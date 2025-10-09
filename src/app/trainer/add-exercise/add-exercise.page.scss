@@ -1,0 +1,294 @@
+ion-toolbar {
+  --background: #fdbc22;
+  --color: #ffffff;
+}
+
+.exercise-form-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  --color: #333333;
+}
+
+.form-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Información de la sala */
+.room-info-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+  margin-bottom: 25px;
+
+  .room-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .room-icon {
+      font-size: 2.5rem;
+      color: #fdbc22;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333333;
+      margin: 0;
+    }
+
+    p {
+      color: #666666;
+      font-size: 0.9rem;
+      margin: 5px 0 0 0;
+    }
+  }
+}
+
+/* Formulario */
+.form-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+  margin-bottom: 25px;
+}
+
+.form-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333333;
+    margin: 0 0 20px 0;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    
+    &:before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: #fdbc22;
+      margin-right: 10px;
+      border-radius: 2px;
+    }
+  }
+
+  h5 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666666;
+    margin: 0 0 10px 0;
+    padding: 0 16px;
+  }
+}
+
+/* Items del formulario */
+ion-item {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(253, 188, 34, 0.2);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  ion-label[position="stacked"] {
+    font-weight: 500;
+    color: #333333;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  ion-input, ion-textarea, ion-select {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+
+  &.selected {
+    background-color: rgba(253, 188, 34, 0.1);
+    border-color: #fdbc22;
+  }
+}
+
+/* Elementos seleccionados */
+.selected-items {
+  margin-bottom: 20px;
+  padding: 0 16px;
+
+  .chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+
+    ion-chip {
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      ion-icon {
+        margin-left: 5px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+/* Grid de equipamiento y grupos musculares */
+.equipment-grid, .muscle-groups-grid {
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  margin: 10px 16px;
+
+  ion-item {
+    margin-bottom: 0;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.selected {
+      background-color: rgba(253, 188, 34, 0.15);
+      border-color: transparent;
+    }
+
+    ion-checkbox {
+      --color-checked: #fdbc22;
+      --border-color-checked: #fdbc22;
+    }
+  }
+}
+
+/* Agregar elementos personalizados */
+.add-custom {
+  margin: 15px 16px 0;
+  
+  ion-item {
+    border-color: #fdbc22;
+    border-style: dashed;
+    background-color: rgba(253, 188, 34, 0.05);
+    
+    ion-input {
+      font-style: italic;
+    }
+
+    ion-button {
+      --color: #fdbc22;
+    }
+  }
+}
+
+/* Grid responsivo */
+ion-grid {
+  padding: 0;
+  
+  ion-col {
+    padding: 0 5px;
+  }
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  padding: 20px 0;
+
+  ion-button {
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+
+    &[fill="clear"] {
+      --color: #666666;
+      --border-color: #cccccc;
+    }
+
+    &:not([fill="clear"]) {
+      --background: #fdbc22;
+      --color: #ffffff;
+
+      &[disabled] {
+        --background: #cccccc;
+        --color: #999999;
+      }
+    }
+  }
+}
+
+/* Botón guardar en el header */
+ion-header ion-button[disabled] {
+  --color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 15px;
+  }
+
+  .room-header {
+    .room-icon {
+      font-size: 2rem;
+    }
+  }
+
+  .form-section h4 {
+    font-size: 1.1rem;
+  }
+
+  .equipment-grid, .muscle-groups-grid {
+    max-height: 250px;
+    margin: 10px 0;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 10px;
+  }
+
+  .room-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .selected-items .chips-container {
+    justify-content: center;
+  }
+
+  ion-grid ion-col {
+    padding: 0;
+    
+    &:first-child {
+      padding-right: 5px;
+    }
+    
+    &:last-child {
+      padding-left: 5px;
+    }
+  }
+}

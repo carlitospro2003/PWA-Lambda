@@ -1,0 +1,108 @@
+<ion-content class="login-content">
+  <div class="login-container">
+    <!-- Logo y título -->
+    <div class="header-section">
+      <div class="logo-container">
+        <ion-icon name="fitness" class="app-logo"></ion-icon>
+      </div>
+      <h1 class="app-title">Lambda</h1>
+      <p class="app-subtitle">Tu compañero de entrenamiento</p>
+    </div>
+
+    <!-- Formulario de login -->
+    <ion-card class="login-card">
+      <ion-card-content>
+        <form (ngSubmit)="onLogin()">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="login-input" lines="none">
+                  <ion-icon name="person" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Email</ion-label>
+                  <ion-input 
+                    type="email" 
+                    [(ngModel)]="email" 
+                    name="email"
+                    placeholder="tucorreo@ejemplo.com"
+                    required>
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="login-input" lines="none">
+                  <ion-icon name="lock-closed" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Contraseña</ion-label>
+                  <ion-input 
+                    [type]="showPassword ? 'text' : 'password'" 
+                    [(ngModel)]="password" 
+                    name="password"
+                    placeholder="Tu contraseña"
+                    required>
+                  </ion-input>
+                  <ion-button 
+                    fill="clear" 
+                    slot="end" 
+                    (click)="togglePasswordVisibility()"
+                    class="password-toggle">
+                    <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Mensaje de error -->
+            <ion-row *ngIf="errorMessage">
+              <ion-col size="12">
+                <ion-text color="danger" class="error-message">
+                  <p>{{ errorMessage }}</p>
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="12">
+                <ion-button 
+                  expand="block" 
+                  type="submit" 
+                  class="login-button"
+                  [disabled]="isLoading">
+                  <span *ngIf="!isLoading">Iniciar Sesión</span>
+                  <span *ngIf="isLoading">Iniciando...</span>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="12" class="forgot-password-container">
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  (click)="onForgotPassword()"
+                  class="forgot-password-button">
+                  ¿Olvidaste tu contraseña?
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Registro -->
+    <div class="register-section">
+      <ion-text color="medium">
+        <p>¿No tienes una cuenta?</p>
+      </ion-text>
+      <ion-button 
+        fill="outline" 
+        expand="block" 
+        (click)="onRegister()"
+        class="register-button">
+        Crear Cuenta
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

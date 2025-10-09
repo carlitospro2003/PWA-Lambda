@@ -1,0 +1,264 @@
+ion-toolbar {
+  --background: #fdbc22;
+  --color: #ffffff;
+}
+
+.account-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  --color: #333333;
+}
+
+.account-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Card principal de información del usuario */
+.user-info-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(253, 188, 34, 0.2);
+  background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+
+    .user-avatar {
+      ion-icon {
+        font-size: 5rem;
+        color: #fdbc22;
+      }
+    }
+
+    .user-details {
+      flex: 1;
+
+      h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #333333;
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+      }
+
+      .user-email {
+        font-size: 1rem;
+        color: #666666;
+        margin: 0 0 12px 0;
+        font-weight: 400;
+      }
+
+      ion-chip {
+        --background: #fdbc22;
+        --color: #ffffff;
+        font-weight: 500;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+/* Card de información personal */
+.personal-info-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+
+  ion-card-header {
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    ion-card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333333;
+      position: relative;
+      padding-left: 15px;
+
+      &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 20px;
+        background: #fdbc22;
+        border-radius: 2px;
+      }
+    }
+
+    ion-button {
+      --color: #fdbc22;
+      --background: rgba(253, 188, 34, 0.1);
+      --border-radius: 8px;
+      --padding: 8px 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      
+      &:hover {
+        --background: rgba(253, 188, 34, 0.2);
+      }
+    }
+  }
+
+  .info-grid {
+    display: grid;
+    gap: 20px;
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 15px;
+      background: rgba(253, 188, 34, 0.05);
+      border-radius: 10px;
+      border-left: 3px solid #fdbc22;
+
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #666666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      span {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333333;
+      }
+    }
+  }
+}
+
+/* Sección de cerrar sesión */
+.logout-section {
+  margin-top: auto;
+  padding: 20px 0;
+
+  ion-button {
+    --border-radius: 15px;
+    --background: #dc3545;
+    --color: #ffffff;
+    height: 55px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      --background: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    ion-icon {
+      font-size: 1.3rem;
+      margin-right: 8px;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .account-container {
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .user-info-card .user-profile {
+    .user-avatar ion-icon {
+      font-size: 4rem;
+    }
+
+    .user-details h2 {
+      font-size: 1.4rem;
+    }
+  }
+
+  .personal-info-card {
+    ion-card-header ion-card-title {
+      font-size: 1.2rem;
+    }
+
+    .info-grid .info-item {
+      padding: 12px;
+
+      span {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .account-container {
+    padding: 10px;
+  }
+
+  .user-info-card .user-profile {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+
+    .user-details {
+      width: 100%;
+      
+      h2 {
+        font-size: 1.3rem;
+      }
+
+      .user-email {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .logout-section ion-button {
+    height: 50px;
+    font-size: 1rem;
+  }
+}
+
+/* Animaciones suaves */
+.user-info-card,
+.personal-info-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.logout-section {
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efectos hover para cards */
+.user-info-card,
+.personal-info-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+}

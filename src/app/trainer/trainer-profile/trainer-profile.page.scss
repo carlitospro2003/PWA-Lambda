@@ -1,0 +1,248 @@
+/* Trainer Profile Page Styles */
+.profile-content {
+  --background: #f8f9fa;
+}
+
+.profile-container {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Profile Card */
+.profile-card {
+  --background: linear-gradient(135deg, #fdbc22 0%, #f39200 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(253, 188, 34, 0.3);
+  margin-bottom: 24px;
+  color: #000;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar-container {
+  flex-shrink: 0;
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+}
+
+.avatar-icon {
+  font-size: 40px;
+  color: #000;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  color: #000;
+}
+
+.user-role {
+  font-size: 1rem;
+  margin: 0 0 12px 0;
+  opacity: 0.8;
+  color: #000;
+}
+
+/* Info Cards */
+.info-card, .stats-card, .actions-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-icon {
+  margin-right: 8px;
+  color: #fdbc22;
+  font-size: 20px;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.info-icon {
+  font-size: 20px;
+  color: #fdbc22;
+  flex-shrink: 0;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.info-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Stats Card */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 16px 8px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  position: relative;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fdbc22;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 16px;
+  color: #fdbc22;
+  opacity: 0.5;
+}
+
+/* Actions */
+.actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.action-button {
+  --border-radius: 12px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 500;
+  
+  &:not(.logout-button) {
+    --border-color: #fdbc22;
+    --color: #fdbc22;
+    
+    &:hover {
+      --background: #fdbc22;
+      --color: #ffffff;
+    }
+  }
+}
+
+.logout-button {
+  margin-top: 8px;
+  --color: #dc3545;
+  
+  &:hover {
+    --background: rgba(220, 53, 69, 0.1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 12px;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .avatar-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .avatar-icon {
+    font-size: 50px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 12px;
+  }
+  
+  .stat-icon {
+    position: static;
+    opacity: 1;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 8px;
+  }
+  
+  .user-name {
+    font-size: 1.3rem;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .info-icon {
+    align-self: flex-start;
+  }
+}

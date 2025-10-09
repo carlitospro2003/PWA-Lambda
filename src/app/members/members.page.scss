@@ -1,0 +1,390 @@
+// Members Page - Gym Theme (Light)
+.page-content {
+  padding: 16px;
+  padding-bottom: 100px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+  min-height: 100vh;
+}
+
+// Trainer Card
+.trainer-card {
+  background: linear-gradient(135deg, #fdbc22 0%, #f39800 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(253, 188, 34, 0.2);
+  box-shadow: 0 12px 40px rgba(253, 188, 34, 0.3);
+  margin-bottom: 20px;
+  
+  ion-card-header {
+    padding-bottom: 12px;
+    
+    ion-card-title {
+      color: #1a1f2e;
+      font-weight: 700;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+  
+  .trainer-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .trainer-avatar {
+      width: 60px;
+      height: 60px;
+      background: rgba(26, 31, 46, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 32px;
+        color: #1a1f2e;
+      }
+    }
+    
+    .trainer-details {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 4px 0;
+        color: #1a1f2e;
+        font-weight: 700;
+        font-size: 18px;
+      }
+      
+      .trainer-email {
+        margin: 0 0 8px 0;
+        color: rgba(26, 31, 46, 0.8);
+        font-size: 14px;
+      }
+      
+      .trainer-schedule {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: rgba(26, 31, 46, 0.9);
+        font-size: 13px;
+        font-weight: 600;
+        
+        ion-icon {
+          font-size: 16px;
+        }
+      }
+    }
+    
+    .trainer-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      ion-button {
+        --background: rgba(26, 31, 46, 0.1);
+        --color: #1a1f2e;
+        --border-radius: 12px;
+        width: 40px;
+        height: 40px;
+        
+        &:hover {
+          --background: rgba(26, 31, 46, 0.2);
+        }
+        
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}
+
+// Room Card
+.room-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(253, 188, 34, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  
+  ion-card-header {
+    ion-card-title {
+      color: #2c3e50;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      ion-icon {
+        color: #fdbc22;
+        font-size: 24px;
+      }
+    }
+    
+    ion-card-subtitle {
+      color: #6c757d;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+  }
+  
+  .room-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+      background: rgba(253, 188, 34, 0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(253, 188, 34, 0.2);
+      
+      ion-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      
+      .stat-details {
+        .stat-value {
+          display: block;
+          font-size: 20px;
+          font-weight: 800;
+          color: #2c3e50;
+          margin-bottom: 4px;
+        }
+        
+        .stat-label {
+          font-size: 12px;
+          color: #6c757d;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}
+
+// Teammates Card
+.teammates-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(253, 188, 34, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  
+  ion-card-header {
+    ion-card-title {
+      color: #2c3e50;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      ion-icon {
+        color: #fdbc22;
+        font-size: 24px;
+      }
+    }
+    
+    ion-card-subtitle {
+      color: #6c757d;
+    }
+  }
+  
+  .teammate-item {
+    --background: transparent;
+    --border-color: rgba(253, 188, 34, 0.1);
+    margin-bottom: 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(253, 188, 34, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      --background: rgba(253, 188, 34, 0.05);
+      transform: translateX(4px);
+      border-color: rgba(253, 188, 34, 0.3);
+    }
+    
+    .rank-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #6c757d;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 16px;
+      
+      &.top-rank {
+        background: linear-gradient(135deg, #fdbc22 0%, #f39800 100%);
+        box-shadow: 0 4px 12px rgba(253, 188, 34, 0.4);
+      }
+    }
+    
+    ion-label {
+      h2 {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 6px;
+      }
+      
+      .teammate-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        .progress-info {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          
+          .completed {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 14px;
+          }
+          
+          .percentage {
+            color: #fdbc22;
+            font-weight: 700;
+            font-size: 14px;
+          }
+        }
+        
+        .streak-info {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: #e74c3c;
+          font-size: 12px;
+          font-weight: 600;
+          
+          ion-icon {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+    
+    .teammate-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      
+      ion-badge {
+        font-size: 10px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Quick Stats Card
+.quick-stats-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(253, 188, 34, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  
+  ion-card-header {
+    ion-card-title {
+      color: #2c3e50;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      ion-icon {
+        color: #fdbc22;
+        font-size: 24px;
+      }
+    }
+  }
+  
+  .quick-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    
+    .quick-stat {
+      text-align: center;
+      padding: 20px 16px;
+      background: rgba(253, 188, 34, 0.1);
+      border-radius: 16px;
+      border: 1px solid rgba(253, 188, 34, 0.2);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(253, 188, 34, 0.3);
+      }
+      
+      ion-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+        display: block;
+      }
+      
+      .stat-number {
+        display: block;
+        font-size: 24px;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 4px;
+      }
+      
+      .stat-text {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .page-content {
+    padding: 12px;
+  }
+  
+  .trainer-info {
+    flex-direction: column;
+    text-align: center;
+    
+    .trainer-actions {
+      flex-direction: row;
+    }
+  }
+  
+  .room-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .quick-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .teammate-item {
+    .teammate-stats {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+  }
+}

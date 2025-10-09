@@ -1,0 +1,231 @@
+/* Stats Page - Ejercicios Guardados Offline */
+ion-content {
+  --background: #ffffff;
+  color: #333333;
+}
+
+.page-content {
+  padding: 16px;
+}
+
+/* Offline Status */
+.offline-status {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 64px 32px;
+  
+  .empty-icon {
+    --color: #cccccc;
+    --size: 64px;
+    margin-bottom: 24px;
+  }
+  
+  .empty-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: #666666;
+  }
+  
+  .empty-subtitle {
+    font-size: 1rem;
+    margin: 0 0 24px 0;
+    color: #888888;
+    line-height: 1.5;
+  }
+}
+
+/* Favorites Count */
+.favorites-count {
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+/* Quick Actions */
+.quick-actions {
+  margin-bottom: 24px;
+  
+  ion-button {
+    margin: 8px 0;
+    --border-radius: 12px;
+    font-weight: 600;
+  }
+}
+
+/* Favorites List */
+.favorites-list {
+  margin-bottom: 24px;
+}
+
+.favorite-card {
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #f0f0f0;
+  
+  &.completed {
+    border-left: 4px solid #28a745;
+  }
+  
+  ion-card-content {
+    padding: 20px;
+  }
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.exercise-info {
+  flex-grow: 1;
+}
+
+.exercise-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333333;
+}
+
+.exercise-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exercise-actions {
+  margin-left: 16px;
+}
+
+.exercise-instructions {
+  margin: 16px 0;
+  
+  p {
+    margin: 0;
+    line-height: 1.5;
+    color: #666666;
+    font-size: 0.95rem;
+  }
+}
+
+.completion-status {
+  margin: 16px 0;
+}
+
+.exercise-footer {
+  margin-top: 16px;
+  
+  ion-button {
+    --border-radius: 12px;
+    font-weight: 600;
+  }
+}
+
+/* Cache Info Card */
+.cache-info {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  
+  ion-card-title {
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    ion-icon {
+      --color: #6c757d;
+    }
+  }
+  
+  ion-list {
+    background: transparent;
+  }
+  
+  ion-item {
+    --background: transparent;
+    --inner-padding-end: 0;
+    --inner-padding-start: 0;
+    --padding-start: 0;
+    
+    ion-icon {
+      margin-right: 16px;
+      font-size: 20px;
+    }
+  }
+}
+
+/* Chips */
+ion-chip {
+  --background: #f8f9fa;
+  --color: #495057;
+  border: 1px solid #dee2e6;
+  
+  &[color="primary"] {
+    --background: #fdbc22;
+    --color: #000;
+    border: none;
+  }
+  
+  &[color="tertiary"] {
+    --background: #e3f2fd;
+    --color: #1976d2;
+    border: 1px solid #bbdefb;
+  }
+  
+  &[color="success"] {
+    --background: #28a745;
+    --color: #ffffff;
+    border: none;
+  }
+  
+  &[color="medium"] {
+    --background: #f8f9fa;
+    --color: #6c757d;
+    border: 1px solid #dee2e6;
+  }
+  
+  ion-icon {
+    margin-right: 4px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exercise-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .exercise-actions {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+  
+  .exercise-meta {
+    gap: 4px;
+  }
+  
+  .empty-state {
+    padding: 48px 24px;
+  }
+}

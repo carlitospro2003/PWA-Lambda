@@ -1,0 +1,100 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()" defaultHref="/trainer/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ roomInfo?.name || 'Ejercicios de Sala' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="exercises-content">
+  <div class="exercises-container">
+
+    <!-- Información de la sala -->
+    <ion-card class="room-info-card" *ngIf="roomInfo">
+      <ion-card-content>
+        <div class="room-info-header">
+          <div>
+            <h2>{{ roomInfo.name }}</h2>
+            <div class="room-meta">
+              <ion-chip color="primary" size="small">
+                <ion-label>{{ roomInfo.code }}</ion-label>
+              </ion-chip>
+              <span class="members-count">{{ roomInfo.activeMembers }}/{{ roomInfo.totalMembers }} miembros</span>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Header de ejercicios con botón agregar -->
+    <div class="exercises-header">
+      <h3>Ejercicios Disponibles</h3>
+      <ion-button 
+        fill="outline" 
+        size="small"
+        color="primary"
+        (click)="addNewExercise()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar
+      </ion-button>
+    </div>
+
+    <!-- Lista de ejercicios -->
+    <div class="exercises-grid">
+      <ion-card 
+        class="exercise-card" 
+        *ngFor="let exercise of exercises"
+        (click)="viewExerciseDetail(exercise)">
+        <ion-card-content>
+          
+          <!-- Header del ejercicio -->
+          <div class="exercise-header">
+            <div class="exercise-icon">
+              <ion-icon [name]="getCategoryIcon(exercise.category)" [color]="getCategoryColor(exercise.category)"></ion-icon>
+            </div>
+            <div class="exercise-title-section">
+              <h4>{{ exercise.title }}</h4>
+            </div>
+          </div>
+
+          <!-- Badges de categoría y dificultad -->
+          <div class="exercise-badges">
+            <ion-chip [color]="getCategoryColor(exercise.category)" size="small">
+              {{ exercise.category | titlecase }}
+            </ion-chip>
+            <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
+              {{ getDifficultyText(exercise.difficulty) }}
+            </ion-chip>
+          </div>
+
+
+          <!-- Botón de acción -->
+          <div class="exercise-actions">
+            <ion-button 
+              expand="block" 
+              fill="outline" 
+              color="primary"
+              (click)="viewExerciseDetail(exercise); $event.stopPropagation()">
+              <ion-icon name="play-circle-outline" slot="start"></ion-icon>
+              Ver Detalles
+            </ion-button>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Estado vacío si no hay ejercicios -->
+    <div class="empty-state" *ngIf="exercises.length === 0">
+      <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
+      <h3>No hay ejercicios en esta sala</h3>
+      <p>Agrega ejercicios para que los miembros puedan entrenar</p>
+      <ion-button expand="block" (click)="addNewExercise()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Agregar Primer Ejercicio
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

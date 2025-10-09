@@ -1,0 +1,174 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/trainer/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Salas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="rooms-content">
+  <div class="rooms-container">
+    
+    <!-- Estadísticas rápidas -->
+    <div class="stats-summary">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ rooms.length }}</h3>
+              <p>Total Salas</p>
+            </div>
+          </ion-col>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ getActiveRoomsCount() }}</h3>
+              <p>Activas</p>
+            </div>
+          </ion-col>
+          <ion-col size="4">
+            <div class="stat-item">
+              <h3>{{ getTotalActiveMembers() }}</h3>
+              <p>Miembros</p>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Lista de salas -->
+    <div class="rooms-list">
+      <ion-card 
+        class="room-card" 
+        *ngFor="let room of rooms"
+        [class.inactive]="room.status === 'inactive'">
+        
+        <ion-card-content>
+          <!-- Header de la sala -->
+          <div class="room-header">
+            <div class="room-info">
+              <h3>{{ room.name }}</h3>
+              <p class="room-description">{{ room.description }}</p>
+              <div class="room-meta">
+                <ion-chip 
+                  [color]="getStatusColor(room.status)" 
+                  size="small">
+                  {{ getStatusText(room.status) }}
+                </ion-chip>
+                <span class="created-date">{{ room.createdDate }}</span>
+              </div>
+            </div>
+            
+            <div class="room-actions">
+              <ion-button 
+                fill="clear" 
+                size="small"
+                (click)="viewRoomDetail(room)">
+                <ion-icon name="eye-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button 
+                fill="clear" 
+                size="small"
+                (click)="editRoom(room)">
+                <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button 
+                fill="clear" 
+                size="small"
+                color="danger"
+                (click)="deleteRoom(room)">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Código de sala -->
+          <div class="room-code-section">
+            <div class="code-display">
+              <span class="code-label">Código:</span>
+              <span class="code-text">{{ room.code }}</span>
+              <ion-button 
+                fill="clear" 
+                size="small"
+                (click)="copyRoomCode(room.code)">
+                <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Estadísticas de la sala -->
+          <div class="room-stats">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6" size-md="3">
+                  <div class="stat-box">
+                    <ion-icon name="people"></ion-icon>
+                    <div>
+                      <strong>{{ room.activeMembers }}/{{ room.totalMembers }}</strong>
+                      <span>Miembros</span>
+                    </div>
+                  </div>
+                </ion-col>
+                
+                <ion-col size="6" size-md="3">
+                  <div class="stat-box">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    <div>
+                      <strong>{{ room.completedWorkouts }}</strong>
+                      <span>Completados</span>
+                    </div>
+                  </div>
+                </ion-col>
+                
+                <ion-col size="12" size-md="6">
+                  <div class="progress-section">
+                    <div class="progress-header">
+                      <span class="progress-label">Progreso Promedio</span>
+                      <span class="progress-value">{{ room.averageProgress }}%</span>
+                    </div>
+                    <ion-progress-bar 
+                      [value]="room.averageProgress / 100"
+                      [color]="room.averageProgress > 70 ? 'success' : room.averageProgress > 40 ? 'warning' : 'danger'">
+                    </ion-progress-bar>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+
+          <!-- Acciones de la sala -->
+          <div class="room-card-actions">
+            <ion-button 
+              expand="block" 
+              fill="outline" 
+              color="primary"
+              (click)="viewRoomDetail(room)">
+              <ion-icon name="eye-outline" slot="start"></ion-icon>
+              Ver Detalles
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Mensaje si no hay salas -->
+    <div class="empty-state" *ngIf="rooms.length === 0">
+      <ion-icon name="fitness" class="empty-icon"></ion-icon>
+      <h3>No tienes salas creadas</h3>
+      <p>Crea tu primera sala para comenzar a entrenar con tus alumnos</p>
+      <ion-button expand="block" (click)="createNewRoom()">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Crear Primera Sala
+      </ion-button>
+    </div>
+
+  </div>
+
+  <!-- FAB para crear nueva sala -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="primary" (click)="createNewRoom()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

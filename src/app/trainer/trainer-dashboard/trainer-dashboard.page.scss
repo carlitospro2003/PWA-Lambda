@@ -1,0 +1,317 @@
+ion-toolbar {
+  --background: #fdbc22;
+  --color: #ffffff;
+}
+
+.trainer-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  --color: #333333;
+}
+
+.trainer-container {
+  padding: 20px;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+/* Nombre del entrenador */
+.trainer-name-section {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
+}
+
+.trainer-name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333333;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Etiqueta Salas */
+.salas-section {
+  margin-bottom: 25px;
+}
+
+.salas-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  padding-left: 5px;
+}
+
+/* Grid de salas */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.room-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border-color: rgba(253, 188, 34, 0.3);
+  }
+}
+
+/* Header de la sala */
+.room-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+
+  .room-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+    line-height: 1.3;
+  }
+}
+
+/* Información de la sala */
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: rgba(253, 188, 34, 0.05);
+    border-radius: 10px;
+    border-left: 3px solid #fdbc22;
+
+    .info-icon {
+      font-size: 1.3rem;
+      color: #fdbc22;
+      min-width: 20px;
+    }
+
+    .info-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+
+      .info-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #666666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+      }
+
+      .info-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #333333;
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* Botón Agregar Nueva Sala */
+.add-room-section {
+  margin-top: 40px;
+  padding: 0 20px;
+}
+
+.add-room-button {
+  --background: #fdbc22;
+  --background-activated: #e6a61f;
+  --background-hover: #e6a61f;
+  --color: #ffffff;
+  --border-radius: 15px;
+  --padding-top: 18px;
+  --padding-bottom: 18px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(253, 188, 34, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(253, 188, 34, 0.4);
+  }
+
+  ion-icon {
+    font-size: 1.3rem;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .trainer-container {
+    padding: 15px;
+  }
+
+  .trainer-name {
+    font-size: 1.7rem;
+  }
+
+  .salas-title {
+    font-size: 1.3rem;
+  }
+
+  .rooms-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .add-room-section {
+    padding: 0 10px;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trainer-container {
+    padding: 10px;
+  }
+
+  .trainer-name-section {
+    margin-bottom: 20px;
+    padding: 15px 0;
+  }
+
+  .trainer-name {
+    font-size: 1.5rem;
+  }
+
+  .salas-title {
+    font-size: 1.2rem;
+  }
+
+  .add-room-section {
+    margin-top: 25px;
+    padding: 0 5px;
+  }
+}
+
+/* Estilos del Modal */
+.modal-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+}
+
+.modal-container {
+  padding: 20px;
+}
+
+.form-input {
+  --background: #f8f9fa;
+  --border-radius: 15px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin-bottom: 20px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: #fdbc22;
+    --background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(253, 188, 34, 0.1);
+  }
+
+  ion-label {
+    color: #333333;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  ion-input, ion-textarea, ion-select {
+    --color: #333333;
+    --placeholder-color: #999999;
+  }
+
+  ion-textarea {
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.cancel-button {
+  --border-color: #cccccc;
+  --color: #666666;
+  --border-radius: 15px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 500;
+
+  &:hover {
+    --background: #f5f5f5;
+    --color: #333333;
+  }
+}
+
+.create-button {
+  --background: #fdbc22;
+  --background-activated: #e6a61f;
+  --background-hover: #e6a61f;
+  --color: #ffffff;
+  --border-radius: 15px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(253, 188, 34, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(253, 188, 34, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    transform: none;
+    box-shadow: 0 4px 15px rgba(253, 188, 34, 0.2);
+  }
+}
+
+/* Responsive para modal */
+@media (max-width: 768px) {
+  .modal-container {
+    padding: 15px;
+  }
+
+  .modal-actions {
+    margin-top: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    padding: 10px;
+  }
+
+  .form-input {
+    margin-bottom: 15px;
+  }
+}

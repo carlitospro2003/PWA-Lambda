@@ -1,0 +1,167 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mi Grupo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Mi Grupo</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="page-content">
+    
+    <!-- Trainer Info Card -->
+    <ion-card class="trainer-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline"></ion-icon>
+          Mi Entrenador
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="trainer-info">
+          <div class="trainer-avatar">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="trainer-details">
+            <h3>{{ trainerInfo.trainer.USR_Name }} {{ trainerInfo.trainer.USR_LastName }}</h3>
+            <p class="trainer-email">{{ trainerInfo.trainer.USR_Email }}</p>
+            <div class="trainer-schedule">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ trainerInfo.contactInfo.schedule }}</span>
+            </div>
+          </div>
+          <div class="trainer-actions">
+            <ion-button fill="clear" size="small" (click)="contactTrainer()">
+              <ion-icon name="mail-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small">
+              <ion-icon name="call-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Room Info Card -->
+    <ion-card class="room-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="school-outline"></ion-icon>
+          {{ roomStats.room.ROO_Name }}
+        </ion-card-title>
+        <ion-card-subtitle>Código: {{ roomStats.room.ROO_Code }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="room-stats">
+          <div class="stat-item">
+            <ion-icon name="people-outline" color="primary"></ion-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ roomStats.memberCount }}</span>
+              <span class="stat-label">Miembros</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="stats-chart-outline" color="success"></ion-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ roomStats.totalExercises }}</span>
+              <span class="stat-label">Ejercicios</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="trophy-outline" color="warning"></ion-icon>
+            <div class="stat-details">
+              <span class="stat-value">{{ roomStats.averageCompletion }}%</span>
+              <span class="stat-label">Progreso Promedio</span>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Teammates Leaderboard -->
+    <ion-card class="teammates-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="ribbon-outline"></ion-icon>
+          Ranking del Grupo
+        </ion-card-title>
+        <ion-card-subtitle>Basado en rutinas completadas</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item 
+            *ngFor="let teammate of teammates; let i = index" 
+            button 
+            (click)="viewTeammateProfile(teammate)"
+            class="teammate-item">
+            
+            <div slot="start" class="rank-badge" [class.top-rank]="i < 3">
+              <span>{{ getRankPosition(teammate) }}</span>
+            </div>
+            
+            <ion-label>
+              <h2>{{ teammate.user.USR_Name }} {{ teammate.user.USR_LastName }}</h2>
+              <div class="teammate-stats">
+                <div class="progress-info">
+                  <span class="completed">{{ teammate.stats.completedRoutines }}/{{ teammate.stats.totalRoutines }}</span>
+                  <span class="percentage">{{ getCompletionRate(teammate) }}%</span>
+                </div>
+                <div class="streak-info" *ngIf="teammate.stats.streak > 0">
+                  <ion-icon name="flame-outline" color="danger"></ion-icon>
+                  <span>{{ teammate.stats.streak }} días</span>
+                </div>
+              </div>
+            </ion-label>
+            
+            <div slot="end" class="teammate-badges">
+              <ion-badge 
+                *ngIf="teammate.stats.weeklyActive" 
+                color="success">
+                Activo
+              </ion-badge>
+              <ion-badge 
+                *ngIf="getCompletionRate(teammate) >= 90" 
+                color="warning">
+                Top
+              </ion-badge>
+            </div>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Quick Stats Card -->
+    <ion-card class="quick-stats-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          Estadísticas Rápidas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="quick-stats-grid">
+          <div class="quick-stat">
+            <ion-icon name="people-outline" color="primary"></ion-icon>
+            <span class="stat-number">{{ totalCompanions }}</span>
+            <span class="stat-text">Compañeros</span>
+          </div>
+          <div class="quick-stat">
+            <ion-icon name="trophy-outline" color="warning"></ion-icon>
+            <span class="stat-number">{{ topPerformersCount }}</span>
+            <span class="stat-text">Top Performers</span>
+          </div>
+          <div class="quick-stat">
+            <ion-icon name="flame-outline" color="danger"></ion-icon>
+            <span class="stat-number">{{ weeklyActiveCount }}</span>
+            <span class="stat-text">Activos esta semana</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

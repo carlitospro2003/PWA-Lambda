@@ -1,0 +1,175 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="onBackToLogin()" defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="register-content">
+  <div class="register-container">
+    <!-- Logo y título -->
+    <div class="header-section">
+      <div class="logo-container">
+        <ion-icon name="person-add" class="app-logo"></ion-icon>
+      </div>
+      <h1 class="app-title">¡Únete a Lambda!</h1>
+      <p class="app-subtitle">Crea tu cuenta y comienza tu entrenamiento</p>
+    </div>
+
+    <!-- Formulario de registro -->
+    <ion-card class="register-card">
+      <ion-card-content>
+        <form (ngSubmit)="onRegister()">
+          <ion-grid>
+            <!-- Nombre -->
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="person" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Nombre</ion-label>
+                  <ion-input 
+                    type="text" 
+                    [(ngModel)]="firstName" 
+                    name="firstName"
+                    placeholder="Tu nombre"
+                    required>
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+
+              <!-- Apellido -->
+              <ion-col size="12" size-md="6">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="person" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Apellido</ion-label>
+                  <ion-input 
+                    type="text" 
+                    [(ngModel)]="lastName" 
+                    name="lastName"
+                    placeholder="Tu apellido"
+                    required>
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Email -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="mail" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Email</ion-label>
+                  <ion-input 
+                    type="email" 
+                    [(ngModel)]="email" 
+                    name="email"
+                    placeholder="tucorreo@ejemplo.com"
+                    required>
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Teléfono -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="call" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Teléfono</ion-label>
+                  <ion-input 
+                    type="tel" 
+                    [(ngModel)]="phone" 
+                    name="phone"
+                    placeholder="1234567890"
+                    maxlength="10"
+                    pattern="[0-9]*"
+                    required>
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Rol -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="fitness" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Tipo de Usuario</ion-label>
+                  <ion-select 
+                    [(ngModel)]="role" 
+                    name="role"
+                    placeholder="Selecciona tu rol">
+                    <ion-select-option value="trainee">Entrenando (Usuario)</ion-select-option>
+                    <ion-select-option value="trainer">Entrenador</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Contraseña -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-item class="register-input" lines="none">
+                  <ion-icon name="lock-closed" slot="start" class="input-icon"></ion-icon>
+                  <ion-label position="stacked">Contraseña</ion-label>
+                  <ion-input 
+                    [type]="showPassword ? 'text' : 'password'" 
+                    [(ngModel)]="password" 
+                    name="password"
+                    placeholder="Mínimo 8 caracteres"
+                    required>
+                  </ion-input>
+                  <ion-button 
+                    fill="clear" 
+                    slot="end" 
+                    (click)="togglePasswordVisibility()"
+                    class="password-toggle">
+                    <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <!-- Mensaje de error -->
+            <ion-row *ngIf="errorMessage">
+              <ion-col size="12">
+                <ion-text color="danger" class="error-message">
+                  <p>{{ errorMessage }}</p>
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <!-- Botón de registro -->
+            <ion-row>
+              <ion-col size="12">
+                <ion-button 
+                  expand="block" 
+                  type="submit" 
+                  class="register-button"
+                  [disabled]="isLoading">
+                  <span *ngIf="!isLoading">Crear Cuenta</span>
+                  <span *ngIf="isLoading">Creando cuenta...</span>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Login -->
+    <div class="login-section">
+      <ion-text color="medium">
+        <p>¿Ya tienes una cuenta?</p>
+      </ion-text>
+      <ion-button 
+        fill="clear" 
+        (click)="onBackToLogin()"
+        class="login-link-button">
+        Iniciar Sesión
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

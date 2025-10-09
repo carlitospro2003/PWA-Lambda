@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ roomDetails.name }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="room-exercises-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ roomDetails.name }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="room-exercises-container">
+
+    <!-- Información Básica de la Sala -->
+    <ion-card class="room-info-card">
+      <ion-card-content>
+        <div class="room-header">
+          <h2 class="room-title">{{ roomDetails.name }}</h2>
+          <ion-chip color="primary" size="small">
+            <ion-label>{{ roomDetails.code }}</ion-label>
+          </ion-chip>
+        </div>
+        <div class="trainer-info">
+          <ion-icon name="person-outline" class="trainer-icon"></ion-icon>
+          <span>Entrenador: <strong>{{ roomDetails.trainerName }}</strong></span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de Ejercicios -->
+    <div class="exercises-list">
+      <ion-card 
+        *ngFor="let exercise of exercises; trackBy: trackByExerciseId"
+        class="exercise-card"
+        [class.completed]="exercise.completed">
+        
+        <ion-card-content>
+          <div class="exercise-content">
+            
+            <!-- Header del ejercicio -->
+            <div class="exercise-header">
+              <div class="exercise-main">
+                <h3 class="exercise-name">{{ exercise.name }}</h3>
+                <p class="exercise-description">{{ exercise.description }}</p>
+              </div>
+              <div class="exercise-actions-header">
+                <ion-button 
+                  fill="clear" 
+                  size="small"
+                  (click)="toggleFavorite(exercise)"
+                  class="favorite-btn">
+                  <ion-icon 
+                    [name]="exercise.isFavorite ? 'heart' : 'heart-outline'"
+                    [color]="exercise.isFavorite ? 'danger' : 'medium'">
+                  </ion-icon>
+                </ion-button>
+                <ion-icon 
+                  *ngIf="exercise.completed"
+                  name="checkmark-circle" 
+                  class="completed-icon"
+                  color="success">
+                </ion-icon>
+              </div>
+            </div>
+
+            <!-- Información del ejercicio -->
+            <div class="exercise-info">
+              <div class="info-tags">
+                <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
+                  <ion-label>{{ getDifficultyLabel(exercise.difficulty) }}</ion-label>
+                </ion-chip>
+                <ion-chip color="medium" size="small">
+                  <ion-icon name="time-outline" class="chip-icon"></ion-icon>
+                  <ion-label>{{ exercise.duration }}min</ion-label>
+                </ion-chip>
+                <ion-chip color="tertiary" size="small">
+                  <ion-label>{{ exercise.category }}</ion-label>
+                </ion-chip>
+              </div>
+
+              <div class="exercise-details">
+                <div class="detail-item" *ngIf="exercise.sets">
+                  <ion-icon name="barbell-outline" class="detail-icon"></ion-icon>
+                  <span>{{ exercise.sets }} series</span>
+                </div>
+                <div class="detail-item" *ngIf="exercise.repetitions">
+                  <ion-icon name="flash-outline" class="detail-icon"></ion-icon>
+                  <span>{{ exercise.repetitions }} {{ exercise.category === 'Core' ? 'seg' : 'reps' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tiempo completado -->
+            <div class="completed-info" *ngIf="exercise.completed && exercise.completedAt">
+              <ion-icon name="checkmark-circle-outline" class="completed-time-icon"></ion-icon>
+              <span class="completed-time">Completado {{ formatTime(exercise.completedAt) }}</span>
+            </div>
+
+            <!-- Acciones del ejercicio -->
+            <div class="exercise-actions">
+              <ion-button 
+                *ngIf="!exercise.completed"
+                fill="solid"
+                color="primary"
+                size="small"
+                (click)="startExercise(exercise)">
+                <ion-icon name="play-circle-outline" slot="start"></ion-icon>
+                Iniciar
+              </ion-button>
+              
+              <ion-button 
+                *ngIf="!exercise.completed"
+                fill="outline"
+                color="success"
+                size="small"
+                (click)="markAsCompleted(exercise)">
+                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                Marcar como completado
+              </ion-button>
+
+              <ion-button 
+                fill="clear"
+                color="medium"
+                size="small"
+                (click)="viewExerciseDetails(exercise)">
+                <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+                Detalles
+              </ion-button>
+            </div>
+
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="exercises.length === 0">
+      <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
+      <h3>No hay ejercicios</h3>
+      <p>No hay ejercicios disponibles en esta sala</p>
+    </div>
+
+  </div>
+
+
+
+</ion-content>

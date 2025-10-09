@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Favoritos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="favorites-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Favoritos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="favorites-container">
+
+    <!-- Lista Simple de Ejercicios -->
+    <div class="exercises-list">
+      <ion-card *ngFor="let exercise of favorites; trackBy: trackByExerciseId" class="exercise-item">
+        <ion-card-content>
+          <h3 class="exercise-name">{{ exercise.name }}</h3>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+  </div>
+</ion-content>

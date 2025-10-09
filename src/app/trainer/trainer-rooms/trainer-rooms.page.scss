@@ -1,0 +1,326 @@
+ion-toolbar {
+  --background: #fdbc22;
+  --color: #ffffff;
+}
+
+.rooms-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  --color: #333333;
+}
+
+.rooms-container {
+  padding: 20px;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+/* Estadísticas resumen */
+.stats-summary {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+}
+
+.stat-item {
+  text-align: center;
+
+  h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #fdbc22;
+    margin: 0 0 5px 0;
+  }
+
+  p {
+    color: #666666;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+/* Lista de salas */
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(253, 188, 34, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  &.inactive {
+    opacity: 0.7;
+    border-color: #ccc;
+  }
+}
+
+/* Header de sala */
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.room-info {
+  flex: 1;
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333333;
+    margin: 0 0 8px 0;
+  }
+
+  .room-description {
+    color: #666666;
+    font-size: 0.95rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  .room-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .created-date {
+      color: #999999;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.room-actions {
+  display: flex;
+  gap: 5px;
+
+  ion-button {
+    --padding: 8px;
+    --color: #666666;
+
+    &:hover {
+      --color: #fdbc22;
+    }
+
+    &[color="danger"]:hover {
+      --color: #e74c3c;
+    }
+  }
+}
+
+/* Código de sala */
+.room-code-section {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.code-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .code-label {
+    color: #666666;
+    font-size: 0.9rem;
+  }
+
+  .code-text {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fdbc22;
+    background: #ffffff;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 2px solid #fdbc22;
+    flex: 1;
+  }
+
+  ion-button {
+    --color: #666666;
+    --padding: 8px;
+
+    &:hover {
+      --color: #fdbc22;
+    }
+  }
+}
+
+/* Estadísticas de sala */
+.room-stats {
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: #fdbc22;
+  }
+
+  div {
+    strong {
+      display: block;
+      font-size: 1.1rem;
+      color: #333333;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 0.8rem;
+      color: #666666;
+    }
+  }
+}
+
+.progress-section {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .progress-label {
+      font-size: 0.9rem;
+      color: #666666;
+    }
+
+    .progress-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333333;
+    }
+  }
+
+  ion-progress-bar {
+    height: 8px;
+    border-radius: 4px;
+  }
+}
+
+/* Acciones de tarjeta */
+.room-card-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+
+  ion-button {
+    --border-color: #fdbc22;
+    --color: #fdbc22;
+    --border-radius: 10px;
+
+    &:hover {
+      --background: #fdbc22;
+      --color: #ffffff;
+    }
+  }
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  .empty-icon {
+    font-size: 4rem;
+    color: #cccccc;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    color: #666666;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #999999;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --background: #fdbc22;
+    --color: #ffffff;
+    --border-radius: 12px;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+/* FAB */
+ion-fab-button {
+  --background: #fdbc22;
+  --color: #ffffff;
+  --box-shadow: 0 6px 20px rgba(253, 188, 34, 0.4);
+
+  &:hover {
+    --background: #e6a61f;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rooms-container {
+    padding: 15px;
+  }
+
+  .room-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .room-actions {
+    align-self: flex-end;
+  }
+
+  .code-display {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    .code-text {
+      text-align: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .rooms-container {
+    padding: 10px;
+  }
+
+  .stats-summary {
+    padding: 15px;
+  }
+
+  .stat-item h3 {
+    font-size: 1.5rem;
+  }
+}

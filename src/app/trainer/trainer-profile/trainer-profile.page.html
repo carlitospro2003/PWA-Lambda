@@ -1,0 +1,146 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/trainer/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="profile-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Mi Perfil</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="profile-container">
+    
+    <!-- Información del Usuario -->
+    <ion-card class="profile-card">
+      <ion-card-content>
+        <div class="profile-header">
+          <div class="avatar-container">
+            <div class="avatar-circle">
+              <ion-icon name="person" class="avatar-icon"></ion-icon>
+            </div>
+          </div>
+          <div class="user-info">
+            <h2 class="user-name">{{ getFullName() }}</h2>
+            <p class="user-role">{{ getUserRole() }}</p>
+            <ion-chip color="primary" size="small">
+              <ion-icon name="fitness-outline" slot="start"></ion-icon>
+              <ion-label>Entrenador</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información Personal -->
+    <ion-card class="info-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline" class="section-icon"></ion-icon>
+          Información Personal
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <ion-icon name="mail-outline" class="info-icon"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ currentUser?.USR_Email || 'No disponible' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <ion-icon name="call-outline" class="info-icon"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value">{{ currentUser?.USR_Phone || 'No disponible' }}</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <ion-icon name="calendar-outline" class="info-icon"></ion-icon>
+            <div class="info-content">
+              <span class="info-label">Miembro desde</span>
+              <span class="info-value">{{ formatDate(currentUser?.created_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Estadísticas del Entrenador -->
+    <ion-card class="stats-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="stats-chart-outline" class="section-icon"></ion-icon>
+          Mis Estadísticas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">{{ trainerStats.totalRooms }}</div>
+            <div class="stat-label">Salas Creadas</div>
+            <ion-icon name="home-outline" class="stat-icon"></ion-icon>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-value">{{ trainerStats.totalStudents }}</div>
+            <div class="stat-label">Estudiantes</div>
+            <ion-icon name="people-outline" class="stat-icon"></ion-icon>
+          </div>
+          
+          <div class="stat-item">
+            <div class="stat-value">{{ trainerStats.totalExercises }}</div>
+            <div class="stat-label">Ejercicios</div>
+            <ion-icon name="barbell-outline" class="stat-icon"></ion-icon>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Acciones -->
+    <ion-card class="actions-card">
+      <ion-card-content>
+        <div class="actions-grid">
+          <ion-button 
+            fill="outline" 
+            expand="block" 
+            color="primary"
+            (click)="editProfile()"
+            class="action-button">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar Perfil
+          </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            expand="block" 
+            color="medium"
+            (click)="changePassword()"
+            class="action-button">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            Cambiar Contraseña
+          </ion-button>
+          
+          <ion-button 
+            fill="clear" 
+            expand="block" 
+            color="danger"
+            (click)="logout()"
+            class="action-button logout-button">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            Cerrar Sesión
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

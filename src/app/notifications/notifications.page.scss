@@ -1,0 +1,277 @@
+/* Notifications Page Styles */
+.notifications-content {
+  --background: #f8f9fa;
+}
+
+.notifications-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Notifications List */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Notification Cards */
+.notification-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.notification-card.unread {
+  border-left: 4px solid #fdbc22;
+  box-shadow: 0 2px 12px rgba(253, 188, 34, 0.15);
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.notification-card ion-card-content {
+  padding: 16px;
+}
+
+/* Notification Content Layout */
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* Icon Container */
+.notification-icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(253, 188, 34, 0.1);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.notification-icon {
+  --size: 24px;
+}
+
+.unread-indicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: #fdbc22;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Main Content */
+.notification-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.notification-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  line-height: 1.3;
+}
+
+.notification-time {
+  font-size: 0.8rem;
+  color: #666;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.notification-message {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+/* Footer */
+.notification-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Actions */
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-actions ion-button {
+  --color: #999;
+  --padding: 8px;
+}
+
+.notification-actions ion-button:hover {
+  --color: #666;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #888;
+}
+
+.empty-state .empty-icon {
+  --color: #cccccc;
+  --size: 64px;
+  margin-bottom: 24px;
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #666;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin: 0;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* Refresher */
+ion-refresher {
+  z-index: 10;
+}
+
+/* Infinite Scroll */
+ion-infinite-scroll-content {
+  color: #666;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .notifications-container {
+    padding: 12px;
+  }
+  
+  .notification-content {
+    gap: 12px;
+  }
+  
+  .notification-icon-container {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .notification-icon {
+    --size: 20px;
+  }
+  
+  .notification-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .notification-title {
+    font-size: 1rem;
+  }
+  
+  .notification-message {
+    font-size: 0.85rem;
+  }
+  
+  .notification-actions {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .notifications-content {
+    --background: #1a1a1a;
+  }
+  
+  .notification-card {
+    --background: #2a2a2a;
+  }
+  
+  .notification-title {
+    color: #ffffff;
+  }
+  
+  .notification-message {
+    color: #cccccc;
+  }
+  
+  .notification-time {
+    color: #999999;
+  }
+}
+
+/* Notification type specific colors */
+.notification-card.room .notification-icon-container {
+  background: rgba(56, 128, 255, 0.1);
+}
+
+.notification-card.exercise .notification-icon-container {
+  background: rgba(52, 199, 89, 0.1);
+}
+
+.notification-card.success .notification-icon-container {
+  background: rgba(52, 199, 89, 0.1);
+}
+
+.notification-card.warning .notification-icon-container {
+  background: rgba(255, 149, 0, 0.1);
+}
+
+.notification-card.info .notification-icon-container {
+  background: rgba(142, 142, 147, 0.1);
+}

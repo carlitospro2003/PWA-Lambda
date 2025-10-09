@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mis Salas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="home-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Mis Salas</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="home-container">
+    
+    <!-- Header con saludo -->
+    <div class="user-welcome">
+      <h2>¡Hola, {{ userName }}!</h2>
+      <p>Estas son las salas en las que participas</p>
+    </div>
+
+    <!-- Lista de salas del usuario -->
+    <div class="rooms-grid">
+      <ion-card 
+        class="room-card" 
+        *ngFor="let room of userRooms"
+        (click)="enterRoom(room)">
+        <ion-card-content>
+          
+          <!-- Header de la sala -->
+          <div class="room-header">
+            <h3 class="room-name">{{ room.name }}</h3>
+            <ion-chip color="primary" size="small">
+              <ion-label>{{ room.code }}</ion-label>
+            </ion-chip>
+          </div>
+
+          <!-- Información de la sala -->
+          <div class="room-info">
+            <!-- Miembros totales -->
+            <div class="info-item">
+              <div class="info-icon-container">
+                <ion-icon name="people-outline" class="info-icon"></ion-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Miembros</span>
+                <span class="info-value">{{ room.totalMembers }}</span>
+              </div>
+            </div>
+            
+            <!-- Ejercicios disponibles -->
+            <div class="info-item">
+              <div class="info-icon-container">
+                <ion-icon name="fitness-outline" class="info-icon"></ion-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Ejercicios</span>
+                <span class="info-value">{{ room.totalExercises }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de acción -->
+          <div class="action-section">
+            <div class="enter-button">
+              <ion-icon name="arrow-forward-circle-outline" class="action-icon"></ion-icon>
+              <span>Entrar a la sala</span>
+            </div>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Estado vacío si no hay salas -->
+    <div class="empty-state" *ngIf="userRooms.length === 0">
+      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+      <h3>No estás en ninguna sala</h3>
+      <p>Pídele a tu entrenador el código de una sala para unirte</p>
+    </div>
+
+  </div>
+</ion-content>

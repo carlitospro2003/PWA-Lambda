@@ -1,0 +1,39 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home">
+      <ion-icon [name]="getCurrentTab() === 'home' ? 'home' : 'home-outline'"></ion-icon>
+      <ion-label>Inicio</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="favorites">
+      <ion-icon [name]="getCurrentTab() === 'favorites' ? 'heart' : 'heart-outline'"></ion-icon>
+      <ion-label>Favoritos</ion-label>
+    </ion-tab-button>
+
+    <!--
+    
+    <ion-tab-button tab="members">
+      <ion-icon [name]="getCurrentTab() === 'members' ? 'people' : 'people-outline'"></ion-icon>
+      <ion-label>Entrenadores</ion-label>
+    </ion-tab-button>
+    -->
+
+    <ion-tab-button tab="notifications">
+      <ion-icon [name]="getCurrentTab() === 'notifications' ? 'notifications' : 'notifications-outline'"></ion-icon>
+      <ion-label>Notificaciones</ion-label>
+      <ion-badge color="primary" *ngIf="getUnreadNotifications() > 0">{{ getUnreadNotifications() }}</ion-badge>
+    </ion-tab-button>
+
+    <!--
+    <ion-tab-button tab="stats">
+      <ion-icon [name]="getCurrentTab() === 'stats' ? 'calendar' : 'calendar-outline'"></ion-icon>
+      <ion-label>Stats</ion-label>
+    </ion-tab-button> 163 pesos
+    -->
+
+    <ion-tab-button tab="account">
+      <ion-icon [name]="getCurrentTab() === 'account' ? 'person' : 'person-outline'"></ion-icon>
+      <ion-label>Cuenta</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

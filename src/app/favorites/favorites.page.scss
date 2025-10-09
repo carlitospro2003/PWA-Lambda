@@ -1,0 +1,78 @@
+.favorites-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 20px;
+  background: linear-gradient(135deg, #faf9f6 0%, #f5f4f1 100%);
+}
+
+.favorites-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Exercise List */
+.exercises-list {
+  .exercise-item {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: #ffffff;
+    overflow: hidden;
+
+    ion-card-content {
+      padding: 16px 20px;
+
+      .exercise-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        line-height: 1.3;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .favorites-content {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+
+  .exercises-list .exercise-item {
+    margin-bottom: 10px;
+    border-radius: 10px;
+
+    ion-card-content {
+      padding: 14px 16px;
+
+      .exercise-name {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+/* Loading Animation */
+.exercise-item {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

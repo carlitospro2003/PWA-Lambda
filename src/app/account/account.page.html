@@ -1,0 +1,75 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mi Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="account-content">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Mi Cuenta</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="account-container">
+    
+    <!-- Información del Usuario -->
+    <ion-card class="user-info-card">
+      <ion-card-content>
+        <div class="user-profile">
+          <div class="user-avatar">
+            <ion-icon name="person-circle" color="primary"></ion-icon>
+          </div>
+          <div class="user-details">
+            <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+            <p class="user-email">{{ userProfile.email }}</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información Personal -->
+    <ion-card class="personal-info-card">
+      <ion-card-header>
+        <ion-card-title>Información Personal</ion-card-title>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="primary"
+          (click)="openEditProfile()">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nombre:</label>
+            <span>{{ userProfile.firstName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Apellidos:</label>
+            <span>{{ userProfile.lastName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Correo Electrónico:</label>
+            <span>{{ userProfile.email }}</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botón de Cerrar Sesión -->
+    <div class="logout-section">
+      <ion-button 
+        expand="block" 
+        color="danger"
+        size="large"
+        (click)="signOut()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

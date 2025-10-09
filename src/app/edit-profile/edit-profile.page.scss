@@ -1,0 +1,237 @@
+/* Edit Profile Page Styles */
+.edit-profile-content {
+  --background: #f8f9fa;
+}
+
+.edit-profile-container {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Avatar Section */
+.avatar-section {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-icon {
+  --size: 120px;
+  --color: #fdbc22;
+}
+
+.change-photo-btn {
+  --color: #fdbc22;
+  font-size: 0.9rem;
+}
+
+/* Form Cards */
+.form-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.form-card ion-card-header {
+  padding-bottom: 8px;
+}
+
+.form-card ion-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.section-icon {
+  --size: 24px;
+  --color: #fdbc22;
+}
+
+/* Form Items */
+.form-item {
+  --background: transparent;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --padding: 16px 0;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.form-item.error {
+  --border-color: #dc3545;
+}
+
+.form-item ion-label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.form-item ion-input {
+  --background: #f8f9fa;
+  --border-radius: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-size: 1rem;
+}
+
+.field-icon {
+  --size: 20px;
+  --color: #666;
+  margin-right: 12px;
+}
+
+/* Error Messages */
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  padding-left: 16px;
+  font-weight: 500;
+}
+
+/* Actions Section */
+.actions-section {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.save-btn {
+  --background: linear-gradient(135deg, #fdbc22 0%, #f39200 100%);
+  --color: #000;
+  --border-radius: 12px;
+  --padding: 16px 24px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.save-btn:hover {
+  --background: linear-gradient(135deg, #f39200 0%, #e68a00 100%);
+}
+
+.cancel-btn {
+  --color: #666;
+  --border-color: #ddd;
+  --border-radius: 12px;
+  --padding: 16px 24px;
+  font-weight: 600;
+}
+
+/* Form Validation States */
+.form-item.error ion-input {
+  --border-color: #dc3545;
+  --border-width: 2px;
+  --border-style: solid;
+}
+
+.form-item ion-input:focus-within {
+  --border-color: #fdbc22;
+  --border-width: 2px;
+  --border-style: solid;
+}
+
+/* Lists */
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+/* Loading State */
+.save-btn[disabled] {
+  opacity: 0.7;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .edit-profile-container {
+    padding: 12px;
+  }
+  
+  .avatar-icon {
+    --size: 100px;
+  }
+  
+  .form-card ion-card-header {
+    padding: 16px 16px 8px 16px;
+  }
+  
+  .form-card ion-card-content {
+    padding: 0 16px 16px 16px;
+  }
+  
+  .actions-section {
+    margin-top: 24px;
+  }
+  
+  .save-btn,
+  .cancel-btn {
+    --padding: 14px 20px;
+    font-size: 1rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .edit-profile-content {
+    --background: #1a1a1a;
+  }
+  
+  .form-card {
+    --background: #2a2a2a;
+  }
+  
+  .form-card ion-card-title {
+    color: #ffffff;
+  }
+  
+  .form-item ion-label {
+    color: #cccccc;
+  }
+  
+  .form-item ion-input {
+    --background: #333333;
+    --color: #ffffff;
+  }
+}
+
+/* Smooth Transitions */
+.form-item,
+.save-btn,
+.cancel-btn {
+  transition: all 0.3s ease;
+}
+
+.form-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Focus States */
+.form-item ion-input:focus-within {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+/* Success Animation */
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.save-btn:active {
+  animation: successPulse 0.3s ease;
+}
