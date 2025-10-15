@@ -17,7 +17,8 @@ import {
   IonChip,
   IonLabel,
   AlertController,
-  ToastController
+  ToastController,
+  LoadingController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -79,7 +80,8 @@ export class TrainerProfilePage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController
   ) {
     addIcons({
       person,
@@ -163,20 +165,68 @@ export class TrainerProfilePage implements OnInit {
       buttons: [
         {
           text: 'Cancelar',
-          role: 'cancel'
+          role: 'cancel',
+          cssClass: 'secondary'
         },
         {
           text: 'Cerrar Sesión',
           role: 'destructive',
-          handler: () => {
-            this.authService.logout();
-            this.router.navigate(['/login']);
+          cssClass: 'danger',
+          handler: async () => {
+            await this.performLogout();
           }
         }
       ]
     });
 
     await alert.present();
+  }
+
+  private async performLogout() {
+    const loading = await this.loadingController.create({
+      message: 'Cerrando sesión...',
+      duration: 10000
+    });
+    
+    await loading.present();
+    console.log('Iniciando logout...');
+
+    this.authService.logout().subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        
+        console.log('Logout Response:', response);
+        
+        if (response.success) {
+          await this.showToast(response.message || 'Sesión cerrada exitosamente', 'success');
+        } else {
+          await this.showToast(response.message || 'Sesión cerrada', 'warning');
+        }
+        
+        this.router.navigate(['/login'], { replaceUrl: true });
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        
+        console.error('Logout Error:', error);
+        
+        // Aunque falle la API, cerramos sesión localmente
+        this.authService.logoutLocal();
+        
+        let errorMessage = 'Error al cerrar sesión en el servidor, pero se cerró localmente';
+        
+        if (error.status === 401) {
+          errorMessage = 'Token inválido - sesión cerrada localmente';
+        } else if (error.status === 0) {
+          errorMessage = 'Sin conexión al servidor - sesión cerrada localmente';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
+        await this.showToast(errorMessage, 'warning');
+        this.router.navigate(['/login'], { replaceUrl: true });
+      }
+    });
   }
 
   private async showToast(message: string, color: string) {

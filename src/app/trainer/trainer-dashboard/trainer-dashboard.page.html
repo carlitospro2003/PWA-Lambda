@@ -34,8 +34,27 @@
       </ion-button>
     </div>
 
+    <!-- Loading de salas -->
+    <div *ngIf="isLoadingRooms" class="loading-container">
+      <ion-card>
+        <ion-card-content>
+          <p>Cargando salas...</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
     <!-- Cards de Salas -->
-    <div class="rooms-grid">
+    <div class="rooms-grid" *ngIf="!isLoadingRooms">
+      <!-- Mensaje cuando no hay salas -->
+      <div *ngIf="rooms.length === 0" class="no-rooms-message">
+        <ion-card>
+          <ion-card-content>
+            <p>No tienes salas creadas aún. ¡Crea tu primera sala!</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Lista de salas -->
       <ion-card 
         class="room-card" 
         *ngFor="let room of rooms"

@@ -101,7 +101,8 @@ export class AuthService {
     
     return this.http.post(`${this.apiUrl}${API_ENDPOINTS.LOGOUT}`, {}, { headers })
       .pipe(
-        tap(() => {
+        tap((response) => {
+          console.log('AuthService Logout Response:', response);
           this.clearAuthData();
         })
       );
@@ -111,6 +112,7 @@ export class AuthService {
    * Cerrar sesión localmente (sin llamada a la API)
    */
   logoutLocal(): void {
+    console.log('Local logout initiated');
     this.clearAuthData();
   }
 
@@ -125,6 +127,8 @@ export class AuthService {
     // Limpiar subjects
     this.currentUserSubject.next(null);
     this.tokenSubject.next(null);
+    
+    console.log('Auth data cleared');
   }
 
   /**

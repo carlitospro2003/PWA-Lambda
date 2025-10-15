@@ -19,11 +19,11 @@ import {
   IonTextarea,
   IonSelect,
   IonSelectOption,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonToggle
+  LoadingController,
+  ToastController
 } from '@ionic/angular/standalone';
+import { ExerciseService, CreateExerciseRequest } from '../../services/exercise.service';
+import { RoomService } from '../../services/room.service';
 import { addIcons } from 'ionicons';
 import { 
   saveOutline,
@@ -31,25 +31,11 @@ import {
 } from 'ionicons/icons';
 
 interface ExerciseFormData {
-  EXC_Name: string;
-  EXC_Description: string;
-  EXC_Instructions: string;
-  EXC_MuscleGroup: string;
-  EXC_Equipment: string;
-  EXC_Difficulty: string;
+  EXC_Title: string;
   EXC_Type: string;
-  EXC_Duration?: number;
-  EXC_Repetitions?: number;
-  EXC_Sets?: number;
-  EXC_RestTime?: number;
-  EXC_CaloriesBurned?: number;
-  EXC_Status: boolean;
-  MED_Media1?: File;
-  MED_Media2?: File;
-  MED_Media3?: File;
-  MED_Media4?: File;
-  MED_URL1?: string;
-  MED_URL2?: string;
+  EXC_DifficultyLevel: string;
+  EXC_Instructions: string;
+  EXC_ROO_ID: number;
 }
 
 @Component({
@@ -75,117 +61,154 @@ interface ExerciseFormData {
     IonInput,
     IonTextarea,
     IonSelect,
-    IonSelectOption,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonToggle
+    IonSelectOption
   ]
 })
 export class AddExercisePage implements OnInit {
   roomId: string = '';
   roomName: string = 'Sala de Entrenamiento';
+  isCreating: boolean = false;
 
   exerciseForm: ExerciseFormData = {
-    EXC_Name: '',
-    EXC_Description: '',
-    EXC_Instructions: '',
-    EXC_MuscleGroup: '',
-    EXC_Equipment: '',
-    EXC_Difficulty: '',
+    EXC_Title: '',
     EXC_Type: '',
-    EXC_Status: true,
-    EXC_Duration: undefined,
-    EXC_Repetitions: undefined,
-    EXC_Sets: undefined,
-    EXC_RestTime: undefined,
-    EXC_CaloriesBurned: undefined,
-    MED_Media1: undefined,
-    MED_Media2: undefined,
-    MED_Media3: undefined,
-    MED_Media4: undefined,
-    MED_URL1: '',
-    MED_URL2: ''
+    EXC_DifficultyLevel: '',
+    EXC_Instructions: '',
+    EXC_ROO_ID: 0
   };
 
-  muscleGroups: string[] = [
-    'Pecho', 'Espalda', 'Piernas', 'Brazos', 'Hombros',
-    'Abdomen', 'Glúteos', 'Pantorrillas', 'Cuerpo completo'
-  ];
-
-  equipmentOptions: string[] = [
-    'Sin equipamiento', 'Mancuernas', 'Barra', 'Máquina',
-    'Bandas elásticas', 'Kettlebell', 'Pelota de ejercicio',
-    'Colchoneta', 'TRX', 'Banco'
+  exerciseTypes = [
+    { value: 'Calentamiento', label: 'Calentamiento' },
+    { value: 'Calistenia', label: 'Calistenia' },
+    { value: 'Musculatura', label: 'Musculatura' },
+    { value: 'Elasticidad', label: 'Elasticidad' },
+    { value: 'Resistencia', label: 'Resistencia' },
+    { value: 'Médico', label: 'Médico' }
   ];
 
   difficultyLevels = [
-    { value: 'principiante', label: 'Principiante' },
-    { value: 'intermedio', label: 'Intermedio' },
-    { value: 'avanzado', label: 'Avanzado' }
-  ];
-
-  exerciseTypes = [
-    { value: 'cardio', label: 'Cardio' },
-    { value: 'fuerza', label: 'Fuerza' },
-    { value: 'flexibilidad', label: 'Flexibilidad' },
-    { value: 'resistencia', label: 'Resistencia' },
-    { value: 'equilibrio', label: 'Equilibrio' }
+    { value: 'PRINCIPIANTE', label: 'PRINCIPIANTE' },
+    { value: 'INTERMEDIO', label: 'INTERMEDIO' },
+    { value: 'AVANZADO', label: 'AVANZADO' }
   ];
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private exerciseService: ExerciseService,
+    private roomService: RoomService,
+    private loadingController: LoadingController,
+    private toastController: ToastController
   ) {
     addIcons({ saveOutline, fitnessOutline });
   }
 
   ngOnInit() {
     this.roomId = this.route.snapshot.paramMap.get('roomId') || '';
+    this.exerciseForm.EXC_ROO_ID = parseInt(this.roomId);
     this.loadRoomData();
   }
 
   loadRoomData() {
-    const rooms = [
-      { id: '1', name: 'Sala de Cardio' },
-      { id: '2', name: 'Sala de Fuerza' },
-      { id: '3', name: 'Sala HIIT' }
-    ];
-    
-    const room = rooms.find(r => r.id === this.roomId);
-    this.roomName = room ? room.name : 'Sala Desconocida';
-  }
-
-  onFileSelected(event: any, fieldName: string) {
-    const file = event.target.files[0];
-    if (file) {
-      (this.exerciseForm as any)[fieldName] = file;
-      console.log(`Archivo seleccionado para ${fieldName}: ${file.name}`);
-    }
+    // Cargar el nombre de la sala desde el servicio
+    this.roomService.getMyRooms().subscribe({
+      next: (response) => {
+        if (response.success && response.rooms) {
+          const room = response.rooms.find(r => r.ROO_ID.toString() === this.roomId);
+          this.roomName = room ? room.ROO_Name : 'Sala Desconocida';
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar datos de la sala:', error);
+        this.roomName = 'Sala Desconocida';
+      }
+    });
   }
 
   isFormValid(): boolean {
-    return !!(
-      this.exerciseForm.EXC_Name?.trim() &&
-      this.exerciseForm.EXC_Description?.trim() &&
-      this.exerciseForm.EXC_Instructions?.trim() &&
-      this.exerciseForm.EXC_MuscleGroup &&
-      this.exerciseForm.EXC_Equipment &&
-      this.exerciseForm.EXC_Difficulty &&
-      this.exerciseForm.EXC_Type
-    );
+    return !!(this.exerciseForm.EXC_Title?.trim());
   }
 
-  saveExercise() {
-    if (this.isFormValid()) {
-      console.log('Guardando ejercicio:', this.exerciseForm);
-      setTimeout(() => {
-        console.log('Ejercicio guardado exitosamente');
-        this.router.navigate([`/trainer/room-exercises/${this.roomId}`]);
-      }, 1000);
-    } else {
-      console.log('Formulario no válido');
+  async saveExercise() {
+    if (!this.isFormValid()) {
+      await this.showToast('El título del ejercicio es obligatorio', 'warning');
+      return;
     }
+
+    const loading = await this.loadingController.create({
+      message: 'Creando ejercicio...',
+      duration: 10000
+    });
+
+    await loading.present();
+    this.isCreating = true;
+
+    // Preparar datos para enviar a la API
+    const exerciseData: CreateExerciseRequest = {
+      EXC_Title: this.exerciseForm.EXC_Title.trim(),
+      EXC_ROO_ID: this.exerciseForm.EXC_ROO_ID
+    };
+
+    // Solo agregar campos opcionales si tienen valor
+    if (this.exerciseForm.EXC_Type) {
+      exerciseData.EXC_Type = this.exerciseForm.EXC_Type;
+    }
+    if (this.exerciseForm.EXC_DifficultyLevel) {
+      exerciseData.EXC_DifficultyLevel = this.exerciseForm.EXC_DifficultyLevel;
+    }
+    if (this.exerciseForm.EXC_Instructions?.trim()) {
+      exerciseData.EXC_Instructions = this.exerciseForm.EXC_Instructions.trim();
+    }
+
+    console.log('Creando ejercicio con datos:', exerciseData);
+
+    this.exerciseService.createExercise(exerciseData).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        this.isCreating = false;
+
+        console.log('Respuesta de creación de ejercicio:', response);
+
+        if (response.success) {
+          await this.showToast(response.message, 'success');
+          this.router.navigate([`/trainer/room-exercises/${this.roomId}`]);
+        } else {
+          await this.showToast(response.message || 'Error al crear el ejercicio', 'danger');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isCreating = false;
+
+        console.error('Error al crear ejercicio:', error);
+
+        let errorMessage = 'Error al crear el ejercicio';
+        
+        if (error.status === 422 && error.error?.errors) {
+          // Errores de validación
+          const validationErrors = error.error.errors;
+          errorMessage = Object.values(validationErrors)[0] as string;
+        } else if (error.status === 403) {
+          errorMessage = 'No tienes permiso para agregar ejercicios a esta sala';
+        } else if (error.status === 404) {
+          errorMessage = error.error?.message || 'Sala no encontrada';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
+        await this.showToast(errorMessage, 'danger');
+      }
+    });
+  }
+
+  private async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color
+    });
+    await toast.present();
   }
 
   cancel() {

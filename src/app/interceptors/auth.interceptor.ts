@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Observable, catchError, throwError, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -36,9 +36,25 @@ export class AuthInterceptor implements HttpInterceptor {
         setHeaders: headers
       });
       return next.handle(authReq).pipe(
+        tap((event: HttpEvent<any>) => {
+          if (event instanceof HttpResponse) {
+            // Mostrar respuestas exitosas de APIs importantes
+            if (req.url.includes('/login') || req.url.includes('/logout') || req.url.includes('/register')) {
+              console.log(`API Response [${req.method}] ${req.url}:`, event.body);
+            }
+          }
+        }),
         catchError((error: HttpErrorResponse) => {
+          console.error('AuthInterceptor Error:', {
+            status: error.status,
+            statusText: error.statusText,
+            url: error.url,
+            error: error.error
+          });
+          
           // Si el token está expirado o es inválido (401), cerrar sesión
           if (error.status === 401 && !isPublicUrl) {
+            console.log('Token inválido - cerrando sesión automáticamente');
             this.authService.logoutLocal();
             this.router.navigate(['/login'], { replaceUrl: true });
           }
@@ -48,6 +64,15 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     
     // Si no hay token o es una petición pública, enviar la petición original
-    return next.handle(req);
+    return next.handle(req).pipe(
+      tap((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          // Mostrar respuestas exitosas de APIs públicas (login, register)
+          if (req.url.includes('/login') || req.url.includes('/register')) {
+            console.log(`API Response [${req.method}] ${req.url}:`, event.body);
+          }
+        }
+      })
+    );
   }
 }

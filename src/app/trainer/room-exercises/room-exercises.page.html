@@ -40,8 +40,14 @@
       </ion-button>
     </div>
 
+    <!-- Indicador de carga -->
+    <div class="loading-state" *ngIf="isLoadingExercises">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando ejercicios...</p>
+    </div>
+
     <!-- Lista de ejercicios -->
-    <div class="exercises-grid">
+    <div class="exercises-grid" *ngIf="!isLoadingExercises">
       <ion-card 
         class="exercise-card" 
         *ngFor="let exercise of exercises"
@@ -51,23 +57,27 @@
           <!-- Header del ejercicio -->
           <div class="exercise-header">
             <div class="exercise-icon">
-              <ion-icon [name]="getCategoryIcon(exercise.category)" [color]="getCategoryColor(exercise.category)"></ion-icon>
+              <ion-icon [name]="getCategoryIcon(exercise.EXC_Type || '')" [color]="getCategoryColor(exercise.EXC_Type || '')"></ion-icon>
             </div>
             <div class="exercise-title-section">
-              <h4>{{ exercise.title }}</h4>
+              <h4>{{ exercise.EXC_Title }}</h4>
             </div>
           </div>
 
           <!-- Badges de categoría y dificultad -->
           <div class="exercise-badges">
-            <ion-chip [color]="getCategoryColor(exercise.category)" size="small">
-              {{ exercise.category | titlecase }}
+            <ion-chip [color]="getCategoryColor(exercise.EXC_Type || '')" size="small" *ngIf="exercise.EXC_Type">
+              {{ exercise.EXC_Type | titlecase }}
             </ion-chip>
-            <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
-              {{ getDifficultyText(exercise.difficulty) }}
+            <ion-chip [color]="getDifficultyColor(exercise.EXC_DifficultyLevel || '')" size="small" *ngIf="exercise.EXC_DifficultyLevel">
+              {{ getDifficultyText(exercise.EXC_DifficultyLevel) }}
             </ion-chip>
           </div>
 
+          <!-- Instrucciones (si existen) -->
+          <div class="exercise-description" *ngIf="exercise.EXC_Instructions">
+            <p>{{ exercise.EXC_Instructions }}</p>
+          </div>
 
           <!-- Botón de acción -->
           <div class="exercise-actions">
@@ -86,7 +96,7 @@
     </div>
 
     <!-- Estado vacío si no hay ejercicios -->
-    <div class="empty-state" *ngIf="exercises.length === 0">
+    <div class="empty-state" *ngIf="!isLoadingExercises && exercises.length === 0">
       <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
       <h3>No hay ejercicios en esta sala</h3>
       <p>Agrega ejercicios para que los miembros puedan entrenar</p>

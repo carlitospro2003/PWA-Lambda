@@ -136,6 +136,18 @@ ion-toolbar {
   flex-wrap: wrap;
 }
 
+/* Descripción del ejercicio */
+.exercise-description {
+  margin-bottom: 15px;
+
+  p {
+    color: #666666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
 /* Información del ejercicio */
 .exercise-info {
   margin-bottom: 15px;
@@ -209,6 +221,22 @@ ion-toolbar {
       --background: #fdbc22;
       --color: #ffffff;
     }
+  }
+}
+
+/* Estado de carga */
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    --color: #fdbc22;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #999999;
+    font-size: 0.95rem;
   }
 }
 

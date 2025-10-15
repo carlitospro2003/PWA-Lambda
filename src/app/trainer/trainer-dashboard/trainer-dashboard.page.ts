@@ -15,8 +15,12 @@ import {
   IonButtons,
   IonItem,
   IonLabel,
-  IonInput
+  IonInput,
+  ToastController,
+  LoadingController
 } from '@ionic/angular/standalone';
+import { RoomService, CreateRoomRequest, Room } from '../../services/room.service';
+import { AuthService } from '../../services/auth.service';
 import { addIcons } from 'ionicons';
 import { 
   add,
@@ -63,11 +67,12 @@ interface NewRoomData {
   ]
 })
 export class TrainerDashboardPage implements OnInit {
-  trainerName: string = 'Carlos Rodríguez';
+  trainerName: string = '';
   
   // Estado del modal
   isModalOpen: boolean = false;
   isCreating: boolean = false;
+  isLoadingRooms: boolean = false;
   
   // Datos del formulario
   newRoom: NewRoomData = {
@@ -75,31 +80,15 @@ export class TrainerDashboardPage implements OnInit {
   };
   
   // Salas del entrenador
-  rooms: TrainerRoom[] = [
-    {
-      id: 1,
-      code: 'ROOM001',
-      name: 'Grupo Principiantes',
-      activeMembers: 8,
-      totalExercises: 12
-    },
-    {
-      id: 2,
-      code: 'ROOM002', 
-      name: 'Grupo Avanzado',
-      activeMembers: 15,
-      totalExercises: 18
-    },
-    {
-      id: 3,
-      code: 'ROOM003',
-      name: 'Grupo Personalizado',
-      activeMembers: 4,
-      totalExercises: 8
-    }
-  ];
+  rooms: TrainerRoom[] = [];
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private roomService: RoomService,
+    private authService: AuthService,
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {
     addIcons({
       add,
       close,
@@ -109,7 +98,47 @@ export class TrainerDashboardPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadTrainerData();
+    this.loadMyRooms();
+  }
+
+  loadTrainerData() {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.trainerName = `${user.USR_Name} ${user.USR_LastName}`;
+    }
+  }
+
+  loadMyRooms() {
+    this.isLoadingRooms = true;
+    console.log('Cargando salas del entrenador...');
+
+    this.roomService.getMyRooms().subscribe({
+      next: (response) => {
+        this.isLoadingRooms = false;
+        console.log('Respuesta de mis salas:', response);
+
+        if (response.success && response.rooms) {
+          // Convertir las salas de la API al formato local
+          this.rooms = response.rooms.map((room: Room) => ({
+            id: room.ROO_ID,
+            code: room.ROO_Code,
+            name: room.ROO_Name,
+            activeMembers: 0, // Por ahora en 0, se puede agregar esta info a la API después
+            totalExercises: 0  // Por ahora en 0, se puede agregar esta info a la API después
+          }));
+
+          console.log('Salas cargadas:', this.rooms);
+        }
+      },
+      error: (error) => {
+        this.isLoadingRooms = false;
+        console.error('Error al cargar salas:', error);
+        this.showToast('Error al cargar las salas', 'danger');
+      }
+    });
+  }
 
   // Navegación al perfil
   goToProfile() {
@@ -138,34 +167,70 @@ export class TrainerDashboardPage implements OnInit {
   async createRoom() {
     // Validar que el nombre esté completo
     if (!this.newRoom.name.trim()) {
+      await this.showToast('El nombre de la sala es requerido', 'warning');
       return;
     }
 
+    const loading = await this.loadingController.create({
+      message: 'Creando sala...',
+      duration: 10000
+    });
+
+    await loading.present();
     this.isCreating = true;
 
-    // Simular creación de sala (en producción sería una llamada a API)
-    setTimeout(() => {
-      // Generar código único para la sala
-      const roomCode = `ROOM${String(this.rooms.length + 1).padStart(3, '0')}`;
-      
-      // Crear nueva sala
-      const newRoom: TrainerRoom = {
-        id: this.rooms.length + 1,
-        code: roomCode,
-        name: this.newRoom.name,
-        activeMembers: 0,
-        totalExercises: 0
-      };
+    const roomData: CreateRoomRequest = {
+      ROO_Name: this.newRoom.name.trim()
+    };
 
-      // Agregar a la lista de salas
-      this.rooms.push(newRoom);
-      
-      this.isCreating = false;
-      this.closeModal();
-      
-      // Mostrar mensaje de éxito (en producción usar Toast)
-      console.log('Sala creada exitosamente:', newRoom);
-    }, 1000);
+    console.log('Creando sala con datos:', roomData);
+
+    this.roomService.createRoom(roomData).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        this.isCreating = false;
+
+        console.log('Respuesta de creación de sala:', response);
+
+        if (response.success && response.room) {
+          await this.showToast(response.message, 'success');
+          this.closeModal();
+          
+          // Recargar las salas para obtener la lista actualizada
+          this.loadMyRooms();
+        } else {
+          await this.showToast(response.message || 'Error al crear la sala', 'danger');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isCreating = false;
+
+        console.error('Error al crear sala:', error);
+
+        let errorMessage = 'Error al crear la sala';
+        
+        if (error.status === 422 && error.error?.errors) {
+          // Errores de validación
+          const validationErrors = error.error.errors;
+          errorMessage = Object.values(validationErrors)[0] as string;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
+        await this.showToast(errorMessage, 'danger');
+      }
+    });
+  }
+
+  private async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color
+    });
+    await toast.present();
   }
 
   viewRoomDetail(room: TrainerRoom) {

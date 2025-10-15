@@ -21,10 +21,14 @@ export const API_ENDPOINTS = {
   // Exercise endpoints
   EXERCISES: '/exercises',
   EXERCISE_BY_ID: '/exercises',
+  CREATE_EXERCISE: '/createExcercise',
+  GET_EXERCISES_BY_ROOM: '/getExcercisesByRoom',
   
   // Room endpoints
   ROOMS: '/rooms',
   ROOM_EXERCISES: '/rooms',
+  CREATE_ROOM: '/createRoom',
+  GET_MY_ROOMS: '/getMyRooms',
   
   // Trainer endpoints
   TRAINERS: '/trainers',

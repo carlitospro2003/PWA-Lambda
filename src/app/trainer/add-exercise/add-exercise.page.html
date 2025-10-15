@@ -32,73 +32,42 @@
     <ion-card class="form-card">
       <ion-card-content>
         
-        <!-- Información Básica del Ejercicio -->
+        <!-- Campo Obligatorio -->
         <div class="form-section">
-          <h4>Información Básica del Ejercicio</h4>
+          <h4>Información del Ejercicio</h4>
           
           <ion-item>
-            <ion-label position="stacked">Nombre del Ejercicio *</ion-label>
+            <ion-label position="stacked">Título del Ejercicio *</ion-label>
             <ion-input 
-              [(ngModel)]="exerciseForm.EXC_Name" 
+              [(ngModel)]="exerciseForm.EXC_Title" 
               placeholder="Ej: Flexiones de pecho"
-              maxlength="100">
+              maxlength="255"
+              required>
             </ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="stacked">Descripción Detallada *</ion-label>
-            <ion-textarea 
-              [(ngModel)]="exerciseForm.EXC_Description" 
-              placeholder="Describe detalladamente el ejercicio"
-              rows="3"
-              maxlength="500">
-            </ion-textarea>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="stacked">Instrucciones Paso a Paso *</ion-label>
-            <ion-textarea 
-              [(ngModel)]="exerciseForm.EXC_Instructions" 
-              placeholder="1. Primer paso&#10;2. Segundo paso&#10;3. Tercer paso..."
-              rows="4"
-              maxlength="1000">
-            </ion-textarea>
           </ion-item>
         </div>
 
-        <!-- Clasificación del Ejercicio -->
+        <!-- Campos Opcionales -->
         <div class="form-section">
-          <h4>Clasificación del Ejercicio</h4>
+          <h4>Detalles Opcionales</h4>
           
           <ion-item>
-            <ion-label position="stacked">Grupo Muscular *</ion-label>
+            <ion-label position="stacked">Tipo de Ejercicio</ion-label>
             <ion-select 
-              [(ngModel)]="exerciseForm.EXC_MuscleGroup" 
-              placeholder="Selecciona el grupo muscular"
+              [(ngModel)]="exerciseForm.EXC_Type" 
+              placeholder="Selecciona el tipo (opcional)"
               interface="popover">
-              <ion-select-option *ngFor="let muscle of muscleGroups" [value]="muscle">
-                {{ muscle }}
+              <ion-select-option *ngFor="let type of exerciseTypes" [value]="type.value">
+                {{ type.label }}
               </ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
-            <ion-label position="stacked">Equipamiento Necesario *</ion-label>
+            <ion-label position="stacked">Nivel de Dificultad</ion-label>
             <ion-select 
-              [(ngModel)]="exerciseForm.EXC_Equipment" 
-              placeholder="Selecciona el equipamiento"
-              interface="popover">
-              <ion-select-option *ngFor="let equipment of equipmentOptions" [value]="equipment">
-                {{ equipment }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="stacked">Dificultad *</ion-label>
-            <ion-select 
-              [(ngModel)]="exerciseForm.EXC_Difficulty" 
-              placeholder="Selecciona la dificultad"
+              [(ngModel)]="exerciseForm.EXC_DifficultyLevel" 
+              placeholder="Selecciona la dificultad (opcional)"
               interface="popover">
               <ion-select-option *ngFor="let difficulty of difficultyLevels" [value]="difficulty.value">
                 {{ difficulty.label }}
@@ -107,179 +76,12 @@
           </ion-item>
 
           <ion-item>
-            <ion-label position="stacked">Tipo de Ejercicio *</ion-label>
-            <ion-select 
-              [(ngModel)]="exerciseForm.EXC_Type" 
-              placeholder="Selecciona el tipo"
-              interface="popover">
-              <ion-select-option *ngFor="let type of exerciseTypes" [value]="type.value">
-                {{ type.label }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-        </div>
-
-        <!-- Parámetros del Ejercicio (Opcionales) -->
-        <div class="form-section">
-          <h4>Parámetros del Ejercicio (Opcionales)</h4>
-          
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Duración (minutos)</ion-label>
-                  <ion-input 
-                    [(ngModel)]="exerciseForm.EXC_Duration" 
-                    type="number"
-                    min="1"
-                    placeholder="10">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Repeticiones</ion-label>
-                  <ion-input 
-                    [(ngModel)]="exerciseForm.EXC_Repetitions" 
-                    type="number"
-                    min="1"
-                    placeholder="15">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-            
-            <ion-row>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Series</ion-label>
-                  <ion-input 
-                    [(ngModel)]="exerciseForm.EXC_Sets" 
-                    type="number"
-                    min="1"
-                    placeholder="3">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Tiempo Descanso (seg)</ion-label>
-                  <ion-input 
-                    [(ngModel)]="exerciseForm.EXC_RestTime" 
-                    type="number"
-                    min="0"
-                    placeholder="60">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <ion-col size="12">
-                <ion-item>
-                  <ion-label position="stacked">Calorías Quemadas (estimadas)</ion-label>
-                  <ion-input 
-                    [(ngModel)]="exerciseForm.EXC_CaloriesBurned" 
-                    type="number"
-                    min="1"
-                    placeholder="50">
-                  </ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </div>
-
-        <!-- Archivos Multimedia (Opcionales) -->
-        <div class="form-section">
-          <h4>Archivos Multimedia (Opcionales)</h4>
-          
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Imagen/Video 1</ion-label>
-                  <input 
-                    type="file" 
-                    accept="image/*,video/*"
-                    (change)="onFileSelected($event, 'MED_Media1')"
-                    style="width: 100%;">
-                </ion-item>
-              </ion-col>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Imagen/Video 2</ion-label>
-                  <input 
-                    type="file" 
-                    accept="image/*,video/*"
-                    (change)="onFileSelected($event, 'MED_Media2')"
-                    style="width: 100%;">
-                </ion-item>
-              </ion-col>
-            </ion-row>
-            
-            <ion-row>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Imagen/Video 3</ion-label>
-                  <input 
-                    type="file" 
-                    accept="image/*,video/*"
-                    (change)="onFileSelected($event, 'MED_Media3')"
-                    style="width: 100%;">
-                </ion-item>
-              </ion-col>
-              <ion-col size="6">
-                <ion-item>
-                  <ion-label position="stacked">Imagen/Video 4</ion-label>
-                  <input 
-                    type="file" 
-                    accept="image/*,video/*"
-                    (change)="onFileSelected($event, 'MED_Media4')"
-                    style="width: 100%;">
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </div>
-
-        <!-- URLs Externas (Opcionales) -->
-        <div class="form-section">
-          <h4>URLs Externas (Opcionales)</h4>
-          
-          <ion-item>
-            <ion-label position="stacked">URL de Video (YouTube, etc.)</ion-label>
-            <ion-input 
-              [(ngModel)]="exerciseForm.MED_URL1" 
-              type="url"
-              placeholder="https://www.youtube.com/watch?v=...">
-            </ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="stacked">URL Adicional</ion-label>
-            <ion-input 
-              [(ngModel)]="exerciseForm.MED_URL2" 
-              type="url"
-              placeholder="https://...">
-            </ion-input>
-          </ion-item>
-        </div>
-
-        <!-- Estado del Ejercicio -->
-        <div class="form-section">
-          <h4>Estado del Ejercicio</h4>
-          
-          <ion-item>
-            <ion-label>
-              <h3>Ejercicio Activo</h3>
-              <p>¿El ejercicio debe estar disponible para los usuarios?</p>
-            </ion-label>
-            <ion-toggle 
-              [(ngModel)]="exerciseForm.EXC_Status"
-              slot="end"
-              color="primary">
-            </ion-toggle>
+            <ion-label position="stacked">Instrucciones del Ejercicio</ion-label>
+            <ion-textarea 
+              [(ngModel)]="exerciseForm.EXC_Instructions" 
+              placeholder="Describe las instrucciones del ejercicio (opcional)"
+              rows="4">
+            </ion-textarea>
           </ion-item>
         </div>
 

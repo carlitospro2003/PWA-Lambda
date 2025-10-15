@@ -13,8 +13,12 @@ import {
   IonTitle,
   IonButtons,
   IonBackButton,
-  IonChip
+  IonChip,
+  IonSpinner,
+  ToastController
 } from '@ionic/angular/standalone';
+import { ExerciseService, Exercise } from '../../services/exercise.service';
+import { RoomService } from '../../services/room.service';
 import { addIcons } from 'ionicons';
 import { 
   timeOutline,
@@ -27,19 +31,6 @@ import {
   add,
   chevronForward
 } from 'ionicons/icons';
-
-interface Exercise {
-  id: number;
-  title: string;
-  description: string;
-  category: 'cardio' | 'fuerza' | 'flexibilidad' | 'hiit' | 'funcional';
-  duration: number; // en minutos
-  difficulty: 'principiante' | 'intermedio' | 'avanzado';
-  equipment: string[];
-  instructions: string[];
-  caloriesEstimate: number;
-  muscleGroups: string[];
-}
 
 interface RoomInfo {
   id: number;
@@ -68,105 +59,22 @@ interface RoomInfo {
     IonTitle,
     IonButtons,
     IonBackButton,
-    IonChip
+    IonChip,
+    IonSpinner
   ]
 })
 export class RoomExercisesPage implements OnInit {
-  roomId: string = '';
+  roomId: number = 0;
   roomInfo: RoomInfo | null = null;
-
-  exercises: Exercise[] = [
-    {
-      id: 1,
-      title: 'Rutina de Cardio Básico',
-      description: 'Ejercicios cardiovasculares para principiantes que ayudan a mejorar la resistencia',
-      category: 'cardio',
-      duration: 30,
-      difficulty: 'principiante',
-      equipment: ['Ninguno'],
-      instructions: [
-        'Realizar 5 minutos de calentamiento caminando',
-        'Trotar en el lugar por 15 minutos',
-        'Realizar jumping jacks por 5 minutos',
-        '5 minutos de enfriamiento y estiramiento'
-      ],
-      caloriesEstimate: 250,
-      muscleGroups: ['Cardiovascular', 'Piernas']
-    },
-    {
-      id: 2,
-      title: 'Entrenamiento de Fuerza Upper',
-      description: 'Rutina enfocada en el fortalecimiento del tren superior',
-      category: 'fuerza',
-      duration: 45,
-      difficulty: 'intermedio',
-      equipment: ['Mancuernas', 'Banco'],
-      instructions: [
-        'Calentamiento de 5 minutos',
-        'Press de banca 3x12',
-        'Remo con mancuernas 3x10',
-        'Press militar 3x8',
-        'Curl de bíceps 3x12'
-      ],
-      caloriesEstimate: 300,
-      muscleGroups: ['Pecho', 'Espalda', 'Hombros', 'Brazos']
-    },
-    {
-      id: 3,
-      title: 'HIIT Intenso',
-      description: 'Entrenamiento de alta intensidad por intervalos',
-      category: 'hiit',
-      duration: 25,
-      difficulty: 'avanzado',
-      equipment: ['Ninguno'],
-      instructions: [
-        'Calentamiento 3 minutos',
-        '8 rondas de: 30seg trabajo / 30seg descanso',
-        'Ejercicios: Burpees, Mountain climbers, Jump squats',
-        'Enfriamiento 3 minutos'
-      ],
-      caloriesEstimate: 400,
-      muscleGroups: ['Cuerpo completo']
-    },
-    {
-      id: 4,
-      title: 'Flexibilidad y Movilidad',
-      description: 'Rutina de estiramiento y mejora de la movilidad articular',
-      category: 'flexibilidad',
-      duration: 20,
-      difficulty: 'principiante',
-      equipment: ['Esterilla'],
-      instructions: [
-        'Estiramiento de cuello y hombros',
-        'Movilidad de columna vertebral',
-        'Estiramiento de piernas',
-        'Relajación final'
-      ],
-      caloriesEstimate: 80,
-      muscleGroups: ['Todo el cuerpo']
-    },
-    {
-      id: 5,
-      title: 'Entrenamiento Funcional',
-      description: 'Ejercicios que mejoran los movimientos del día a día',
-      category: 'funcional',
-      duration: 40,
-      difficulty: 'intermedio',
-      equipment: ['Kettlebell', 'TRX'],
-      instructions: [
-        'Calentamiento dinámico',
-        'Sentadillas funcionales',
-        'Peso muerto con kettlebell',
-        'Ejercicios con TRX'
-      ],
-      caloriesEstimate: 350,
-      muscleGroups: ['Cuerpo completo']
-    }
-  ];
+  exercises: Exercise[] = [];
+  isLoadingExercises: boolean = false;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private exerciseService: ExerciseService,
+    private roomService: RoomService,
+    private toastController: ToastController
   ) {
     addIcons({
       timeOutline,
@@ -182,9 +90,12 @@ export class RoomExercisesPage implements OnInit {
   }
 
   ngOnInit() {
-    // Obtener el ID de la sala desde los parámetros de la ruta
-    this.roomId = this.route.snapshot.paramMap.get('id') || '';
-    this.loadRoomInfo();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.roomId = parseInt(id);
+      this.loadRoomInfo();
+      this.loadExercises();
+    }
   }
 
   loadRoomInfo() {
@@ -216,7 +127,28 @@ export class RoomExercisesPage implements OnInit {
       }
     ];
 
-    this.roomInfo = rooms.find(room => room.id.toString() === this.roomId) || null;
+    this.roomInfo = rooms.find(room => room.id === this.roomId) || null;
+  }
+
+  async loadExercises() {
+    this.isLoadingExercises = true;
+    try {
+      const response = await this.exerciseService.getExercisesByRoom(this.roomId).toPromise();
+      if (response && response.success) {
+        this.exercises = response.data;
+      }
+    } catch (error: any) {
+      console.error('Error al cargar ejercicios:', error);
+      const toast = await this.toastController.create({
+        message: error?.error?.message || 'Error al cargar ejercicios',
+        duration: 3000,
+        color: 'danger',
+        position: 'bottom'
+      });
+      await toast.present();
+    } finally {
+      this.isLoadingExercises = false;
+    }
   }
 
   getCategoryIcon(category: string): string {
