@@ -103,36 +103,34 @@
           <ion-list>
             
             <!-- Teléfono -->
-            <ion-item class="form-item">
+            <ion-item class="form-item" [class.error]="hasError('phone')">
               <ion-icon name="phone-portrait-outline" slot="start" class="field-icon"></ion-icon>
-              <ion-label position="stacked">Teléfono</ion-label>
+              <ion-label position="stacked">Teléfono *</ion-label>
               <ion-input 
                 formControlName="phone"
                 type="tel"
-                placeholder="+58 412 123 4567"
+                placeholder="8712345678"
+                maxlength="10"
                 clearInput="true">
               </ion-input>
+              <div class="error-message" *ngIf="hasError('phone')">
+                {{ getErrorMessage('phone') }}
+              </div>
             </ion-item>
 
-            <!-- Fecha de Nacimiento -->
-            <ion-item class="form-item">
-              <ion-icon name="calendar-outline" slot="start" class="field-icon"></ion-icon>
-              <ion-label position="stacked">Fecha de Nacimiento</ion-label>
+            <!-- Contraseña -->
+            <ion-item class="form-item" [class.error]="hasError('password')">
+              <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+              <ion-label position="stacked">Nueva Contraseña (opcional)</ion-label>
               <ion-input 
-                formControlName="dateOfBirth"
-                type="date">
-              </ion-input>
-            </ion-item>
-
-            <!-- Dirección -->
-            <ion-item class="form-item">
-              <ion-icon name="location-outline" slot="start" class="field-icon"></ion-icon>
-              <ion-label position="stacked">Dirección</ion-label>
-              <ion-input 
-                formControlName="address"
-                placeholder="Ciudad, País"
+                formControlName="password"
+                type="password"
+                placeholder="Mínimo 8 caracteres"
                 clearInput="true">
               </ion-input>
+              <div class="error-message" *ngIf="hasError('password')">
+                {{ getErrorMessage('password') }}
+              </div>
             </ion-item>
 
           </ion-list>

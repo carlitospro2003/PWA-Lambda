@@ -28,21 +28,20 @@ import {
   personOutline,
   mailOutline,
   phonePortraitOutline,
-  calendarOutline,
-  locationOutline,
   personCircle,
   cameraOutline,
   refreshOutline,
-  informationCircleOutline
+  informationCircleOutline,
+  lockClosedOutline
 } from 'ionicons/icons';
+import { UserService, User } from '../services/user.service';
+import { AuthService } from '../services/auth.service';
 
 interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
   phone?: string;
-  dateOfBirth?: string;
-  address?: string;
 }
 
 @Component({
@@ -74,31 +73,22 @@ interface UserProfile {
 export class EditProfilePage implements OnInit {
   profileForm: FormGroup;
   isLoading: boolean = false;
-
-  // Datos actuales del usuario (normalmente vendrían de un servicio)
-  currentUserProfile: UserProfile = {
-    firstName: 'Carlos',
-    lastName: 'González Martínez',
-    email: 'carlos.gonzalez@gmail.com',
-    phone: '+58 412 123 4567',
-    dateOfBirth: '1995-05-15',
-    address: 'Caracas, Venezuela'
-  };
+  currentUser: User | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private userService: UserService,
+    private authService: AuthService
   ) {
-    // Inicializar el formulario
     this.profileForm = this.formBuilder.group({
-      firstName: [this.currentUserProfile.firstName, [Validators.required, Validators.minLength(2)]],
-      lastName: [this.currentUserProfile.lastName, [Validators.required, Validators.minLength(2)]],
-      email: [this.currentUserProfile.email, [Validators.required, Validators.email]],
-      phone: [this.currentUserProfile.phone],
-      dateOfBirth: [this.currentUserProfile.dateOfBirth],
-      address: [this.currentUserProfile.address]
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      phone: ['', [Validators.required, Validators.maxLength(10)]],
+      password: ['', [Validators.minLength(8), Validators.maxLength(255)]]
     });
 
     addIcons({
@@ -106,17 +96,48 @@ export class EditProfilePage implements OnInit {
       personOutline,
       mailOutline,
       phonePortraitOutline,
-      calendarOutline,
-      locationOutline,
       personCircle,
       cameraOutline,
       refreshOutline,
-      informationCircleOutline
+      informationCircleOutline,
+      lockClosedOutline
     });
   }
 
   ngOnInit() {
-    // Inicialización adicional si es necesaria
+    this.loadUserData();
+  }
+
+  async loadUserData() {
+    try {
+      const response = await this.userService.getUser().toPromise();
+      
+      if (response && response.success && response.data) {
+        this.currentUser = response.data;
+        this.profileForm.patchValue({
+          firstName: response.data.USR_Name,
+          lastName: response.data.USR_LastName,
+          email: response.data.USR_Email,
+          phone: response.data.USR_Phone
+        });
+        
+        localStorage.setItem('user', JSON.stringify(response.data));
+        console.log('Datos del usuario cargados correctamente');
+      }
+    } catch (error) {
+      console.error('Error al cargar usuario:', error);
+      
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.currentUser = user;
+        this.profileForm.patchValue({
+          firstName: user.USR_Name,
+          lastName: user.USR_LastName,
+          email: user.USR_Email,
+          phone: user.USR_Phone
+        });
+      }
+    }
   }
 
   // Verificar si un campo tiene errores
@@ -138,6 +159,9 @@ export class EditProfilePage implements OnInit {
       if (field.errors['minlength']) {
         return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
       }
+      if (field.errors['maxlength']) {
+        return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+      }
     }
     return '';
   }
@@ -147,41 +171,90 @@ export class EditProfilePage implements OnInit {
     if (this.profileForm.valid) {
       this.isLoading = true;
       
-      // Mostrar loading
       const loading = await this.loadingController.create({
-        message: 'Guardando cambios...',
-        duration: 2000
+        message: 'Guardando cambios...'
       });
       await loading.present();
 
-      // Simular llamada a API
-      setTimeout(async () => {
-        this.isLoading = false;
-        await loading.dismiss();
+      const updateData: any = {};
+      
+      if (this.profileForm.value.firstName) {
+        updateData.USR_Name = this.profileForm.value.firstName;
+      }
+      if (this.profileForm.value.lastName) {
+        updateData.USR_LastName = this.profileForm.value.lastName;
+      }
+      if (this.profileForm.value.email) {
+        updateData.USR_Email = this.profileForm.value.email;
+      }
+      if (this.profileForm.value.phone) {
+        updateData.USR_Phone = this.profileForm.value.phone;
+      }
+      if (this.profileForm.value.password) {
+        updateData.USR_Password = this.profileForm.value.password;
+      }
 
-        // Mostrar mensaje de éxito
+      try {
+        const response = await this.userService.updateUser(updateData).toPromise();
+        
+        if (response && response.success) {
+          console.log('Success:', response.success);
+          console.log('Message:', response.message);
+          console.log('Usuario actualizado:', response.data);
+
+          await loading.dismiss();
+          this.isLoading = false;
+
+          if (response.data) {
+            this.currentUser = response.data;
+            localStorage.setItem('user', JSON.stringify(response.data));
+          }
+
+          const toast = await this.toastController.create({
+            message: response.message || 'Perfil actualizado exitosamente',
+            duration: 3000,
+            position: 'bottom',
+            color: 'success'
+          });
+          await toast.present();
+
+          this.router.navigate(['/tabs/account']);
+        }
+      } catch (error: any) {
+        console.error('Error completo:', error);
+        if (error?.error) {
+          console.log('Respuesta del servidor:', error.error);
+        }
+        
+        await loading.dismiss();
+        this.isLoading = false;
+
+        let errorMessage = 'Error al actualizar el perfil';
+        
+        if (error?.error?.errors) {
+          const errors = error.error.errors;
+          const firstError = Object.values(errors)[0];
+          errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+        } else if (error?.error?.message) {
+          errorMessage = error.error.message;
+        }
+
         const toast = await this.toastController.create({
-          message: 'Perfil actualizado exitosamente',
+          message: errorMessage,
           duration: 3000,
-          position: 'top',
-          color: 'success',
-          icon: 'checkmark-circle-outline'
+          position: 'bottom',
+          color: 'danger'
         });
         await toast.present();
-
-        // Volver a la página de cuenta
-        this.router.navigate(['/tabs/account']);
-      }, 2000);
+      }
     } else {
-      // Marcar todos los campos como touched para mostrar errores
       this.profileForm.markAllAsTouched();
       
       const toast = await this.toastController.create({
         message: 'Por favor corrige los errores en el formulario',
         duration: 3000,
-        position: 'top',
-        color: 'danger',
-        icon: 'alert-circle-outline'
+        position: 'bottom',
+        color: 'danger'
       });
       await toast.present();
     }
@@ -194,6 +267,14 @@ export class EditProfilePage implements OnInit {
 
   // Resetear formulario
   resetForm() {
-    this.profileForm.reset(this.currentUserProfile);
+    if (this.currentUser) {
+      this.profileForm.patchValue({
+        firstName: this.currentUser.USR_Name,
+        lastName: this.currentUser.USR_LastName,
+        email: this.currentUser.USR_Email,
+        phone: this.currentUser.USR_Phone,
+        password: ''
+      });
+    }
   }
 }

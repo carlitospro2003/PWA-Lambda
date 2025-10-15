@@ -17,6 +17,8 @@ export const API_ENDPOINTS = {
   USERS: '/users',
   UPDATE_PROFILE: '/users/profile',
   CHANGE_PASSWORD: '/users/change-password',
+  EDIT_USER: '/editUser',
+  GET_USER: '/getUser',
   
   // Exercise endpoints
   EXERCISES: '/exercises',

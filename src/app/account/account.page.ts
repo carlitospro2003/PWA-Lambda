@@ -17,6 +17,7 @@ import {
   ToastController
 } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
+import { UserService, User } from '../services/user.service';
 
 import { addIcons } from 'ionicons';
 import {
@@ -53,9 +54,9 @@ interface UserProfile {
 export class AccountPage implements OnInit {
 
   userProfile: UserProfile = {
-    firstName: 'Carlos',
-    lastName: 'González Martínez',
-    email: 'carlos.gonzalez@gmail.com'
+    firstName: '',
+    lastName: '',
+    email: ''
   };
 
   constructor(
@@ -63,7 +64,8 @@ export class AccountPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {
     addIcons({
       personCircle,
@@ -73,14 +75,38 @@ export class AccountPage implements OnInit {
   }
 
   ngOnInit() {
-    // Cargar datos del usuario desde el servicio de autenticación
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.userProfile = {
-        firstName: user.USR_Name,
-        lastName: user.USR_LastName,
-        email: user.USR_Email
-      };
+    this.loadUserProfile();
+  }
+
+  ionViewWillEnter() {
+    this.loadUserProfile();
+  }
+
+  async loadUserProfile() {
+    try {
+      const response = await this.userService.getUser().toPromise();
+      
+      if (response && response.success && response.data) {
+        const user = response.data;
+        this.userProfile = {
+          firstName: user.USR_Name,
+          lastName: user.USR_LastName,
+          email: user.USR_Email
+        };
+        
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+      
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.userProfile = {
+          firstName: user.USR_Name,
+          lastName: user.USR_LastName,
+          email: user.USR_Email
+        };
+      }
     }
   }
 
