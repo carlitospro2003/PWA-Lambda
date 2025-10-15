@@ -1,0 +1,131 @@
+.edit-profile-content {
+  --background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+}
+
+.edit-profile-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Avatar Section */
+.avatar-section {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-icon {
+  font-size: 100px;
+  color: var(--ion-color-primary);
+}
+
+.change-photo-btn {
+  --color: var(--ion-color-primary);
+  font-size: 0.9rem;
+}
+
+/* Form Cards */
+.form-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .section-icon {
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+/* Form Items */
+.form-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  margin-bottom: 20px;
+
+  ion-label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  ion-input {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+
+  &.error {
+    ion-input {
+      border-color: var(--ion-color-danger);
+    }
+  }
+}
+
+.field-icon {
+  font-size: 1.2rem;
+  color: #999;
+  margin-right: 8px;
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 0.85rem;
+  margin-top: 5px;
+  padding-left: 12px;
+}
+
+/* Actions Section */
+.actions-section {
+  margin-top: 30px;
+  padding-bottom: 20px;
+}
+
+.save-btn {
+  --background: #fdbc22;
+  --background-hover: #e5a91f;
+  --background-activated: #cc961b;
+  --color: #ffffff;
+  margin-bottom: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.cancel-btn {
+  --color: #666;
+  --border-color: #ddd;
+  text-transform: none;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .edit-profile-container {
+    padding: 15px;
+  }
+
+  .avatar-icon {
+    font-size: 80px;
+  }
+}

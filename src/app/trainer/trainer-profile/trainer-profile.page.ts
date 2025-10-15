@@ -36,7 +36,8 @@ import {
   logOutOutline,
   fitnessOutline
 } from 'ionicons/icons';
-import { AuthService, User } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
+import { UserService, User } from '../../services/user.service';
 
 interface TrainerStats {
   totalRooms: number;
@@ -79,6 +80,7 @@ export class TrainerProfilePage implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private userService: UserService,
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController
@@ -105,8 +107,26 @@ export class TrainerProfilePage implements OnInit {
     this.loadTrainerStats();
   }
 
-  loadUserData() {
-    this.currentUser = this.authService.getCurrentUser();
+  ionViewWillEnter() {
+    this.loadUserData();
+  }
+
+  async loadUserData() {
+    try {
+      const response = await this.userService.getUser().toPromise();
+      
+      if (response && response.success && response.data) {
+        this.currentUser = response.data;
+        localStorage.setItem('user', JSON.stringify(response.data));
+      }
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+      
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.currentUser = user;
+      }
+    }
   }
 
   loadTrainerStats() {
@@ -146,17 +166,9 @@ export class TrainerProfilePage implements OnInit {
   }
 
   editProfile() {
-    // Implementar navegación a página de editar perfil
-    console.log('Navegar a editar perfil');
-    // this.router.navigate(['/trainer/edit-profile']);
-    this.showToast('Función de editar perfil próximamente', 'medium');
+    this.router.navigate(['/trainer/edit-profile']);
   }
 
-  changePassword() {
-    // Implementar cambio de contraseña
-    console.log('Cambiar contraseña');
-    this.showToast('Función de cambiar contraseña próximamente', 'medium');
-  }
 
   async logout() {
     const alert = await this.alertController.create({
@@ -196,6 +208,9 @@ export class TrainerProfilePage implements OnInit {
         await loading.dismiss();
         
         console.log('Logout Response:', response);
+        
+        // Limpiar localStorage y token SIEMPRE después del logout
+        this.authService.logoutLocal();
         
         if (response.success) {
           await this.showToast(response.message || 'Sesión cerrada exitosamente', 'success');

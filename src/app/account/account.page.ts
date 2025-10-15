@@ -149,6 +149,9 @@ export class AccountPage implements OnInit {
       next: async (response) => {
         await loading.dismiss();
         
+        // Limpiar localStorage y token SIEMPRE después del logout
+        this.authService.logoutLocal();
+        
         if (response.success) {
           const toast = await this.toastController.create({
             message: response.message || 'Sesión cerrada exitosamente',

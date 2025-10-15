@@ -53,6 +53,12 @@ export const routes: Routes = [
         data: { role: 'trainer' }
       },
       {
+        path: 'edit-profile',
+        loadComponent: () => import('./trainer/trainer-edit-profile/trainer-edit-profile.page').then(m => m.TrainerEditProfilePage),
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: 'trainer' }
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
