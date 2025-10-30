@@ -1,0 +1,66 @@
+# Nombre del Workflow
+name: Entrega Continua de Artefacto PWA
+
+# Disparador: al hacer push a la rama principal
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # 1. Job de Construcción y Entrega (CI/CD)
+  build_artifact:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del Repositorio
+        uses: actions/checkout@v4
+      
+      - name: Configurar Entorno Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' 
+      
+      - name: Instalar Dependencias y Compilar (Creación del Artefacto)
+        run: |
+          npm install
+          npm run build 
+        
+      - name: Ejecutar Pruebas (Simulación QA)
+        run: npm test 
+        
+      - name: Almacenar Artefacto Compilado (Entrega Continua)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pwa-lambda-dist-v${{ github.sha }}
+          path: dist/
+          retention-days: 7
+          
+      - name: Confirmar Entrega
+        run: echo "Artefacto de PWA (dist) ha sido ENTREGADO y almacenado para su despliegue."
+
+  # 2. Job de Despliegue Simulado a Preproducción
+  deploy_simulado:
+    needs: build_artifact 
+    runs-on: ubuntu-latest
+    
+    # Asignación a Environment para simular aprobación manual
+    environment: 
+      name: Preproduccion
+      
+    steps:
+      - name: Simulación de Aprobación de Despliegue
+        run: echo "Esperando aprobación manual en el Environment 'Preproduccion'..."
+      
+      - name: Descargar Artefacto Entregado
+        uses: actions/download-artifact@v4
+        with:
+          name: pwa-lambda-dist-v${{ github.sha }}
+          path: ./staging-server/
+          
+      - name: Despliegue Automatizado a Servidor SIMULADO
+        run: |
+          echo "Simulando comandos de Despliegue Automatizado:"
+          echo "Copiando artefacto a /var/www/preproduccion/..."
+          ls -R ./staging-server/
+          echo "--- Despliegue a Preproducción Completo. ---"
