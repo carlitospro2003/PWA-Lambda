@@ -39,7 +39,7 @@ jobs:
       - name: Confirmar Entrega
         run: echo "Artefacto de PWA (dist) ha sido ENTREGADO y almacenado para su despliegue."
 
-  # 2. Job de Despliegue Simulado a Preproducción
+  # 2. Job de Despliegue Simulado a Preproducción 
   deploy_simulado:
     needs: build_artifact 
     runs-on: ubuntu-latest
