@@ -39,6 +39,30 @@ export interface GetMyRoomsResponse {
   rooms: Room[];
 }
 
+export interface GetMyRoomsDataResponse {
+  success: boolean;
+  data: {
+    total_rooms: number;
+    total_exercises: number;
+    total_trainees: number;
+  };
+}
+
+export interface EditRoomRequest {
+  ROO_Name: string;
+}
+
+export interface EditRoomResponse {
+  success: boolean;
+  message: string;
+  errors?: any;
+}
+
+export interface DeleteRoomResponse {
+  success: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -59,5 +83,26 @@ export class RoomService {
    */
   getMyRooms(): Observable<GetMyRoomsResponse> {
     return this.http.get<GetMyRoomsResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_MY_ROOMS}`);
+  }
+
+  /**
+   * Obtener estadísticas de mis salas
+   */
+  getMyRoomsData(): Observable<GetMyRoomsDataResponse> {
+    return this.http.get<GetMyRoomsDataResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_MY_ROOMS_DATA}`);
+  }
+
+  /**
+   * Editar nombre de una sala
+   */
+  editRoom(roomId: number, roomData: EditRoomRequest): Observable<EditRoomResponse> {
+    return this.http.put<EditRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.EDIT_ROOM}/${roomId}`, roomData);
+  }
+
+  /**
+   * Eliminar una sala y sus ejercicios
+   */
+  deleteRoom(roomId: number): Observable<DeleteRoomResponse> {
+    return this.http.delete<DeleteRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.DELETE_ROOM}/${roomId}`);
   }
 }

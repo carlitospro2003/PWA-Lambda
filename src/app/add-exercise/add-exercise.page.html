@@ -35,229 +35,49 @@
           <ion-list>
             
             <!-- Nombre del Ejercicio -->
-            <ion-item class="form-item" [class.error]="hasError('EXC_Name')">
-              <ion-label position="stacked">Nombre del Ejercicio *</ion-label>
+            <ion-item class="form-item" [class.error]="hasError('EXC_Title')">
+              <ion-label position="stacked">Título del Ejercicio *</ion-label>
               <ion-input 
-                formControlName="EXC_Name"
+                formControlName="EXC_Title"
                 placeholder="ej. Burpees, Sentadillas, etc."
                 clearInput="true">
               </ion-input>
-              <div class="error-message" *ngIf="hasError('EXC_Name')">
-                {{ getErrorMessage('EXC_Name') }}
+              <div class="error-message" *ngIf="hasError('EXC_Title')">
+                {{ getErrorMessage('EXC_Title') }}
               </div>
             </ion-item>
 
-            <!-- Descripción -->
-            <ion-item class="form-item" [class.error]="hasError('EXC_Description')">
-              <ion-label position="stacked">Descripción *</ion-label>
-              <ion-textarea 
-                formControlName="EXC_Description"
-                placeholder="Describe brevemente en qué consiste el ejercicio..."
-                rows="3"
-                maxlength="500"
-                counter="true">
-              </ion-textarea>
-              <div class="error-message" *ngIf="hasError('EXC_Description')">
-                {{ getErrorMessage('EXC_Description') }}
-              </div>
+            <!-- Tipo de Ejercicio -->
+            <ion-item class="form-item">
+              <ion-label position="stacked">Tipo de Ejercicio</ion-label>
+              <ion-select formControlName="EXC_Type" placeholder="Selecciona tipo (opcional)">
+                <ion-select-option *ngFor="let type of exerciseTypes" [value]="type.value">
+                  {{ type.label }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Nivel de Dificultad -->
+            <ion-item class="form-item">
+              <ion-label position="stacked">Nivel de Dificultad</ion-label>
+              <ion-select formControlName="EXC_DifficultyLevel" placeholder="Selecciona dificultad (opcional)">
+                <ion-select-option *ngFor="let level of difficultyLevels" [value]="level.value">
+                  {{ level.label }}
+                </ion-select-option>
+              </ion-select>
             </ion-item>
 
             <!-- Instrucciones -->
-            <ion-item class="form-item" [class.error]="hasError('EXC_Instructions')">
-              <ion-label position="stacked">Instrucciones Paso a Paso *</ion-label>
+            <ion-item class="form-item">
+              <ion-label position="stacked">Instrucciones</ion-label>
               <ion-textarea 
                 formControlName="EXC_Instructions"
-                placeholder="1. Primer paso&#10;2. Segundo paso&#10;3. Tercer paso..."
+                placeholder="Describe las instrucciones paso a paso... (opcional)"
                 rows="4"
-                maxlength="1000"
+                maxlength="5000"
                 counter="true">
               </ion-textarea>
-              <div class="error-message" *ngIf="hasError('EXC_Instructions')">
-                {{ getErrorMessage('EXC_Instructions') }}
-              </div>
             </ion-item>
-
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Clasificación del Ejercicio -->
-      <ion-card class="form-card">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="fitness-outline" class="section-icon"></ion-icon>
-            Clasificación del Ejercicio
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list>
-
-            <ion-grid>
-              <ion-row>
-                
-                <!-- Grupo Muscular -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item" [class.error]="hasError('EXC_MuscleGroup')">
-                    <ion-icon name="body-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Grupo Muscular *</ion-label>
-                    <ion-select formControlName="EXC_MuscleGroup" placeholder="Selecciona grupo muscular">
-                      <ion-select-option *ngFor="let muscle of muscleGroups" [value]="muscle">
-                        {{ muscle }}
-                      </ion-select-option>
-                    </ion-select>
-                    <div class="error-message" *ngIf="hasError('EXC_MuscleGroup')">
-                      {{ getErrorMessage('EXC_MuscleGroup') }}
-                    </div>
-                  </ion-item>
-                </ion-col>
-
-                <!-- Equipamiento -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item" [class.error]="hasError('EXC_Equipment')">
-                    <ion-icon name="construct-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Equipamiento Necesario *</ion-label>
-                    <ion-select formControlName="EXC_Equipment" placeholder="Selecciona equipamiento">
-                      <ion-select-option *ngFor="let equipment of equipmentOptions" [value]="equipment">
-                        {{ equipment }}
-                      </ion-select-option>
-                    </ion-select>
-                    <div class="error-message" *ngIf="hasError('EXC_Equipment')">
-                      {{ getErrorMessage('EXC_Equipment') }}
-                    </div>
-                  </ion-item>
-                </ion-col>
-
-              </ion-row>
-              <ion-row>
-
-                <!-- Dificultad -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item" [class.error]="hasError('EXC_Difficulty')">
-                    <ion-icon name="trending-up-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Nivel de Dificultad *</ion-label>
-                    <ion-select formControlName="EXC_Difficulty" placeholder="Selecciona dificultad">
-                      <ion-select-option *ngFor="let level of difficultyLevels" [value]="level.value">
-                        {{ level.label }}
-                      </ion-select-option>
-                    </ion-select>
-                    <div class="error-message" *ngIf="hasError('EXC_Difficulty')">
-                      {{ getErrorMessage('EXC_Difficulty') }}
-                    </div>
-                  </ion-item>
-                </ion-col>
-
-                <!-- Tipo de Ejercicio -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item" [class.error]="hasError('EXC_Type')">
-                    <ion-icon name="flash-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Tipo de Ejercicio *</ion-label>
-                    <ion-select formControlName="EXC_Type" placeholder="Selecciona tipo">
-                      <ion-select-option *ngFor="let type of exerciseTypes" [value]="type.value">
-                        {{ type.label }}
-                      </ion-select-option>
-                    </ion-select>
-                    <div class="error-message" *ngIf="hasError('EXC_Type')">
-                      {{ getErrorMessage('EXC_Type') }}
-                    </div>
-                  </ion-item>
-                </ion-col>
-
-              </ion-row>
-            </ion-grid>
-
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Parámetros del Ejercicio -->
-      <ion-card class="form-card">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="barbell-outline" class="section-icon"></ion-icon>
-            Parámetros del Ejercicio
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list>
-
-            <ion-grid>
-              <ion-row>
-                
-                <!-- Duración -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item">
-                    <ion-icon name="time-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Duración (minutos)</ion-label>
-                    <ion-input 
-                      formControlName="EXC_Duration"
-                      type="number"
-                      placeholder="ej. 10"
-                      min="1">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-
-                <!-- Repeticiones -->
-                <ion-col size="12" size-md="6">
-                  <ion-item class="form-item">
-                    <ion-icon name="flash-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Repeticiones</ion-label>
-                    <ion-input 
-                      formControlName="EXC_Repetitions"
-                      type="number"
-                      placeholder="ej. 15"
-                      min="1">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-
-              </ion-row>
-              <ion-row>
-
-                <!-- Series -->
-                <ion-col size="12" size-md="4">
-                  <ion-item class="form-item">
-                    <ion-icon name="barbell-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Series</ion-label>
-                    <ion-input 
-                      formControlName="EXC_Sets"
-                      type="number"
-                      placeholder="ej. 3"
-                      min="1">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-
-                <!-- Tiempo de Descanso -->
-                <ion-col size="12" size-md="4">
-                  <ion-item class="form-item">
-                    <ion-icon name="time-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Descanso (seg)</ion-label>
-                    <ion-input 
-                      formControlName="EXC_RestTime"
-                      type="number"
-                      placeholder="ej. 60"
-                      min="0">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-
-                <!-- Calorías Quemadas -->
-                <ion-col size="12" size-md="4">
-                  <ion-item class="form-item">
-                    <ion-icon name="flash-outline" slot="start" class="field-icon"></ion-icon>
-                    <ion-label position="stacked">Calorías (aprox)</ion-label>
-                    <ion-input 
-                      formControlName="EXC_CaloriesBurned"
-                      type="number"
-                      placeholder="ej. 50"
-                      min="1">
-                    </ion-input>
-                  </ion-item>
-                </ion-col>
-
-              </ion-row>
-            </ion-grid>
 
           </ion-list>
         </ion-card-content>
@@ -268,7 +88,7 @@
         <ion-card-header>
           <ion-card-title>
             <ion-icon name="camera-outline" class="section-icon"></ion-icon>
-            Archivos Multimedia
+            Multimedia (Opcional)
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
@@ -284,21 +104,21 @@
                     <div class="file-input-container">
                       <input 
                         type="file" 
-                        accept="image/*,video/*"
-                        data-field="MED_Media1"
-                        (change)="onFileSelected($event, 'MED_Media1')"
+                        accept="image/jpeg,image/png,image/jpg,image/webp,video/mp4,video/mov"
+                        data-field="EXC_Media1"
+                        (change)="onFileSelected($event, 'EXC_Media1')"
                         class="file-input">
                       <ion-button fill="outline" size="small" class="file-button">
                         <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
                         Seleccionar
                       </ion-button>
-                      <ion-note class="file-name">{{ getFileName('MED_Media1') }}</ion-note>
+                      <ion-note class="file-name">{{ getFileName('EXC_Media1') }}</ion-note>
                       <ion-button 
-                        *ngIf="hasFile('MED_Media1')"
+                        *ngIf="hasFile('EXC_Media1')"
                         fill="clear" 
                         size="small" 
                         color="danger"
-                        (click)="removeFile('MED_Media1')">
+                        (click)="removeFile('EXC_Media1')">
                         <ion-icon name="close-outline"></ion-icon>
                       </ion-button>
                     </div>
@@ -312,21 +132,21 @@
                     <div class="file-input-container">
                       <input 
                         type="file" 
-                        accept="image/*,video/*"
-                        data-field="MED_Media2"
-                        (change)="onFileSelected($event, 'MED_Media2')"
+                        accept="image/jpeg,image/png,image/jpg,image/webp,video/mp4,video/mov"
+                        data-field="EXC_Media2"
+                        (change)="onFileSelected($event, 'EXC_Media2')"
                         class="file-input">
                       <ion-button fill="outline" size="small" class="file-button">
                         <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
                         Seleccionar
                       </ion-button>
-                      <ion-note class="file-name">{{ getFileName('MED_Media2') }}</ion-note>
+                      <ion-note class="file-name">{{ getFileName('EXC_Media2') }}</ion-note>
                       <ion-button 
-                        *ngIf="hasFile('MED_Media2')"
+                        *ngIf="hasFile('EXC_Media2')"
                         fill="clear" 
                         size="small" 
                         color="danger"
-                        (click)="removeFile('MED_Media2')">
+                        (click)="removeFile('EXC_Media2')">
                         <ion-icon name="close-outline"></ion-icon>
                       </ion-button>
                     </div>
@@ -343,21 +163,21 @@
                     <div class="file-input-container">
                       <input 
                         type="file" 
-                        accept="image/*,video/*"
-                        data-field="MED_Media3"
-                        (change)="onFileSelected($event, 'MED_Media3')"
+                        accept="image/jpeg,image/png,image/jpg,image/webp,video/mp4,video/mov"
+                        data-field="EXC_Media3"
+                        (change)="onFileSelected($event, 'EXC_Media3')"
                         class="file-input">
                       <ion-button fill="outline" size="small" class="file-button">
                         <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
                         Seleccionar
                       </ion-button>
-                      <ion-note class="file-name">{{ getFileName('MED_Media3') }}</ion-note>
+                      <ion-note class="file-name">{{ getFileName('EXC_Media3') }}</ion-note>
                       <ion-button 
-                        *ngIf="hasFile('MED_Media3')"
+                        *ngIf="hasFile('EXC_Media3')"
                         fill="clear" 
                         size="small" 
                         color="danger"
-                        (click)="removeFile('MED_Media3')">
+                        (click)="removeFile('EXC_Media3')">
                         <ion-icon name="close-outline"></ion-icon>
                       </ion-button>
                     </div>
@@ -371,21 +191,21 @@
                     <div class="file-input-container">
                       <input 
                         type="file" 
-                        accept="image/*,video/*"
-                        data-field="MED_Media4"
-                        (change)="onFileSelected($event, 'MED_Media4')"
+                        accept="image/jpeg,image/png,image/jpg,image/webp,video/mp4,video/mov"
+                        data-field="EXC_Media4"
+                        (change)="onFileSelected($event, 'EXC_Media4')"
                         class="file-input">
                       <ion-button fill="outline" size="small" class="file-button">
                         <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
                         Seleccionar
                       </ion-button>
-                      <ion-note class="file-name">{{ getFileName('MED_Media4') }}</ion-note>
+                      <ion-note class="file-name">{{ getFileName('EXC_Media4') }}</ion-note>
                       <ion-button 
-                        *ngIf="hasFile('MED_Media4')"
+                        *ngIf="hasFile('EXC_Media4')"
                         fill="clear" 
                         size="small" 
                         color="danger"
-                        (click)="removeFile('MED_Media4')">
+                        (click)="removeFile('EXC_Media4')">
                         <ion-icon name="close-outline"></ion-icon>
                       </ion-button>
                     </div>
@@ -413,9 +233,9 @@
             <!-- URL 1 -->
             <ion-item class="form-item">
               <ion-icon name="link-outline" slot="start" class="field-icon"></ion-icon>
-              <ion-label position="stacked">URL de Video (YouTube, etc.)</ion-label>
+              <ion-label position="stacked">URL de Video 1 (YouTube, Vimeo, etc.)</ion-label>
               <ion-input 
-                formControlName="MED_URL1"
+                formControlName="EXC_URL1"
                 type="url"
                 placeholder="https://www.youtube.com/watch?v=..."
                 clearInput="true">
@@ -425,41 +245,13 @@
             <!-- URL 2 -->
             <ion-item class="form-item">
               <ion-icon name="link-outline" slot="start" class="field-icon"></ion-icon>
-              <ion-label position="stacked">URL Adicional</ion-label>
+              <ion-label position="stacked">URL de Video 2</ion-label>
               <ion-input 
-                formControlName="MED_URL2"
+                formControlName="EXC_URL2"
                 type="url"
                 placeholder="https://..."
                 clearInput="true">
               </ion-input>
-            </ion-item>
-
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Estado del Ejercicio -->
-      <ion-card class="form-card">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="checkmark-circle-outline" class="section-icon"></ion-icon>
-            Estado del Ejercicio
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list>
-            
-            <!-- Estado Activo -->
-            <ion-item class="form-item toggle-item">
-              <ion-label>
-                <h3>Ejercicio Activo</h3>
-                <p>¿Debe estar disponible para los usuarios?</p>
-              </ion-label>
-              <ion-toggle 
-                formControlName="EXC_Status"
-                slot="end"
-                color="primary">
-              </ion-toggle>
             </ion-item>
 
           </ion-list>

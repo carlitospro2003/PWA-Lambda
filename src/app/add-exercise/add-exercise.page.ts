@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ExerciseService } from '../services/exercise.service';
 import {
   IonHeader,
   IonToolbar,
@@ -47,7 +48,8 @@ import {
   flashOutline,
   refreshOutline,
   checkmarkCircleOutline,
-  cloudUploadOutline
+  cloudUploadOutline,
+  closeOutline
 } from 'ionicons/icons';
 
 // Interface para el formulario de ejercicio
@@ -123,23 +125,25 @@ export class AddExercisePage implements OnInit {
   ];
 
   difficultyLevels = [
-    { value: 'principiante', label: 'Principiante' },
-    { value: 'intermedio', label: 'Intermedio' },
-    { value: 'avanzado', label: 'Avanzado' }
+    { value: 'PRINCIPIANTE', label: 'Principiante' },
+    { value: 'INTERMEDIO', label: 'Intermedio' },
+    { value: 'AVANZADO', label: 'Avanzado' }
   ];
 
   exerciseTypes = [
-    { value: 'cardio', label: 'Cardio' },
-    { value: 'fuerza', label: 'Fuerza' },
-    { value: 'flexibilidad', label: 'Flexibilidad' },
-    { value: 'equilibrio', label: 'Equilibrio' },
-    { value: 'resistencia', label: 'Resistencia' }
+    { value: 'Calentamiento', label: 'Calentamiento' },
+    { value: 'Calistenia', label: 'Calistenia' },
+    { value: 'Musculatura', label: 'Musculatura' },
+    { value: 'Elasticidad', label: 'Elasticidad' },
+    { value: 'Resistencia', label: 'Resistencia' },
+    { value: 'Médico', label: 'Médico' }
   ];
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private exerciseService: ExerciseService,
     private toastController: ToastController,
     private loadingController: LoadingController,
     private alertController: AlertController
@@ -147,25 +151,14 @@ export class AddExercisePage implements OnInit {
     // Inicializar el formulario
     this.exerciseForm = this.formBuilder.group({
       // Campos obligatorios
-      EXC_Name: ['', [Validators.required, Validators.minLength(3)]],
-      EXC_Description: ['', [Validators.required, Validators.minLength(10)]],
-      EXC_Instructions: ['', [Validators.required, Validators.minLength(20)]],
-      EXC_MuscleGroup: ['', Validators.required],
-      EXC_Equipment: ['', Validators.required],
-      EXC_Difficulty: ['', Validators.required],
-      EXC_Type: ['', Validators.required],
-      EXC_Status: [true],
-
-      // Campos opcionales
-      EXC_Duration: [''],
-      EXC_Repetitions: [''],
-      EXC_Sets: [''],
-      EXC_RestTime: [''],
-      EXC_CaloriesBurned: [''],
+      EXC_Title: ['', [Validators.required, Validators.minLength(3)]],
+      EXC_Type: [''],
+      EXC_Instructions: [''],
+      EXC_DifficultyLevel: [''],
 
       // URLs externas
-      MED_URL1: [''],
-      MED_URL2: ['']
+      EXC_URL1: [''],
+      EXC_URL2: ['']
     });
 
     addIcons({
@@ -183,7 +176,8 @@ export class AddExercisePage implements OnInit {
       flashOutline,
       refreshOutline,
       checkmarkCircleOutline,
-      cloudUploadOutline
+      cloudUploadOutline,
+      closeOutline
     });
   }
 
@@ -220,16 +214,18 @@ export class AddExercisePage implements OnInit {
     const file = event.target.files[0];
     if (file) {
       // Validar tipo de archivo
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4', 'video/webm'];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'video/mp4', 'video/mov'];
       if (!allowedTypes.includes(file.type)) {
-        this.showToast('Solo se permiten archivos de imagen (JPG, PNG) o video (MP4, WebM)', 'danger');
+        this.showToast('Solo se permiten archivos: JPEG, PNG, WEBP, MP4, MOV', 'danger');
+        event.target.value = '';
         return;
       }
 
-      // Validar tamaño (máximo 10MB)
-      const maxSize = 10 * 1024 * 1024; // 10MB
+      // Validar tamaño (máximo 20MB)
+      const maxSize = 20 * 1024 * 1024; // 20MB
       if (file.size > maxSize) {
-        this.showToast('El archivo es muy grande. Máximo 10MB permitido', 'danger');
+        this.showToast('El archivo es muy grande. Máximo 20MB permitido', 'danger');
+        event.target.value = '';
         return;
       }
 
@@ -262,10 +258,15 @@ export class AddExercisePage implements OnInit {
 
   // Resetear formulario
   resetForm() {
-    this.exerciseForm.reset({
-      EXC_Status: true // Mantener el estado activo por defecto
-    });
+    this.exerciseForm.reset();
     this.uploadedFiles = {};
+    
+    // Resetear todos los inputs de archivos
+    const fileInputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
+    fileInputs.forEach(input => {
+      input.value = '';
+    });
+    
     this.showToast('Formulario reseteado', 'medium');
   }
 
@@ -277,32 +278,96 @@ export class AddExercisePage implements OnInit {
       // Mostrar loading
       const loading = await this.loadingController.create({
         message: 'Guardando ejercicio...',
-        duration: 3000
+        duration: 30000
       });
       await loading.present();
 
-      // Simular llamada a API
-      setTimeout(async () => {
-        this.isLoading = false;
-        await loading.dismiss();
-
-        // Obtener datos del formulario
-        const formData = this.exerciseForm.value as ExerciseFormData;
+      try {
+        // Crear FormData para enviar archivos
+        const formData = new FormData();
+        
+        // Agregar campos del formulario
+        const formValues = this.exerciseForm.value;
+        
+        // Campo obligatorio
+        formData.append('EXC_Title', formValues.EXC_Title);
+        formData.append('EXC_ROO_ID', this.roomId.toString());
+        
+        // Campos opcionales
+        if (formValues.EXC_Type) {
+          formData.append('EXC_Type', formValues.EXC_Type);
+        }
+        if (formValues.EXC_Instructions) {
+          formData.append('EXC_Instructions', formValues.EXC_Instructions);
+        }
+        if (formValues.EXC_DifficultyLevel) {
+          formData.append('EXC_DifficultyLevel', formValues.EXC_DifficultyLevel);
+        }
+        if (formValues.EXC_URL1) {
+          formData.append('EXC_URL1', formValues.EXC_URL1);
+        }
+        if (formValues.EXC_URL2) {
+          formData.append('EXC_URL2', formValues.EXC_URL2);
+        }
         
         // Agregar archivos multimedia
-        Object.keys(this.uploadedFiles).forEach(key => {
-          (formData as any)[key] = this.uploadedFiles[key];
+        for (let i = 1; i <= 4; i++) {
+          const mediaKey = `EXC_Media${i}`;
+          if (this.uploadedFiles[mediaKey]) {
+            formData.append(mediaKey, this.uploadedFiles[mediaKey]);
+          }
+        }
+
+        console.log('Creando ejercicio para sala ID:', this.roomId);
+
+        // Llamar al servicio
+        this.exerciseService.createExerciseWithMedia(formData).subscribe({
+          next: async (response) => {
+            this.isLoading = false;
+            await loading.dismiss();
+
+            console.log('Respuesta de creación de ejercicio:', response);
+
+            if (response.success) {
+              await this.showToast(response.message, 'success');
+              
+              // Volver a la página de ejercicios de la sala
+              this.router.navigate(['/trainer/room-exercises', this.roomId]);
+            } else {
+              await this.showToast(response.message || 'Error al crear el ejercicio', 'danger');
+            }
+          },
+          error: async (error) => {
+            this.isLoading = false;
+            await loading.dismiss();
+
+            console.error('Error al crear ejercicio:', error);
+
+            let errorMessage = 'Error al crear el ejercicio';
+            
+            if (error.status === 422 && error.error?.errors) {
+              // Errores de validación
+              const validationErrors = error.error.errors;
+              const firstError = Object.values(validationErrors)[0];
+              errorMessage = Array.isArray(firstError) ? firstError[0] : firstError as string;
+            } else if (error.status === 404) {
+              errorMessage = error.error?.message || 'Sala no encontrada';
+            } else if (error.status === 403) {
+              errorMessage = 'No tienes permiso para agregar ejercicios a esta sala';
+            } else if (error.error?.message) {
+              errorMessage = error.error.message;
+            }
+
+            await this.showToast(errorMessage, 'danger');
+          }
         });
 
-        console.log('Ejercicio a guardar:', formData);
-        console.log('ID de la sala:', this.roomId);
-
-        // Mostrar mensaje de éxito
-        await this.showToast('¡Ejercicio creado exitosamente! 🎉', 'success');
-
-        // Volver a la página de ejercicios de la sala
-        this.router.navigate(['/room-exercises', this.roomId]);
-      }, 3000);
+      } catch (error) {
+        this.isLoading = false;
+        await loading.dismiss();
+        console.error('Error inesperado:', error);
+        await this.showToast('Error inesperado al crear el ejercicio', 'danger');
+      }
 
     } else {
       // Marcar todos los campos como touched para mostrar errores

@@ -27,8 +27,9 @@ export class AuthInterceptor implements HttpInterceptor {
         'Accept': 'application/json'
       };
       
-      // Solo agregar Content-Type si no está presente
-      if (!req.headers.has('Content-Type')) {
+      // NO agregar Content-Type si el body es FormData
+      // El navegador lo establece automáticamente con el boundary correcto
+      if (!req.headers.has('Content-Type') && !(req.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
       }
       

@@ -17,7 +17,8 @@ import {
   IonLabel,
   IonInput,
   ToastController,
-  LoadingController
+  LoadingController,
+  AlertController
 } from '@ionic/angular/standalone';
 import { RoomService, CreateRoomRequest, Room } from '../../services/room.service';
 import { AuthService } from '../../services/auth.service';
@@ -27,7 +28,9 @@ import {
   close,
   peopleOutline,
   listOutline,
-  personCircleOutline
+  personCircleOutline,
+  createOutline,
+  trashOutline
 } from 'ionicons/icons';
 
 // Interfaces para datos del entrenador
@@ -40,6 +43,11 @@ interface TrainerRoom {
 }
 
 interface NewRoomData {
+  name: string;
+}
+
+interface EditRoomData {
+  id: number;
   name: string;
 }
 
@@ -71,11 +79,18 @@ export class TrainerDashboardPage implements OnInit {
   
   // Estado del modal
   isModalOpen: boolean = false;
+  isEditModalOpen: boolean = false;
   isCreating: boolean = false;
+  isEditing: boolean = false;
   isLoadingRooms: boolean = false;
   
   // Datos del formulario
   newRoom: NewRoomData = {
+    name: ''
+  };
+
+  editRoom: EditRoomData = {
+    id: 0,
     name: ''
   };
   
@@ -87,14 +102,17 @@ export class TrainerDashboardPage implements OnInit {
     private roomService: RoomService,
     private authService: AuthService,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private alertController: AlertController
   ) {
     addIcons({
       add,
       close,
       peopleOutline,
       listOutline,
-      personCircleOutline
+      personCircleOutline,
+      createOutline,
+      trashOutline
     });
   }
 
@@ -236,5 +254,159 @@ export class TrainerDashboardPage implements OnInit {
   viewRoomDetail(room: TrainerRoom) {
     // Navegar a la vista de ejercicios de la sala
     this.router.navigate(['/trainer/room-exercises', room.id]);
+  }
+
+  async openEditModal(room: TrainerRoom, event?: Event) {
+    // Prevenir que se dispare el click del card
+    if (event) {
+      event.stopPropagation();
+    }
+
+    this.editRoom = {
+      id: room.id,
+      name: room.name
+    };
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.editRoom = {
+      id: 0,
+      name: ''
+    };
+  }
+
+  async updateRoom() {
+    // Validar que el nombre esté completo
+    if (!this.editRoom.name.trim()) {
+      await this.showToast('El nombre de la sala es requerido', 'warning');
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Actualizando sala...',
+      duration: 10000
+    });
+
+    await loading.present();
+    this.isEditing = true;
+
+    const roomData = {
+      ROO_Name: this.editRoom.name.trim()
+    };
+
+    console.log('Editando sala con ID:', this.editRoom.id, 'Datos:', roomData);
+
+    this.roomService.editRoom(this.editRoom.id, roomData).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        this.isEditing = false;
+
+        console.log('Respuesta de edición de sala:', response);
+
+        if (response.success) {
+          await this.showToast(response.message, 'success');
+          this.closeEditModal();
+          
+          // Recargar las salas para obtener la lista actualizada
+          this.loadMyRooms();
+        } else {
+          await this.showToast(response.message || 'Error al editar la sala', 'danger');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isEditing = false;
+
+        console.error('Error al editar sala:', error);
+
+        let errorMessage = 'Error al editar la sala';
+        
+        if (error.status === 422 && error.error?.errors) {
+          // Errores de validación
+          const validationErrors = error.error.errors;
+          errorMessage = Object.values(validationErrors)[0] as string;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
+        await this.showToast(errorMessage, 'danger');
+      }
+    });
+  }
+
+  async confirmDeleteRoom(room: TrainerRoom, event?: Event) {
+    // Prevenir que se dispare el click del card
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Confirmar Eliminación',
+      message: `¿Estás seguro de que deseas eliminar la sala "${room.name}"? Esto también eliminará todos los ejercicios asociados.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          cssClass: 'danger',
+          handler: async () => {
+            await this.deleteRoom(room.id);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async deleteRoom(roomId: number) {
+    const loading = await this.loadingController.create({
+      message: 'Eliminando sala...',
+      duration: 10000
+    });
+
+    await loading.present();
+
+    console.log('Eliminando sala con ID:', roomId);
+
+    this.roomService.deleteRoom(roomId).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+
+        console.log('Respuesta de eliminación de sala:', response);
+
+        if (response.success) {
+          await this.showToast(response.message, 'success');
+          
+          // Recargar las salas para obtener la lista actualizada
+          this.loadMyRooms();
+        } else {
+          await this.showToast(response.message || 'Error al eliminar la sala', 'danger');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+
+        console.error('Error al eliminar sala:', error);
+
+        let errorMessage = 'Error al eliminar la sala';
+        
+        if (error.status === 404) {
+          errorMessage = 'Sala no encontrada';
+        } else if (error.status === 403) {
+          errorMessage = 'No tienes permiso para eliminar esta sala';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
+        await this.showToast(errorMessage, 'danger');
+      }
+    });
   }
 }

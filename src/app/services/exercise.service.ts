@@ -19,14 +19,37 @@ export interface Exercise {
   EXC_Instructions?: string;
   EXC_DifficultyLevel?: string;
   EXC_ROO_ID: number;
+  EXC_Media1?: string;
+  EXC_Media2?: string;
+  EXC_Media3?: string;
+  EXC_Media4?: string;
+  EXC_URL1?: string;
+  EXC_URL2?: string;
   created_at: string;
   updated_at: string;
+  room?: {
+    ROO_ID: number;
+    ROO_Code: string;
+    ROO_Name: string;
+    ROO_USR_ID: number;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
+export interface GetExerciseResponse {
+  success: boolean;
+  message: string;
+  data?: Exercise;
+  total_images?: number;
+  total_urls?: number;
 }
 
 export interface CreateExerciseResponse {
   success: boolean;
   message: string;
   data?: Exercise;
+  uploaded_files?: number;
   errors?: any;
 }
 
@@ -53,9 +76,23 @@ export class ExerciseService {
   }
 
   /**
+   * Crear un nuevo ejercicio con archivos multimedia (FormData)
+   */
+  createExerciseWithMedia(formData: FormData): Observable<CreateExerciseResponse> {
+    return this.http.post<CreateExerciseResponse>(`${this.apiUrl}${API_ENDPOINTS.CREATE_EXERCISE}`, formData);
+  }
+
+  /**
    * Obtener ejercicios por sala
    */
   getExercisesByRoom(roomId: number): Observable<GetExercisesByRoomResponse> {
     return this.http.get<GetExercisesByRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_EXERCISES_BY_ROOM}/${roomId}`);
+  }
+
+  /**
+   * Obtener detalles completos de un ejercicio específico
+   */
+  getExercise(exerciseId: number): Observable<GetExerciseResponse> {
+    return this.http.get<GetExerciseResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_EXERCISE}/${exerciseId}`);
   }
 }

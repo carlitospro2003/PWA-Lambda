@@ -38,6 +38,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { UserService, User } from '../../services/user.service';
+import { RoomService } from '../../services/room.service';
 
 interface TrainerStats {
   totalRooms: number;
@@ -81,6 +82,7 @@ export class TrainerProfilePage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private userService: UserService,
+    private roomService: RoomService,
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController
@@ -130,13 +132,26 @@ export class TrainerProfilePage implements OnInit {
   }
 
   loadTrainerStats() {
-    // Aquí normalmente cargarías las estadísticas desde un servicio
-    // Por ahora usamos datos simulados
-    this.trainerStats = {
-      totalRooms: 3,
-      totalStudents: 45,
-      totalExercises: 28
-    };
+    this.roomService.getMyRoomsData().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.trainerStats = {
+            totalRooms: response.data.total_rooms,
+            totalStudents: response.data.total_trainees,
+            totalExercises: response.data.total_exercises
+          };
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar estadísticas:', error);
+        // Mantener valores en 0 si hay error
+        this.trainerStats = {
+          totalRooms: 0,
+          totalStudents: 0,
+          totalExercises: 0
+        };
+      }
+    });
   }
 
   getFullName(): string {

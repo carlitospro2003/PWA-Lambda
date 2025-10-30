@@ -233,6 +233,30 @@ ion-grid {
   }
 }
 
+/* File input wrapper */
+.file-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 0;
+  flex-wrap: wrap;
+
+  ion-button {
+    flex-shrink: 0;
+  }
+
+  .file-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #666666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 120px;
+  }
+}
+
 /* Botón guardar en el header */
 ion-header ion-button[disabled] {
   --color: rgba(255, 255, 255, 0.5);

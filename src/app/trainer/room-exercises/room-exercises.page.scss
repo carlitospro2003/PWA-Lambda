@@ -306,6 +306,49 @@ ion-toolbar {
   }
 }
 
+/* Estilos para el modal de detalles */
+.exercise-details-alert {
+  .alert-wrapper {
+    max-width: 600px;
+  }
+
+  .alert-message {
+    max-height: 400px;
+    overflow-y: auto;
+    
+    p {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    strong {
+      color: #333333;
+      font-weight: 600;
+    }
+
+    a {
+      color: #fdbc22;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    hr {
+      margin: 15px 0;
+      border: none;
+      border-top: 1px solid #e9ecef;
+    }
+
+    ul {
+      li {
+        margin: 5px 0;
+      }
+    }
+  }
+}
+
 @media (max-width: 480px) {
   .exercises-container {
     padding: 10px;
