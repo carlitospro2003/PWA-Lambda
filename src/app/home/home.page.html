@@ -19,6 +19,69 @@
       <p>Estas son las salas en las que participas</p>
     </div>
 
+    <!-- Buscador de salas -->
+    <div class="search-section">
+      <h3 class="search-title">Buscar una sala</h3>
+      <p class="search-subtitle">Ingresa el código de 7 caracteres</p>
+      
+      <div class="search-container">
+        <ion-searchbar
+          [(ngModel)]="searchCode"
+          placeholder="Ej: ROOM001"
+          [maxlength]="7"
+          (keyup.enter)="searchRoom()"
+          class="room-searchbar">
+        </ion-searchbar>
+        
+        <ion-button 
+          expand="block" 
+          (click)="searchRoom()"
+          [disabled]="isSearching || searchCode.length !== 7"
+          class="search-button">
+          <ion-icon name="search-outline" slot="start" *ngIf="!isSearching"></ion-icon>
+          <ion-spinner name="crescent" *ngIf="isSearching"></ion-spinner>
+          <span *ngIf="!isSearching">Buscar</span>
+          <span *ngIf="isSearching">Buscando...</span>
+        </ion-button>
+      </div>
+
+      <!-- Resultado de la búsqueda -->
+      <div class="search-result" *ngIf="searchedRoom">
+        <ion-card class="found-room-card">
+          <ion-card-content>
+            <div class="found-room-header">
+              <div class="found-room-info">
+                <h4 class="found-room-name">{{ searchedRoom.ROO_Name }}</h4>
+                <ion-chip color="success" size="small">
+                  <ion-label>{{ searchedRoom.ROO_Code }}</ion-label>
+                </ion-chip>
+              </div>
+              <ion-button 
+                (click)="clearSearch()" 
+                fill="clear" 
+                size="small"
+                class="clear-btn">
+                ✕
+              </ion-button>
+            </div>
+            
+            <div class="found-room-actions">
+              <ion-button 
+                expand="block" 
+                (click)="joinSearchedRoom()"
+                [disabled]="isSearching"
+                class="join-button">
+                <ion-icon name="arrow-forward-circle-outline" slot="start" *ngIf="!isSearching"></ion-icon>
+                <ion-spinner name="crescent" *ngIf="isSearching"></ion-spinner>
+                <span *ngIf="!isSearching">Unirse a esta sala</span>
+                <span *ngIf="isSearching">Uniéndose...</span>
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
     <!-- Lista de salas del usuario -->
     <div class="rooms-grid">
       <ion-card 
@@ -62,10 +125,20 @@
 
           <!-- Botón de acción -->
           <div class="action-section">
-            <div class="enter-button">
+            <div class="enter-button" (click)="enterRoom(room); $event.stopPropagation()">
               <ion-icon name="arrow-forward-circle-outline" class="action-icon"></ion-icon>
               <span>Entrar a la sala</span>
             </div>
+            
+            <ion-button 
+              fill="clear" 
+              color="danger" 
+              size="small"
+              (click)="leaveRoom(room, $event)"
+              class="leave-room-btn">
+              <ion-icon name="exit-outline" slot="start"></ion-icon>
+              Salir de la sala
+            </ion-button>
           </div>
 
         </ion-card-content>

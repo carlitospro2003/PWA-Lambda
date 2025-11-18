@@ -357,6 +357,137 @@ ion-card-subtitle {
   opacity: 0.8;
 }
 
+/* Search Section */
+.search-section {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  border: 2px dashed #e0e0e0;
+}
+
+.search-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333;
+  text-align: center;
+}
+
+.search-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-searchbar {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --placeholder-color: #999;
+  --placeholder-opacity: 1;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.search-button {
+  --background: linear-gradient(135deg, #fdbc22 0%, #f39200 100%);
+  --color: #000;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+  text-transform: none;
+}
+
+.search-button[disabled] {
+  --background: #e0e0e0;
+  --color: #999;
+}
+
+/* Search Result */
+.search-result {
+  margin-top: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.found-room-card {
+  --background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(253, 188, 34, 0.2);
+  border: 2px solid #fdbc22;
+  margin: 0;
+}
+
+.found-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.found-room-info {
+  flex: 1;
+}
+
+.found-room-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.found-room-header ion-chip {
+  --background: rgba(40, 167, 69, 0.15);
+  --color: #28a745;
+  font-weight: 600;
+}
+
+.clear-btn {
+  --color: #999;
+  font-size: 1.5rem;
+  margin: -8px -8px 0 0;
+}
+
+.found-room-actions {
+  margin-top: 16px;
+}
+
+.join-button {
+  --background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  --color: #fff;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+  text-transform: none;
+}
+
+.join-button:hover {
+  --background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+}
+
+.join-button[disabled] {
+  --background: #e0e0e0;
+  --color: #999;
+}
+
 /* Rooms Grid */
 .rooms-grid {
   display: grid;
@@ -474,6 +605,9 @@ ion-card-subtitle {
 /* Action Section */
 .action-section {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .enter-button {
@@ -487,11 +621,29 @@ ion-card-subtitle {
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .enter-button:hover {
   background: linear-gradient(135deg, #f39200 0%, #e68a00 100%);
   transform: scale(1.02);
+}
+
+.leave-room-btn {
+  --color: #dc3545;
+  font-size: 0.9rem;
+  margin: 0;
+  height: auto;
+}
+
+.leave-room-alert {
+  --width: 90%;
+  --max-width: 400px;
+}
+
+.leave-room-alert [role="destructive"] {
+  color: #dc3545;
+  font-weight: 600;
 }
 
 .action-icon {

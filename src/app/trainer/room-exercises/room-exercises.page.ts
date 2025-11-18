@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { 
   IonContent, 
   IonCard, 
@@ -15,6 +16,11 @@ import {
   IonBackButton,
   IonChip,
   IonSpinner,
+  IonModal,
+  IonInput,
+  IonTextarea,
+  IonSelect,
+  IonSelectOption,
   ToastController,
   AlertController,
   ModalController
@@ -31,7 +37,12 @@ import {
   walk,
   bicycle,
   add,
-  chevronForward
+  chevronForward,
+  createOutline,
+  trashOutline,
+  close,
+  cloudUploadOutline,
+  saveOutline
 } from 'ionicons/icons';
 
 interface RoomInfo {
@@ -50,6 +61,7 @@ interface RoomInfo {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     IonContent,
     IonCard,
     IonCardContent,
@@ -62,7 +74,12 @@ interface RoomInfo {
     IonButtons,
     IonBackButton,
     IonChip,
-    IonSpinner
+    IonSpinner,
+    IonModal,
+    IonInput,
+    IonTextarea,
+    IonSelect,
+    IonSelectOption
   ]
 })
 export class RoomExercisesPage implements OnInit {
@@ -70,6 +87,34 @@ export class RoomExercisesPage implements OnInit {
   roomInfo: RoomInfo | null = null;
   exercises: Exercise[] = [];
   isLoadingExercises: boolean = false;
+
+  // Variables para el modal de edición
+  isEditModalOpen = false;
+  editingExercise: Exercise | null = null;
+  editForm = {
+    EXC_Title: '',
+    EXC_Type: '',
+    EXC_DifficultyLevel: '',
+    EXC_Instructions: '',
+    EXC_URL1: '',
+    EXC_URL2: ''
+  };
+
+  // Opciones para los selects
+  exerciseTypes = [
+    'Calentamiento',
+    'Calistenia',
+    'Musculatura',
+    'Elasticidad',
+    'Resistencia',
+    'Médico'
+  ];
+
+  difficultyLevels = [
+    { value: 'PRINCIPIANTE', label: 'Principiante' },
+    { value: 'INTERMEDIO', label: 'Intermedio' },
+    { value: 'AVANZADO', label: 'Avanzado' }
+  ];
 
   constructor(
     private router: Router,
@@ -88,7 +133,12 @@ export class RoomExercisesPage implements OnInit {
       walk,
       bicycle,
       add,
-      chevronForward
+      chevronForward,
+      createOutline,
+      trashOutline,
+      close,
+      cloudUploadOutline,
+      saveOutline
     });
   }
 
@@ -224,6 +274,143 @@ export class RoomExercisesPage implements OnInit {
     }
   }
 
+  async editExercise(exercise: Exercise) {
+    // Evitar propagación del click
+    event?.stopPropagation();
+
+    // Guardar ejercicio en edición
+    this.editingExercise = exercise;
+
+    // Pre-llenar el formulario
+    this.editForm = {
+      EXC_Title: exercise.EXC_Title,
+      EXC_Type: exercise.EXC_Type || '',
+      EXC_DifficultyLevel: exercise.EXC_DifficultyLevel || '',
+      EXC_Instructions: exercise.EXC_Instructions || '',
+      EXC_URL1: exercise.EXC_URL1 || '',
+      EXC_URL2: exercise.EXC_URL2 || ''
+    };
+
+    // Abrir modal
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.editingExercise = null;
+  }
+
+  async saveExerciseFromModal() {
+    if (!this.editingExercise) return;
+
+    await this.saveExerciseEdits(this.editingExercise.EXC_ID, this.editForm);
+    this.closeEditModal();
+  }
+
+  async openFilePickerForEdit() {
+    if (!this.editingExercise) return;
+
+    // Crear input file oculto para seleccionar archivos
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.accept = 'image/jpeg,image/png,image/jpg,image/webp,video/mp4,video/mov';
+    
+    fileInput.onchange = async (e: any) => {
+      const files = e.target.files;
+      if (files && files.length > 0 && this.editingExercise) {
+        await this.uploadExerciseFiles(this.editingExercise.EXC_ID, files, this.editForm);
+        this.closeEditModal();
+      }
+    };
+    
+    fileInput.click();
+  }
+
+  async uploadExerciseFiles(exerciseId: number, files: FileList, textData: any) {
+    const formData = new FormData();
+
+    // Agregar _method para Laravel (PUT via POST)
+    formData.append('_method', 'PUT');
+
+    // Agregar campos de texto
+    Object.keys(textData).forEach(key => {
+      const value = textData[key];
+      if (value !== null && value !== undefined && String(value).trim() !== '') {
+        formData.append(key, String(value));
+      }
+    });
+
+    // Agregar archivos (máximo 4)
+    const maxFiles = Math.min(files.length, 4);
+    for (let i = 0; i < maxFiles; i++) {
+      formData.append(`EXC_Media${i + 1}`, files[i]);
+    }
+
+    // Debug: ver qué se está enviando
+    console.log('FormData a enviar:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+
+    try {
+      const response = await this.exerciseService.editExerciseWithMedia(exerciseId, formData).toPromise();
+      
+      if (response && response.success) {
+        await this.showToast('Ejercicio actualizado exitosamente', 'success');
+        // Recargar lista de ejercicios
+        await this.loadExercises();
+      } else {
+        await this.showToast(response?.message || 'Error al actualizar ejercicio', 'danger');
+      }
+    } catch (error: any) {
+      console.error('Error al actualizar ejercicio:', error);
+      const errorMsg = error?.error?.message || 'Error al actualizar ejercicio';
+      await this.showToast(errorMsg, 'danger');
+    }
+  }
+
+  async saveExerciseEdits(exerciseId: number, data: any) {
+    const formData = new FormData();
+
+    // Agregar _method para Laravel (PUT via POST)
+    formData.append('_method', 'PUT');
+
+    // Solo agregar campos que tienen valor
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      // Agregar si tiene valor (incluso strings vacíos se envían como vacíos)
+      if (value !== null && value !== undefined) {
+        const stringValue = String(value).trim();
+        if (stringValue !== '') {
+          formData.append(key, stringValue);
+        }
+      }
+    });
+
+    // Debug: ver qué se está enviando
+    console.log('FormData a enviar (sin archivos):');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+
+    try {
+      const response = await this.exerciseService.editExerciseWithMedia(exerciseId, formData).toPromise();
+      
+      if (response && response.success) {
+        await this.showToast('Ejercicio actualizado exitosamente', 'success');
+        // Recargar lista de ejercicios
+        await this.loadExercises();
+      } else {
+        await this.showToast(response?.message || 'Error al actualizar ejercicio', 'danger');
+      }
+    } catch (error: any) {
+      console.error('Error al actualizar ejercicio:', error);
+      const errorMsg = error?.error?.message || 'Error al actualizar ejercicio';
+      await this.showToast(errorMsg, 'danger');
+    }
+  }
+
   async showExerciseDetailsModal(exercise: Exercise, totalImages?: number, totalUrls?: number) {
     const mediaItems = [];
     
@@ -271,6 +458,12 @@ export class RoomExercisesPage implements OnInit {
           role: 'cancel'
         },
         {
+          text: 'Editar',
+          handler: () => {
+            this.editExercise(exercise);
+          }
+        },
+        {
           text: 'Ver Multimedia',
           handler: () => {
             if (mediaItems.length > 0) {
@@ -284,6 +477,64 @@ export class RoomExercisesPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  async deleteExercise(exercise: Exercise) {
+    // Evitar propagación del click
+    event?.stopPropagation();
+
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Estás seguro de que deseas eliminar el ejercicio "${exercise.EXC_Title}"? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          cssClass: 'danger',
+          handler: async () => {
+            await this.confirmDeleteExercise(exercise.EXC_ID, exercise.EXC_Title);
+          }
+        }
+      ],
+      cssClass: 'delete-exercise-alert'
+    });
+
+    await alert.present();
+  }
+
+  async confirmDeleteExercise(exerciseId: number, exerciseTitle: string) {
+    try {
+      const response = await this.exerciseService.deleteExercise(exerciseId).toPromise();
+      
+      if (response && response.success) {
+        await this.showToast(
+          `Ejercicio "${exerciseTitle}" eliminado exitosamente. Quedan ${response.remaining_exercises_in_room || 0} ejercicios en esta sala.`,
+          'success'
+        );
+        // Recargar lista de ejercicios
+        await this.loadExercises();
+      } else {
+        await this.showToast(response?.message || 'Error al eliminar ejercicio', 'danger');
+      }
+    } catch (error: any) {
+      console.error('Error al eliminar ejercicio:', error);
+      
+      let errorMessage = 'Error al eliminar ejercicio';
+      if (error.status === 403) {
+        errorMessage = 'No tienes permiso para eliminar este ejercicio';
+      } else if (error.status === 404) {
+        errorMessage = 'Ejercicio no encontrado';
+      } else if (error.error?.message) {
+        errorMessage = error.error.message;
+      }
+      
+      await this.showToast(errorMessage, 'danger');
+    }
   }
 
   async showToast(message: string, color: string) {

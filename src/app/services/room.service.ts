@@ -63,6 +63,38 @@ export interface DeleteRoomResponse {
   message: string;
 }
 
+export interface SearchRoomRequest {
+  ROO_Code: string;
+}
+
+export interface SearchRoomResponse {
+  success: boolean;
+  message?: string;
+  room?: Room;
+  errors?: any;
+}
+
+export interface JoinRoomRequest {
+  URO_ROO_ID: number;
+}
+
+export interface JoinRoomResponse {
+  success: boolean;
+  message: string;
+  errors?: any;
+}
+
+export interface GetMyJoinedRoomsResponse {
+  success: boolean;
+  message: string;
+  rooms: Room[];
+}
+
+export interface LeaveRoomResponse {
+  success: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -104,5 +136,33 @@ export class RoomService {
    */
   deleteRoom(roomId: number): Observable<DeleteRoomResponse> {
     return this.http.delete<DeleteRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.DELETE_ROOM}/${roomId}`);
+  }
+
+  /**
+   * Buscar una sala por código
+   */
+  searchRoom(roomCode: SearchRoomRequest): Observable<SearchRoomResponse> {
+    return this.http.post<SearchRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.SEARCH_ROOM}`, roomCode);
+  }
+
+  /**
+   * Unirse a una sala
+   */
+  joinRoom(roomData: JoinRoomRequest): Observable<JoinRoomResponse> {
+    return this.http.post<JoinRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.JOIN_ROOM}`, roomData);
+  }
+
+  /**
+   * Obtener las salas a las que el usuario se ha unido
+   */
+  getMyJoinedRooms(): Observable<GetMyJoinedRoomsResponse> {
+    return this.http.get<GetMyJoinedRoomsResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_MY_JOINED_ROOMS}`);
+  }
+
+  /**
+   * Salir de una sala
+   */
+  leaveRoom(roomId: number): Observable<LeaveRoomResponse> {
+    return this.http.post<LeaveRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.LEAVE_ROOM}/${roomId}`, {});
   }
 }

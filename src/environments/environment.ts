@@ -26,6 +26,8 @@ export const API_ENDPOINTS = {
   CREATE_EXERCISE: '/createExcercise',
   GET_EXERCISES_BY_ROOM: '/getExcercisesByRoom',
   GET_EXERCISE: '/getExcercise',
+  EDIT_EXERCISE: '/editExcercise',
+  DELETE_EXERCISE: '/deleteExcercise',
   
   // Room endpoints
   ROOMS: '/rooms',
@@ -35,6 +37,10 @@ export const API_ENDPOINTS = {
   GET_MY_ROOMS_DATA: '/getMyRoomsData',
   EDIT_ROOM: '/editRoom',
   DELETE_ROOM: '/deleteRoom',
+  SEARCH_ROOM: '/searchRoom',
+  JOIN_ROOM: '/joinRoom',
+  GET_MY_JOINED_ROOMS: '/getMyJoinedRooms',
+  LEAVE_ROOM: '/leaveRoom',
   
   // Trainer endpoints
   TRAINERS: '/trainers',

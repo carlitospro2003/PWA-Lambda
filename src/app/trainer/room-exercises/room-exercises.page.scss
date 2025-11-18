@@ -211,6 +211,9 @@ ion-toolbar {
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
   ion-button {
     --border-color: #fdbc22;
@@ -220,6 +223,22 @@ ion-toolbar {
     &:hover {
       --background: #fdbc22;
       --color: #ffffff;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 1.3rem;
+      }
     }
   }
 }
@@ -345,6 +364,121 @@ ion-toolbar {
       li {
         margin: 5px 0;
       }
+    }
+  }
+}
+
+/* Estilos para el modal de edición */
+.edit-exercise-alert {
+  .alert-wrapper {
+    max-width: 500px;
+  }
+
+  .alert-input-group {
+    margin-bottom: 15px;
+  }
+
+  .alert-input {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    
+    &:focus {
+      border-color: #fdbc22;
+      outline: none;
+    }
+  }
+
+  textarea.alert-input {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .alert-button-group {
+    button {
+      &:last-child {
+        font-weight: 600;
+        color: #fdbc22;
+      }
+    }
+  }
+}
+
+/* Estilos para el alert de eliminación */
+.delete-exercise-alert {
+  .alert-wrapper {
+    max-width: 450px;
+  }
+
+  .alert-message {
+    color: #333333;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .alert-button-group {
+    button {
+      &[role="destructive"] {
+        color: #dc3545;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* Estilos para el modal personalizado */
+.edit-form {
+  max-width: 600px;
+  margin: 0 auto;
+
+  .form-field {
+    margin-bottom: 20px;
+
+    ion-label {
+      font-weight: 600;
+      color: #333333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    ion-input,
+    ion-textarea,
+    ion-select {
+      --background: #f8f9fa;
+      --border-radius: 8px;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+
+      &::part(native) {
+        padding: 12px;
+      }
+    }
+
+    ion-select {
+      width: 100%;
+      max-width: 100%;
+      --placeholder-color: #999999;
+    }
+
+    ion-textarea {
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      min-height: 100px;
+    }
+  }
+
+  .modal-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 600;
     }
   }
 }

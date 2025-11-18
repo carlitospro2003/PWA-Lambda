@@ -60,6 +60,23 @@ export interface GetExercisesByRoomResponse {
   data: Exercise[];
 }
 
+export interface EditExerciseResponse {
+  success: boolean;
+  message: string;
+  data?: Exercise;
+  uploaded_files?: number;
+  updated_fields?: string[];
+  errors?: any;
+}
+
+export interface DeleteExerciseResponse {
+  success: boolean;
+  message: string;
+  deleted_exercise?: string;
+  remaining_exercises_in_room?: number;
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -94,5 +111,20 @@ export class ExerciseService {
    */
   getExercise(exerciseId: number): Observable<GetExerciseResponse> {
     return this.http.get<GetExerciseResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_EXERCISE}/${exerciseId}`);
+  }
+
+  /**
+   * Editar un ejercicio existente con archivos multimedia (FormData)
+   * Usa POST con _method=PUT porque Laravel no procesa FormData correctamente con PUT directo
+   */
+  editExerciseWithMedia(exerciseId: number, formData: FormData): Observable<EditExerciseResponse> {
+    return this.http.post<EditExerciseResponse>(`${this.apiUrl}${API_ENDPOINTS.EDIT_EXERCISE}/${exerciseId}`, formData);
+  }
+
+  /**
+   * Eliminar un ejercicio existente
+   */
+  deleteExercise(exerciseId: number): Observable<DeleteExerciseResponse> {
+    return this.http.delete<DeleteExerciseResponse>(`${this.apiUrl}${API_ENDPOINTS.DELETE_EXERCISE}/${exerciseId}`);
   }
 }
