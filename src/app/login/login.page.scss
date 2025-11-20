@@ -164,6 +164,102 @@
   }
 }
 
+// Biometric styles
+.biometric-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.biometric-button {
+  --background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  --background-activated: #45a049;
+  --background-hover: #45a049;
+  --color: #ffffff;
+  --border-radius: 15px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  transition: all 0.3s ease;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  }
+}
+
+.biometric-email {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 5px 0;
+}
+
+.disable-biometric-btn {
+  --color: #999;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  
+  &:hover {
+    --color: #dc3545;
+  }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+  
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e0e0e0;
+  }
+  
+  &::before {
+    left: 0;
+  }
+  
+  &::after {
+    right: 0;
+  }
+  
+  span {
+    background: #ffffff;
+    padding: 0 10px;
+    color: #999;
+    font-size: 0.85rem;
+  }
+}
+
+.remember-item {
+  --background: transparent;
+  --padding-start: 0;
+  margin: 10px 0;
+}
+
+.remember-label {
+  font-size: 0.95rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fingerprint-icon {
+  color: #4CAF50;
+  font-size: 18px;
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .login-container {

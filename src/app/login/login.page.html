@@ -12,6 +12,30 @@
     <!-- Formulario de login -->
     <ion-card class="login-card">
       <ion-card-content>
+        
+        <!-- Botón de login con huella (si está disponible y habilitado) -->
+        <div class="biometric-section" *ngIf="biometricEnabled && savedEmail">
+          <ion-button 
+            expand="block" 
+            (click)="onBiometricLogin()"
+            class="biometric-button">
+            <ion-icon name="finger-print" slot="start"></ion-icon>
+            Iniciar con Huella
+          </ion-button>
+          <p class="biometric-email">{{ savedEmail }}</p>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            (click)="disableBiometric()"
+            class="disable-biometric-btn">
+            Desactivar huella
+          </ion-button>
+          
+          <div class="divider">
+            <span>o usa tu contraseña</span>
+          </div>
+        </div>
+
         <form (ngSubmit)="onLogin()">
           <ion-grid>
             <ion-row>
@@ -59,6 +83,23 @@
                 <ion-text color="danger" class="error-message">
                   <p>{{ errorMessage }}</p>
                 </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <!-- Checkbox para recordar con huella (solo si biometría está disponible) -->
+            <ion-row *ngIf="biometricAvailable && !biometricEnabled">
+              <ion-col size="12">
+                <ion-item lines="none" class="remember-item">
+                  <ion-checkbox 
+                    [(ngModel)]="rememberBiometric" 
+                    name="remember"
+                    slot="start">
+                  </ion-checkbox>
+                  <ion-label class="remember-label">
+                    <ion-icon name="finger-print" class="fingerprint-icon"></ion-icon>
+                    Activar inicio con huella
+                  </ion-label>
+                </ion-item>
               </ion-col>
             </ion-row>
 
