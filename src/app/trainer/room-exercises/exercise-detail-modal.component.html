@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalles del Ejercicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Información básica -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ exercise.EXC_Title }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="info-row" *ngIf="exercise.EXC_Type">
+        <strong>Tipo:</strong> 
+        <ion-chip color="primary">{{ exercise.EXC_Type }}</ion-chip>
+      </div>
+      
+      <div class="info-row" *ngIf="exercise.EXC_DifficultyLevel">
+        <strong>Dificultad:</strong> 
+        <ion-chip [color]="getDifficultyColor(exercise.EXC_DifficultyLevel)">
+          {{ exercise.EXC_DifficultyLevel }}
+        </ion-chip>
+      </div>
+      
+      <div class="info-row" *ngIf="exercise.EXC_Instructions">
+        <strong>Instrucciones:</strong>
+        <p>{{ exercise.EXC_Instructions }}</p>
+      </div>
+
+      <div class="info-row" *ngIf="exercise.room">
+        <strong>Sala:</strong> 
+        <span>{{ exercise.room.ROO_Name }} ({{ exercise.room.ROO_Code }})</span>
+      </div>
+
+      <div class="info-row">
+        <strong>Multimedia:</strong> 
+        <span>{{ totalImages }} imagen(es), {{ totalUrls }} video(s)</span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Galería de imágenes -->
+  <ion-card *ngIf="mediaItems.length > 0">
+    <ion-card-header>
+      <ion-card-title>Archivos Multimedia</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="media-grid">
+        <div *ngFor="let media of mediaItems; let i = index" class="media-item">
+          <!-- Imagen -->
+          <div *ngIf="media.type === 'image'" class="image-container">
+            <img 
+              [src]="media.url" 
+              [alt]="'Imagen ' + (i + 1)"
+              (click)="openImageInNewTab(media.url)"
+              class="exercise-image"
+            />
+            <div class="image-overlay" (click)="openImageInNewTab(media.url)">
+              <ion-icon name="open-outline"></ion-icon>
+              <span>Abrir en nueva pestaña</span>
+            </div>
+            <p class="image-label">Imagen {{ i + 1 }}</p>
+          </div>
+
+          <!-- URL de video -->
+          <div *ngIf="media.type === 'url'" class="url-container">
+            <ion-button expand="block" (click)="openImageInNewTab(media.url)">
+              <ion-icon name="open-outline" slot="start"></ion-icon>
+              Ver Video Externo {{ i + 1 }}
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <p *ngIf="mediaItems.length === 0" class="no-media">
+        No hay multimedia disponible
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botones de acción -->
+  <div class="action-buttons">
+    <ion-button expand="block" color="warning" (click)="editExercise()">
+      <ion-icon name="create-outline" slot="start"></ion-icon>
+      Editar Ejercicio
+    </ion-button>
+    <ion-button expand="block" color="medium" (click)="dismiss()">
+      Cerrar
+    </ion-button>
+  </div>
+</ion-content>

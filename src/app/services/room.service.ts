@@ -95,6 +95,24 @@ export interface LeaveRoomResponse {
   message: string;
 }
 
+export interface Exercise {
+  EXC_ID: number;
+  EXC_Name: string;
+  EXC_Description: string;
+  EXC_Sets: number;
+  EXC_Reps: number;
+  EXC_ROO_ID: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GetExercisesByRoomResponse {
+  success: boolean;
+  message: string;
+  total_exercises: number;
+  data: Exercise[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -164,5 +182,12 @@ export class RoomService {
    */
   leaveRoom(roomId: number): Observable<LeaveRoomResponse> {
     return this.http.post<LeaveRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.LEAVE_ROOM}/${roomId}`, {});
+  }
+
+  /**
+   * Obtener ejercicios de una sala
+   */
+  getExercisesByRoom(roomId: number): Observable<GetExercisesByRoomResponse> {
+    return this.http.get<GetExercisesByRoomResponse>(`${this.apiUrl}${API_ENDPOINTS.GET_EXERCISES_BY_ROOM}/${roomId}`);
   }
 }

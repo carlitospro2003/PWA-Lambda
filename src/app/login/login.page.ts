@@ -25,6 +25,7 @@ import { addIcons } from 'ionicons';
 import { person, lockClosed, eye, eyeOff, fitness, fingerPrint } from 'ionicons/icons';
 import { AuthService, LoginRequest } from '../services/auth.service';
 import { BiometricService } from '../services/biometric.service';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-login',
@@ -69,7 +70,8 @@ export class LoginPage implements OnInit {
     private toastController: ToastController,
     private loadingController: LoadingController,
     private biometricService: BiometricService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private firebaseService: FirebaseService
   ) {
     addIcons({
       person,
@@ -118,10 +120,19 @@ export class LoginPage implements OnInit {
     });
     await loading.present();
 
+    // Obtener FCM token antes de hacer login
+    const fcmToken = await this.firebaseService.getFCMToken();
+
     const credentials: LoginRequest = {
       USR_Email: this.email.trim(),
       USR_Password: this.password
     };
+
+    // Agregar fcm_token si está disponible
+    if (fcmToken) {
+      credentials.fcm_token = fcmToken;
+      console.log('Enviando FCM token al backend:', fcmToken);
+    }
 
     this.authService.login(credentials).subscribe({
       next: async (response) => {
@@ -256,11 +267,20 @@ export class LoginPage implements OnInit {
         return;
       }
 
+      // Obtener FCM token antes de hacer login
+      const fcmToken = await this.firebaseService.getFCMToken();
+
       // Hacer login con las credenciales guardadas
       const loginRequest: LoginRequest = {
         USR_Email: credentials.email,
         USR_Password: credentials.password
       };
+
+      // Agregar fcm_token si está disponible
+      if (fcmToken) {
+        loginRequest.fcm_token = fcmToken;
+        console.log('Enviando FCM token al backend (biometric):', fcmToken);
+      }
 
       this.authService.login(loginRequest).subscribe({
         next: async (response) => {

@@ -2,7 +2,16 @@ export const environment = {
   production: false,
   apiUrl: 'http://127.0.0.1:8000/api',
   appName: 'Lambda Fitness',
-  version: '1.0.0'
+  version: '1.0.0',
+  firebase: {
+    apiKey: "AIzaSyDPQ3HcafZsG9MJgwTYDM-oV-uCOBCIlnM",
+    authDomain: "lambda-6054d.firebaseapp.com",
+    projectId: "lambda-6054d",
+    storageBucket: "lambda-6054d.firebasestorage.app",
+    messagingSenderId: "204320046510",
+    appId: "1:204320046510:web:6dce5bbc96f091d8991c3f",
+    vapidKey: 'BFDF7N7KcP2mXjS0h1_kIu3hDprXcuZVeBC2eoccIcIWz1EBcqtbtvxEafx1eu0DvwE0cNF5usBhfQCC--ZTK4c'
+  }
 };
 
 export const API_ENDPOINTS = {

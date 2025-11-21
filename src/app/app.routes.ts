@@ -112,12 +112,14 @@ export const routes: Routes = [
   {
     path: 'edit-profile',
     loadComponent: () => import('./edit-profile/edit-profile.page').then(m => m.EditProfilePage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'trainee' }
   },
   {
     path: 'room-exercises/:id',
     loadComponent: () => import('./room-exercises/room-exercises.page').then(m => m.RoomExercisesPage),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'trainee' }
   },
 
   //ESTA NO SE USA

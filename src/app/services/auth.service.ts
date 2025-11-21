@@ -8,6 +8,7 @@ import { environment, API_ENDPOINTS } from '../../environments/environment';
 export interface LoginRequest {
   USR_Email: string;
   USR_Password: string;
+  fcm_token?: string;
 }
 
 export interface RegisterRequest {

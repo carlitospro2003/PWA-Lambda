@@ -27,6 +27,8 @@ import {
 } from '@ionic/angular/standalone';
 import { ExerciseService, Exercise } from '../../services/exercise.service';
 import { RoomService } from '../../services/room.service';
+import { ExerciseDetailModalComponent } from './exercise-detail-modal.component';
+import { environment } from '../../../environments/environment';
 import { addIcons } from 'ionicons';
 import { 
   timeOutline,
@@ -122,7 +124,8 @@ export class RoomExercisesPage implements OnInit {
     private exerciseService: ExerciseService,
     private roomService: RoomService,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController
   ) {
     addIcons({
       timeOutline,
@@ -255,8 +258,23 @@ export class RoomExercisesPage implements OnInit {
         console.log('Total imágenes:', response.total_images);
         console.log('Total URLs:', response.total_urls);
 
-        // Crear modal con los detalles completos
-        await this.showExerciseDetailsModal(response.data, response.total_images, response.total_urls);
+        // Crear modal personalizado con los detalles completos
+        const modal = await this.modalController.create({
+          component: ExerciseDetailModalComponent,
+          componentProps: {
+            exercise: response.data,
+            totalImages: response.total_images,
+            totalUrls: response.total_urls
+          }
+        });
+
+        await modal.present();
+
+        // Capturar resultado del modal (si el usuario quiere editar)
+        const { data } = await modal.onWillDismiss();
+        if (data?.action === 'edit' && data?.exercise) {
+          await this.editExercise(data.exercise);
+        }
       } else {
         await this.showToast('No se pudieron cargar los detalles', 'warning');
       }
@@ -411,69 +429,86 @@ export class RoomExercisesPage implements OnInit {
     }
   }
 
-  async showExerciseDetailsModal(exercise: Exercise, totalImages?: number, totalUrls?: number) {
-    const mediaItems = [];
+  // Construir URL completa de la imagen desde Laravel storage
+  getImageUrl(relativePath: string | undefined | null): string | null {
+    if (!relativePath) return null;
     
-    // Construir lista de medios
-    if (exercise.EXC_Media1) mediaItems.push({ type: 'image', url: exercise.EXC_Media1 });
-    if (exercise.EXC_Media2) mediaItems.push({ type: 'image', url: exercise.EXC_Media2 });
-    if (exercise.EXC_Media3) mediaItems.push({ type: 'image', url: exercise.EXC_Media3 });
-    if (exercise.EXC_Media4) mediaItems.push({ type: 'image', url: exercise.EXC_Media4 });
+    // Si la ruta ya es completa (http/https), retornarla tal cual
+    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+      return relativePath;
+    }
+    
+    // Usa automáticamente la URL correcta según el environment
+    // En desarrollo: http://127.0.0.1:8000
+    // En producción: https://api.safekids.site
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    
+    // Si la ruta ya empieza con /storage/, solo agregar el dominio
+    if (relativePath.startsWith('/storage/')) {
+      return `${baseUrl}${relativePath}`;
+    }
+    
+    // Si no tiene /storage/, agregarlo
+    return `${baseUrl}/storage/${relativePath}`;
+  }
+
+  async showExerciseDetailsModal(exercise: Exercise, totalImages?: number, totalUrls?: number) {
+    const mediaItems: Array<{type: string, url: string}> = [];
+    
+    // Construir lista de imágenes con URLs completas
+    if (exercise.EXC_Media1) {
+      const url = this.getImageUrl(exercise.EXC_Media1);
+      if (url) mediaItems.push({ type: 'image', url });
+    }
+    if (exercise.EXC_Media2) {
+      const url = this.getImageUrl(exercise.EXC_Media2);
+      if (url) mediaItems.push({ type: 'image', url });
+    }
+    if (exercise.EXC_Media3) {
+      const url = this.getImageUrl(exercise.EXC_Media3);
+      if (url) mediaItems.push({ type: 'image', url });
+    }
+    if (exercise.EXC_Media4) {
+      const url = this.getImageUrl(exercise.EXC_Media4);
+      if (url) mediaItems.push({ type: 'image', url });
+    }
+    
+    // Agregar URLs de videos
     if (exercise.EXC_URL1) mediaItems.push({ type: 'url', url: exercise.EXC_URL1 });
     if (exercise.EXC_URL2) mediaItems.push({ type: 'url', url: exercise.EXC_URL2 });
 
-    // Construir mensaje HTML
-    let message = `
-      <div style="text-align: left;">
-        <p><strong>Título:</strong> ${exercise.EXC_Title}</p>
-        ${exercise.EXC_Type ? `<p><strong>Tipo:</strong> ${exercise.EXC_Type}</p>` : ''}
-        ${exercise.EXC_DifficultyLevel ? `<p><strong>Dificultad:</strong> ${exercise.EXC_DifficultyLevel}</p>` : ''}
-        ${exercise.EXC_Instructions ? `<p><strong>Instrucciones:</strong> ${exercise.EXC_Instructions}</p>` : ''}
-        ${exercise.room ? `<p><strong>Sala:</strong> ${exercise.room.ROO_Name} (${exercise.room.ROO_Code})</p>` : ''}
-        <p><strong>Archivos multimedia:</strong> ${totalImages || 0} imagen(es)</p>
-        <p><strong>URLs externas:</strong> ${totalUrls || 0} video(s)</p>
-    `;
+    // Mostrar datos en alert simple (temporal para debug)
+    let alertMessage = `
+Título: ${exercise.EXC_Title}
+Tipo: ${exercise.EXC_Type || 'N/A'}
+Dificultad: ${exercise.EXC_DifficultyLevel || 'N/A'}
+Instrucciones: ${exercise.EXC_Instructions || 'N/A'}
 
-    // Agregar medios si existen
-    if (mediaItems.length > 0) {
-      message += '<hr><p><strong>Multimedia:</strong></p><ul style="padding-left: 20px;">';
-      mediaItems.forEach((item, index) => {
-        if (item.type === 'image') {
-          message += `<li>Imagen ${index + 1}: <a href="${item.url}" target="_blank">Ver</a></li>`;
-        } else {
-          message += `<li>Video ${index + 1}: <a href="${item.url}" target="_blank">Ver en YouTube</a></li>`;
-        }
-      });
-      message += '</ul>';
-    }
+Archivos multimedia: ${totalImages || 0} imagen(es)
+URLs externas: ${totalUrls || 0} video(s)
 
-    message += '</div>';
+Para ver las imágenes, abre la consola (F12) y copia estas URLs:
+${mediaItems.filter(m => m.type === 'image').map((m, i) => `\nImagen ${i+1}: ${m.url}`).join('')}
+    `.trim();
 
     const alert = await this.alertController.create({
       header: 'Detalles del Ejercicio',
-      message: message,
+      message: alertMessage,
       buttons: [
+        {
+          text: 'Abrir Primera Imagen',
+          handler: () => {
+            const firstImage = mediaItems.find(m => m.type === 'image');
+            if (firstImage) {
+              window.open(firstImage.url, '_blank');
+            }
+          }
+        },
         {
           text: 'Cerrar',
           role: 'cancel'
-        },
-        {
-          text: 'Editar',
-          handler: () => {
-            this.editExercise(exercise);
-          }
-        },
-        {
-          text: 'Ver Multimedia',
-          handler: () => {
-            if (mediaItems.length > 0) {
-              console.log('Abrir galería de multimedia');
-              // Aquí podrías abrir un modal con galería de imágenes
-            }
-          }
         }
-      ],
-      cssClass: 'exercise-details-alert'
+      ]
     });
 
     await alert.present();

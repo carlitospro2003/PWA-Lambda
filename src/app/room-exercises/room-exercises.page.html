@@ -16,8 +16,14 @@
 
   <div class="room-exercises-container">
 
+    <!-- Spinner de carga -->
+    <div class="loading-container" *ngIf="isLoadingExercises">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando ejercicios...</p>
+    </div>
+
     <!-- Información Básica de la Sala -->
-    <ion-card class="room-info-card">
+    <ion-card class="room-info-card" *ngIf="!isLoadingExercises && roomDetails.name">
       <ion-card-content>
         <div class="room-header">
           <h2 class="room-title">{{ roomDetails.name }}</h2>
@@ -33,7 +39,7 @@
     </ion-card>
 
     <!-- Lista de Ejercicios -->
-    <div class="exercises-list">
+    <div class="exercises-list" *ngIf="!isLoadingExercises">
       <ion-card 
         *ngFor="let exercise of exercises; trackBy: trackByExerciseId"
         class="exercise-card"
@@ -70,27 +76,14 @@
 
             <!-- Información del ejercicio -->
             <div class="exercise-info">
-              <div class="info-tags">
-                <ion-chip [color]="getDifficultyColor(exercise.difficulty)" size="small">
-                  <ion-label>{{ getDifficultyLabel(exercise.difficulty) }}</ion-label>
-                </ion-chip>
-                <ion-chip color="medium" size="small">
-                  <ion-icon name="time-outline" class="chip-icon"></ion-icon>
-                  <ion-label>{{ exercise.duration }}min</ion-label>
-                </ion-chip>
-                <ion-chip color="tertiary" size="small">
-                  <ion-label>{{ exercise.category }}</ion-label>
-                </ion-chip>
-              </div>
-
               <div class="exercise-details">
-                <div class="detail-item" *ngIf="exercise.sets">
+                <div class="detail-item">
                   <ion-icon name="barbell-outline" class="detail-icon"></ion-icon>
                   <span>{{ exercise.sets }} series</span>
                 </div>
-                <div class="detail-item" *ngIf="exercise.repetitions">
+                <div class="detail-item">
                   <ion-icon name="flash-outline" class="detail-icon"></ion-icon>
-                  <span>{{ exercise.repetitions }} {{ exercise.category === 'Core' ? 'seg' : 'reps' }}</span>
+                  <span>{{ exercise.repetitions }} reps</span>
                 </div>
               </div>
             </div>
@@ -139,7 +132,7 @@
     </div>
 
     <!-- Estado vacío -->
-    <div class="empty-state" *ngIf="exercises.length === 0">
+    <div class="empty-state" *ngIf="!isLoadingExercises && exercises.length === 0">
       <ion-icon name="fitness-outline" class="empty-icon"></ion-icon>
       <h3>No hay ejercicios</h3>
       <p>No hay ejercicios disponibles en esta sala</p>
