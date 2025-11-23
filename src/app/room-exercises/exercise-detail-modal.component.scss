@@ -1,0 +1,237 @@
+.exercise-detail-content {
+  --background: #f8f9fa;
+}
+
+.detail-container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Info Card */
+.info-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 16px;
+}
+
+.exercise-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.tags-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.instructions-section {
+  margin-bottom: 20px;
+  
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.room-info {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  
+  p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #555;
+    
+    strong {
+      color: #333;
+    }
+  }
+}
+
+.media-summary {
+  display: flex;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  
+  ion-icon {
+    --size: 20px;
+    color: #fdbc22;
+  }
+}
+
+/* Media Card */
+.media-card {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: #333;
+  }
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.media-item {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.exercise-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.video-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-decoration: none;
+  color: #fdbc22;
+  font-weight: 600;
+  gap: 12px;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(253, 188, 34, 0.1);
+  }
+  
+  ion-icon {
+    --size: 48px;
+  }
+  
+  span {
+    font-size: 0.95rem;
+  }
+}
+
+/* Empty Media */
+.empty-media {
+  --background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  
+  ion-icon {
+    --size: 64px;
+    --color: #ddd;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: #999;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 12px;
+  }
+  
+  .exercise-title {
+    font-size: 1.3rem;
+  }
+  
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .exercise-image {
+    height: 250px;
+  }
+  
+  .media-summary {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .exercise-detail-content {
+    --background: #1a1a1a;
+  }
+  
+  .info-card,
+  .media-card,
+  .empty-media {
+    --background: #2a2a2a;
+  }
+  
+  .exercise-title,
+  .instructions-section h3,
+  .media-card h3 {
+    color: #ffffff;
+  }
+  
+  .instructions-section p,
+  .room-info p {
+    color: #cccccc;
+  }
+  
+  .room-info {
+    background: #333333;
+  }
+  
+  .media-item {
+    background: #333333;
+  }
+}

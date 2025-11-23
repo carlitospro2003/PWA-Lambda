@@ -1,6 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Favoritos</ion-title>
+    <ion-chip slot="end" color="warning" *ngIf="isOffline">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <span>Sin conexión</span>
+    </ion-chip>
   </ion-toolbar>
 </ion-header>
 
@@ -13,13 +17,54 @@
 
   <div class="favorites-container">
 
-    <!-- Lista Simple de Ejercicios -->
-    <div class="exercises-list">
-      <ion-card *ngFor="let exercise of favorites; trackBy: trackByExerciseId" class="exercise-item">
+    <!-- Spinner de carga -->
+    <div class="loading-container" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando favoritos...</p>
+    </div>
+
+    <!-- Lista de Ejercicios Favoritos -->
+    <div class="exercises-list" *ngIf="!isLoading && routines.length > 0">
+      <ion-card 
+        *ngFor="let routine of routines; trackBy: trackByRoutineId" 
+        class="exercise-card">
         <ion-card-content>
-          <h3 class="exercise-name">{{ exercise.name }}</h3>
+          <div class="exercise-header">
+            <ion-icon name="heart-outline" color="danger" class="favorite-icon"></ion-icon>
+            <h3 class="exercise-name">{{ routine.excercise?.EXC_Title }}</h3>
+          </div>
+          
+          <div class="exercise-info" *ngIf="routine.excercise">>
+            <ion-chip 
+              [color]="getDifficultyColor(routine.excercise.EXC_DifficultyLevel || '')" 
+              *ngIf="routine.excercise.EXC_DifficultyLevel">
+              {{ routine.excercise.EXC_DifficultyLevel }}
+            </ion-chip>
+            
+            <ion-chip color="primary" *ngIf="routine.excercise.EXC_Type">
+              {{ routine.excercise.EXC_Type }}
+            </ion-chip>
+          </div>
+
+          <p class="exercise-instructions" *ngIf="routine.excercise?.EXC_Instructions">
+            {{ routine.excercise?.EXC_Instructions }}
+          </p>
+
+          <div class="exercise-status">
+            <ion-chip [color]="routine.ROU_Status === 'In Progress' ? 'warning' : 'success'">
+              <ion-icon name="fitness-outline"></ion-icon>
+              <span>{{ routine.ROU_Status }}</span>
+            </ion-chip>
+          </div>
         </ion-card-content>
       </ion-card>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="empty-state" *ngIf="!isLoading && routines.length === 0">
+      <ion-icon name="heart-outline" class="empty-icon"></ion-icon>
+      <h3>No tienes favoritos</h3>
+      <p>Agrega ejercicios a tus favoritos desde las salas de entrenamiento</p>
     </div>
 
   </div>

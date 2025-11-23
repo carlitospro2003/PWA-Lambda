@@ -53,5 +53,10 @@ export const API_ENDPOINTS = {
   
   // Trainer endpoints
   TRAINERS: '/trainers',
-  TRAINER_ROOMS: '/trainers/rooms'
+  TRAINER_ROOMS: '/trainers/rooms',
+  
+  // Routine endpoints
+  CREATE_ROUTINE: '/createRoutine',
+  GET_MY_ROUTINES: '/getMyRoutines',
+  ADD_FAVORITE: '/AddFavorite'
 };

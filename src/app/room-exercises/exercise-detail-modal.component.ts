@@ -1,24 +1,41 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonButtons,
-  IonButton,
-  IonIcon,
   IonContent,
+  IonButton,
+  IonButtons,
+  IonIcon,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
   IonCardContent,
   IonChip,
+  IonLabel,
   ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { close, openOutline, createOutline } from 'ionicons/icons';
-import { Exercise } from '../../services/exercise.service';
-import { environment } from '../../../environments/environment';
+import { close, imagesOutline, videocamOutline } from 'ionicons/icons';
+import { environment } from '../../environments/environment';
+
+interface ExerciseDetail {
+  EXC_ID: number;
+  EXC_Title: string;
+  EXC_Type?: string;
+  EXC_Instructions?: string;
+  EXC_DifficultyLevel?: string;
+  EXC_Media1?: string | null;
+  EXC_Media2?: string | null;
+  EXC_Media3?: string | null;
+  EXC_Media4?: string | null;
+  EXC_URL1?: string | null;
+  EXC_URL2?: string | null;
+  room?: {
+    ROO_ID: number;
+    ROO_Code: string;
+    ROO_Name: string;
+  };
+}
 
 @Component({
   selector: 'app-exercise-detail-modal',
@@ -30,26 +47,25 @@ import { environment } from '../../../environments/environment';
     IonHeader,
     IonToolbar,
     IonTitle,
-    IonButtons,
-    IonButton,
-    IonIcon,
     IonContent,
+    IonButton,
+    IonButtons,
+    IonIcon,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
     IonCardContent,
-    IonChip
+    IonChip,
+    IonLabel
   ]
 })
-export class ExerciseDetailModalComponent implements OnInit {
-  @Input() exercise!: Exercise;
+export class ExerciseDetailModalComponent {
+  @Input() exercise!: ExerciseDetail;
   @Input() totalImages: number = 0;
   @Input() totalUrls: number = 0;
 
   mediaItems: Array<{type: string, url: string}> = [];
 
   constructor(private modalController: ModalController) {
-    addIcons({ close, openOutline, createOutline });
+    addIcons({ close, imagesOutline, videocamOutline });
   }
 
   ngOnInit() {
@@ -57,7 +73,9 @@ export class ExerciseDetailModalComponent implements OnInit {
   }
 
   buildMediaItems() {
-    // Construir lista de imágenes con URLs completas
+    this.mediaItems = [];
+
+    // Agregar imágenes
     if (this.exercise.EXC_Media1) {
       const url = this.getImageUrl(this.exercise.EXC_Media1);
       if (url) this.mediaItems.push({ type: 'image', url });
@@ -74,25 +92,29 @@ export class ExerciseDetailModalComponent implements OnInit {
       const url = this.getImageUrl(this.exercise.EXC_Media4);
       if (url) this.mediaItems.push({ type: 'image', url });
     }
-    
-    // Agregar URLs de videos
-    if (this.exercise.EXC_URL1) this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL1 });
-    if (this.exercise.EXC_URL2) this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL2 });
 
-    console.log('Media items construidos:', this.mediaItems);
+    // Agregar URLs de videos
+    if (this.exercise.EXC_URL1) {
+      this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL1 });
+    }
+    if (this.exercise.EXC_URL2) {
+      this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL2 });
+    }
   }
 
-  getImageUrl(relativePath: string | undefined | null): string | null {
+  getImageUrl(relativePath: string | null | undefined): string | null {
     if (!relativePath) return null;
-    
+
+    // Si la ruta ya es completa (http/https), retornarla tal cual
     if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
       return relativePath;
     }
-    
-    // Usa automáticamente la URL correcta según el environment
+
+    // Construir URL para Laravel storage
     const baseUrl = environment.apiUrl.replace('/api', '');
     
-    if (relativePath.startsWith('/storage/')) {
+    // Si la ruta ya tiene /storage, no duplicar
+    if (relativePath.startsWith('/storage')) {
       return `${baseUrl}${relativePath}`;
     }
     
@@ -103,20 +125,8 @@ export class ExerciseDetailModalComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  dismiss(action?: string) {
-    this.modalController.dismiss({
-      action: action
-    });
-  }
-
-  editExercise() {
-    this.modalController.dismiss({
-      action: 'edit',
-      exercise: this.exercise
-    });
-  }
-
-  getDifficultyColor(difficulty: string): string {
+  getDifficultyColor(difficulty: string | undefined): string {
+    if (!difficulty) return 'medium';
     const diff = difficulty.toLowerCase();
     switch (diff) {
       case 'principiante': return 'success';
@@ -124,5 +134,9 @@ export class ExerciseDetailModalComponent implements OnInit {
       case 'avanzado': return 'danger';
       default: return 'medium';
     }
+  }
+
+  dismiss() {
+    this.modalController.dismiss();
   }
 }

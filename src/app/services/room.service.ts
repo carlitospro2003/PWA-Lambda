@@ -97,10 +97,10 @@ export interface LeaveRoomResponse {
 
 export interface Exercise {
   EXC_ID: number;
-  EXC_Name: string;
-  EXC_Description: string;
-  EXC_Sets: number;
-  EXC_Reps: number;
+  EXC_Title: string;
+  EXC_Type: string;
+  EXC_Instructions: string;
+  EXC_DifficultyLevel: string;
   EXC_ROO_ID: number;
   created_at: string;
   updated_at: string;

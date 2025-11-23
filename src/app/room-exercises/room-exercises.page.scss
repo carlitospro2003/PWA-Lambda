@@ -208,8 +208,21 @@ ion-progress-bar {
 .exercise-description {
   font-size: 0.9rem;
   color: #666;
-  margin: 0;
+  margin: 0 0 8px 0;
   line-height: 1.4;
+}
+
+.exercise-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  
+  ion-chip {
+    font-size: 0.75rem;
+    font-weight: 600;
+    height: 24px;
+  }
 }
 
 .exercise-actions-header {

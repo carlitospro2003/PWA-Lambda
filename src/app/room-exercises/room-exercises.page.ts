@@ -16,7 +16,7 @@ import {
   IonChip,
   IonSpinner,
   ToastController,
-  AlertController
+  ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -38,6 +38,9 @@ import {
 } from 'ionicons/icons';
 import { RoomService, Exercise as ApiExercise } from '../services/room.service';
 import { ExerciseService, Exercise as FullExercise } from '../services/exercise.service';
+import { RoutineService } from '../services/routine.service';
+import { StorageService } from '../services/storage.service';
+import { ExerciseDetailModalComponent } from './exercise-detail-modal.component';
 import { environment } from '../../environments/environment';
 
 // Interfaces
@@ -45,6 +48,8 @@ interface Exercise {
   id: number;
   name: string;
   description: string;
+  type?: string;
+  difficulty?: string;
   sets: number;
   repetitions: number;
   roomId: number;
@@ -97,9 +102,11 @@ export class RoomExercisesPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toastController: ToastController,
-    private alertController: AlertController,
+    private modalController: ModalController,
     private roomService: RoomService,
-    private exerciseService: ExerciseService
+    private exerciseService: ExerciseService,
+    private routineService: RoutineService,
+    private storageService: StorageService
   ) {
     addIcons({
       fitnessOutline,
@@ -140,15 +147,16 @@ export class RoomExercisesPage implements OnInit {
           this.roomService.getExercisesByRoom(this.roomId)
             .subscribe({
               next: (response) => {
-                this.isLoadingExercises = false;
                 if (response.success && response.data) {
                   // Mapear los ejercicios de la API a la interfaz local
                   this.exercises = response.data.map(exercise => ({
                     id: exercise.EXC_ID,
-                    name: exercise.EXC_Name,
-                    description: exercise.EXC_Description,
-                    sets: exercise.EXC_Sets,
-                    repetitions: exercise.EXC_Reps,
+                    name: exercise.EXC_Title, // Corregido: usar EXC_Title en lugar de EXC_Name
+                    description: exercise.EXC_Instructions, // Corregido: usar EXC_Instructions
+                    type: exercise.EXC_Type,
+                    difficulty: exercise.EXC_DifficultyLevel,
+                    sets: 0, // La API no devuelve sets en esta respuesta
+                    repetitions: 0, // La API no devuelve reps en esta respuesta
                     roomId: exercise.EXC_ROO_ID,
                     createdAt: exercise.created_at,
                     isFavorite: false,
@@ -166,6 +174,11 @@ export class RoomExercisesPage implements OnInit {
                     completedExercises: 0,
                     trainerName: currentRoom?.user?.USR_Name || 'Entrenador'
                   };
+
+                  // Cargar favoritos del usuario para marcar los corazones
+                  this.loadFavorites();
+                } else {
+                  this.isLoadingExercises = false;
                 }
               },
               error: async (error) => {
@@ -192,10 +205,103 @@ export class RoomExercisesPage implements OnInit {
       });
   }
 
+  // Cargar favoritos del usuario
+  loadFavorites() {
+    this.routineService.getMyRoutines().subscribe({
+      next: (response) => {
+        this.isLoadingExercises = false;
+        
+        if (response && response.success && response.data) {
+          // Crear un Set con los IDs de ejercicios favoritos
+          const favoriteExerciseIds = new Set(
+            response.data
+              .filter(routine => routine.ROU_Fav === true)
+              .map(routine => routine.ROU_EXC_ID)
+          );
+
+          // Marcar los ejercicios que ya son favoritos
+          this.exercises.forEach(exercise => {
+            exercise.isFavorite = favoriteExerciseIds.has(exercise.id);
+          });
+
+          console.log('Favoritos cargados:', favoriteExerciseIds.size);
+        }
+      },
+      error: (error) => {
+        this.isLoadingExercises = false;
+        console.error('Error loading favorites:', error);
+        // No mostramos error al usuario, solo log
+      }
+    });
+  }
+
   // Método para alternar favoritos
-  toggleFavorite(exercise: Exercise) {
-    exercise.isFavorite = !exercise.isFavorite;
-    console.log(`Ejercicio ${exercise.name} ${exercise.isFavorite ? 'agregado a' : 'removido de'} favoritos`);
+  async toggleFavorite(exercise: Exercise) {
+    // Evitar que se ejecute múltiples veces
+    if (exercise.isFavorite) {
+      await this.showToast('Este ejercicio ya está en tus favoritos', 'warning');
+      return;
+    }
+
+    try {
+      // 1. Primero crear la rutina
+      const createResponse = await this.routineService.createRoutine(exercise.id).toPromise();
+      
+      if (!createResponse || !createResponse.success) {
+        await this.showToast(createResponse?.message || 'Error al crear rutina', 'danger');
+        return;
+      }
+
+      console.log('Rutina creada:', createResponse.data);
+
+      // 2. Luego marcar como favorito
+      const favoriteResponse = await this.routineService.addFavorite(exercise.id).toPromise();
+      
+      if (favoriteResponse && favoriteResponse.success) {
+        exercise.isFavorite = true;
+        await this.showToast('✅ Ejercicio agregado a favoritos', 'success');
+        console.log('Marcado como favorito:', favoriteResponse.data);
+        
+        // Guardar en cache local para uso offline
+        if (favoriteResponse.data) {
+          await this.storageService.addFavorite(favoriteResponse.data);
+        }
+      } else {
+        await this.showToast(favoriteResponse?.message || 'Error al marcar como favorito', 'warning');
+      }
+
+    } catch (error: any) {
+      console.error('Error al procesar favorito:', error);
+      
+      let errorMessage = 'Error al agregar a favoritos';
+      
+      // Si la rutina ya existe (409), intentar solo marcar como favorito
+      if (error.status === 409) {
+        try {
+          const favoriteResponse = await this.routineService.addFavorite(exercise.id).toPromise();
+          
+          if (favoriteResponse && favoriteResponse.success) {
+            exercise.isFavorite = true;
+            await this.showToast('✅ Ejercicio agregado a favoritos', 'success');
+            
+            // Guardar en cache local para uso offline
+            if (favoriteResponse.data) {
+              await this.storageService.addFavorite(favoriteResponse.data);
+            }
+            return;
+          }
+        } catch (favError: any) {
+          console.error('Error al marcar como favorito:', favError);
+          errorMessage = favError.error?.message || 'Error al marcar como favorito';
+        }
+      } else if (error.status === 404) {
+        errorMessage = error.error?.message || 'Ejercicio no encontrado';
+      } else if (error.error?.message) {
+        errorMessage = error.error.message;
+      }
+      
+      await this.showToast(errorMessage, 'danger');
+    }
   }
 
   // Obtener progreso de la sala
@@ -240,7 +346,16 @@ export class RoomExercisesPage implements OnInit {
       const response = await this.exerciseService.getExercise(exercise.id).toPromise();
       
       if (response && response.success && response.data) {
-        await this.showExerciseDetailsModal(response.data, response.total_images, response.total_urls);
+        const modal = await this.modalController.create({
+          component: ExerciseDetailModalComponent,
+          componentProps: {
+            exercise: response.data,
+            totalImages: response.total_images,
+            totalUrls: response.total_urls
+          }
+        });
+        
+        await modal.present();
       } else {
         await this.showToast('No se pudieron cargar los detalles', 'warning');
       }
@@ -258,94 +373,6 @@ export class RoomExercisesPage implements OnInit {
     }
   }
 
-  // Construir URL completa de la imagen desde Laravel storage
-  getImageUrl(relativePath: string | undefined | null): string | null {
-    if (!relativePath) return null;
-    
-    // Si la ruta ya es completa (http/https), retornarla tal cual
-    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-      return relativePath;
-    }
-    
-    // Construir URL para Laravel storage
-    // Laravel storage público: http://127.0.0.1:8000/storage/exercises/...
-    const baseUrl = environment.apiUrl.replace('/api', ''); // http://127.0.0.1:8000
-    return `${baseUrl}/storage/${relativePath}`;
-  }
-
-  // Mostrar modal con detalles completos del ejercicio
-  async showExerciseDetailsModal(exercise: FullExercise, totalImages?: number, totalUrls?: number) {
-    const mediaItems: Array<{type: string, url: string}> = [];
-    
-    // Construir lista de imágenes
-    if (exercise.EXC_Media1) {
-      const url = this.getImageUrl(exercise.EXC_Media1);
-      if (url) mediaItems.push({ type: 'image', url });
-    }
-    if (exercise.EXC_Media2) {
-      const url = this.getImageUrl(exercise.EXC_Media2);
-      if (url) mediaItems.push({ type: 'image', url });
-    }
-    if (exercise.EXC_Media3) {
-      const url = this.getImageUrl(exercise.EXC_Media3);
-      if (url) mediaItems.push({ type: 'image', url });
-    }
-    if (exercise.EXC_Media4) {
-      const url = this.getImageUrl(exercise.EXC_Media4);
-      if (url) mediaItems.push({ type: 'image', url });
-    }
-    
-    // Agregar URLs de videos
-    if (exercise.EXC_URL1) mediaItems.push({ type: 'url', url: exercise.EXC_URL1 });
-    if (exercise.EXC_URL2) mediaItems.push({ type: 'url', url: exercise.EXC_URL2 });
-
-    // Construir mensaje HTML
-    let message = `
-      <div style="text-align: left;">
-        <p><strong>Título:</strong> ${exercise.EXC_Title || 'Sin título'}</p>
-        ${exercise.EXC_Type ? `<p><strong>Tipo:</strong> ${exercise.EXC_Type}</p>` : ''}
-        ${exercise.EXC_DifficultyLevel ? `<p><strong>Dificultad:</strong> ${exercise.EXC_DifficultyLevel}</p>` : ''}
-        ${exercise.EXC_Instructions ? `<p><strong>Instrucciones:</strong> ${exercise.EXC_Instructions}</p>` : ''}
-        <p><strong>Archivos multimedia:</strong> ${totalImages || 0} imagen(es)</p>
-        <p><strong>URLs externas:</strong> ${totalUrls || 0} video(s)</p>
-        <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
-    `;
-
-    // Agregar imágenes si existen
-    if (mediaItems.length > 0) {
-      message += '<p><strong>Multimedia:</strong></p><div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">';
-      
-      mediaItems.forEach((media, index) => {
-        if (media.type === 'image') {
-          message += `<img src="${media.url}" style="width: 100%; max-width: 200px; height: auto; border-radius: 8px; object-fit: cover;" onclick="window.open('${media.url}', '_blank')" />`;
-        } else if (media.type === 'url') {
-          message += `<p><a href="${media.url}" target="_blank" style="color: #fdbc22;">🎥 Ver Video ${index + 1}</a></p>`;
-        }
-      });
-      
-      message += '</div>';
-    } else {
-      message += '<p style="color: #999;">No hay multimedia disponible</p>';
-    }
-
-    message += '</div>';
-
-    const alert = await this.alertController.create({
-      header: 'Detalles del Ejercicio',
-      message: message,
-      cssClass: 'exercise-details-alert',
-      buttons: [
-        {
-          text: 'Cerrar',
-          role: 'cancel',
-          cssClass: 'secondary'
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
   // Formatear tiempo
   formatTime(completedAt: Date): string {
     const now = new Date();
@@ -359,6 +386,18 @@ export class RoomExercisesPage implements OnInit {
   // Track by function para ngFor
   trackByExerciseId(index: number, exercise: Exercise): number {
     return exercise.id;
+  }
+
+  // Obtener color según dificultad
+  getDifficultyColor(difficulty: string | undefined): string {
+    if (!difficulty) return 'medium';
+    const diff = difficulty.toLowerCase();
+    switch (diff) {
+      case 'principiante': return 'success';
+      case 'intermedio': return 'warning';
+      case 'avanzado': return 'danger';
+      default: return 'medium';
+    }
   }
 
   // Mostrar toast con mensaje

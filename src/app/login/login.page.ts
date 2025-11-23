@@ -14,7 +14,6 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonSpinner,
   IonCheckbox,
   ToastController,
   LoadingController,
@@ -46,7 +45,6 @@ import { FirebaseService } from '../services/firebase.service';
     IonGrid,
     IonRow,
     IonCol,
-    IonSpinner,
     IonCheckbox,
     FormsModule
   ]
@@ -325,11 +323,15 @@ export class LoginPage implements OnInit {
         },
         {
           text: 'Activar',
-          handler: () => {
-            this.biometricService.saveCredentials(this.email, this.password);
-            this.biometricEnabled = true;
-            this.savedEmail = this.email;
-            this.showToast('Huella digital activada correctamente', 'success');
+          handler: async () => {
+            const success = await this.biometricService.saveCredentials(this.email, this.password);
+            if (success) {
+              this.biometricEnabled = true;
+              this.savedEmail = this.email;
+              await this.showToast('Huella digital activada correctamente', 'success');
+            } else {
+              await this.showToast('No se pudo activar la huella. Intenta más tarde.', 'warning');
+            }
           }
         }
       ]

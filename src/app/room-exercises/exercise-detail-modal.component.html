@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalles del Ejercicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="exercise-detail-content">
+  <div class="detail-container">
+
+    <!-- Información Principal -->
+    <ion-card class="info-card">
+      <ion-card-content>
+        <h2 class="exercise-title">{{ exercise.EXC_Title }}</h2>
+        
+        <!-- Tags -->
+        <div class="tags-container">
+          <ion-chip *ngIf="exercise.EXC_Type" color="primary">
+            <ion-label>{{ exercise.EXC_Type }}</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf="exercise.EXC_DifficultyLevel" [color]="getDifficultyColor(exercise.EXC_DifficultyLevel)">
+            <ion-label>{{ exercise.EXC_DifficultyLevel }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="instructions-section" *ngIf="exercise.EXC_Instructions">
+          <h3>Instrucciones</h3>
+          <p>{{ exercise.EXC_Instructions }}</p>
+        </div>
+
+        <!-- Información de la Sala -->
+        <div class="room-info" *ngIf="exercise.room">
+          <p><strong>Sala:</strong> {{ exercise.room.ROO_Name }}</p>
+          <p><strong>Código:</strong> {{ exercise.room.ROO_Code }}</p>
+        </div>
+
+        <!-- Resumen de Multimedia -->
+        <div class="media-summary">
+          <div class="summary-item">
+            <ion-icon name="images-outline"></ion-icon>
+            <span>{{ totalImages }} imagen(es)</span>
+          </div>
+          <div class="summary-item">
+            <ion-icon name="videocam-outline"></ion-icon>
+            <span>{{ totalUrls }} video(s)</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Multimedia -->
+    <ion-card class="media-card" *ngIf="mediaItems.length > 0">
+      <ion-card-content>
+        <h3>Multimedia</h3>
+        
+        <div class="media-grid">
+          <!-- Imágenes -->
+          <div 
+            *ngFor="let media of mediaItems" 
+            class="media-item"
+            [class.media-image]="media.type === 'image'"
+            [class.media-video]="media.type === 'url'">
+            
+            <img 
+              *ngIf="media.type === 'image'" 
+              [src]="media.url" 
+              [alt]="exercise.EXC_Title"
+              (click)="openImageInNewTab(media.url)"
+              class="exercise-image"
+            />
+            
+            <a 
+              *ngIf="media.type === 'url'" 
+              [href]="media.url" 
+              target="_blank"
+              class="video-link">
+              <ion-icon name="videocam-outline"></ion-icon>
+              <span>Ver Video</span>
+            </a>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Estado vacío de multimedia -->
+    <ion-card class="empty-media" *ngIf="mediaItems.length === 0">
+      <ion-card-content>
+        <div class="empty-state">
+          <ion-icon name="images-outline"></ion-icon>
+          <p>No hay multimedia disponible</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>
