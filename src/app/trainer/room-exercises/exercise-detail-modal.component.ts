@@ -57,21 +57,33 @@ export class ExerciseDetailModalComponent implements OnInit {
   }
 
   buildMediaItems() {
+    console.log('🖼️ Building media items for exercise:', this.exercise.EXC_ID);
+    console.log('Raw media values:', {
+      EXC_Media1: this.exercise.EXC_Media1,
+      EXC_Media2: this.exercise.EXC_Media2,
+      EXC_Media3: this.exercise.EXC_Media3,
+      EXC_Media4: this.exercise.EXC_Media4
+    });
+
     // Construir lista de imágenes con URLs completas
     if (this.exercise.EXC_Media1) {
       const url = this.getImageUrl(this.exercise.EXC_Media1);
+      console.log('Media1 URL result:', url);
       if (url) this.mediaItems.push({ type: 'image', url });
     }
     if (this.exercise.EXC_Media2) {
       const url = this.getImageUrl(this.exercise.EXC_Media2);
+      console.log('Media2 URL result:', url);
       if (url) this.mediaItems.push({ type: 'image', url });
     }
     if (this.exercise.EXC_Media3) {
       const url = this.getImageUrl(this.exercise.EXC_Media3);
+      console.log('Media3 URL result:', url);
       if (url) this.mediaItems.push({ type: 'image', url });
     }
     if (this.exercise.EXC_Media4) {
       const url = this.getImageUrl(this.exercise.EXC_Media4);
+      console.log('Media4 URL result:', url);
       if (url) this.mediaItems.push({ type: 'image', url });
     }
     
@@ -79,27 +91,40 @@ export class ExerciseDetailModalComponent implements OnInit {
     if (this.exercise.EXC_URL1) this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL1 });
     if (this.exercise.EXC_URL2) this.mediaItems.push({ type: 'url', url: this.exercise.EXC_URL2 });
 
-    console.log('Media items construidos:', this.mediaItems);
+    console.log('📋 Final mediaItems:', this.mediaItems);
   }
 
   getImageUrl(relativePath: string | undefined | null): string | null {
-    if (!relativePath) return null;
+    if (!relativePath) {
+      console.log('❌ No relativePath provided');
+      return null;
+    }
+    
+    console.log('🔧 Input relativePath:', relativePath);
     
     // Limpiar barras escapadas que vienen del backend JSON
     const cleanPath = relativePath.replace(/\\/g, '');
+    console.log('🧹 Clean path:', cleanPath);
     
     if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      console.log('🌐 Already full URL:', cleanPath);
       return cleanPath;
     }
     
-    // Usa automáticamente la URL correcta según el environment
-    const baseUrl = environment.apiUrl.replace('/api', '');
+    // Construir la URL base para las imágenes (sin /api al final)
+    // De https://api.safekids.site/api -> https://api.safekids.site
+    const apiBaseUrl = environment.apiUrl.replace('/api', '');
+    console.log('🏠 API Base URL:', apiBaseUrl);
     
     if (cleanPath.startsWith('/storage/')) {
-      return `${baseUrl}${cleanPath}`;
+      const finalUrl = `${apiBaseUrl}${cleanPath}`;
+      console.log('✅ Final URL:', finalUrl);
+      return finalUrl;
     }
     
-    return `${baseUrl}/storage/${cleanPath}`;
+    const finalUrl = `${apiBaseUrl}/storage/${cleanPath}`;
+    console.log('✅ Final URL (with /storage/):', finalUrl);
+    return finalUrl;
   }
 
   openImageInNewTab(url: string) {
