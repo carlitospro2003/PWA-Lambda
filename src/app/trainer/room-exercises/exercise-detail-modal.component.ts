@@ -85,18 +85,21 @@ export class ExerciseDetailModalComponent implements OnInit {
   getImageUrl(relativePath: string | undefined | null): string | null {
     if (!relativePath) return null;
     
-    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-      return relativePath;
+    // Limpiar barras escapadas que vienen del backend JSON
+    const cleanPath = relativePath.replace(/\\/g, '');
+    
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      return cleanPath;
     }
     
     // Usa automáticamente la URL correcta según el environment
     const baseUrl = environment.apiUrl.replace('/api', '');
     
-    if (relativePath.startsWith('/storage/')) {
-      return `${baseUrl}${relativePath}`;
+    if (cleanPath.startsWith('/storage/')) {
+      return `${baseUrl}${cleanPath}`;
     }
     
-    return `${baseUrl}/storage/${relativePath}`;
+    return `${baseUrl}/storage/${cleanPath}`;
   }
 
   openImageInNewTab(url: string) {

@@ -105,20 +105,23 @@ export class ExerciseDetailModalComponent {
   getImageUrl(relativePath: string | null | undefined): string | null {
     if (!relativePath) return null;
 
+    // Limpiar barras escapadas que vienen del backend JSON
+    const cleanPath = relativePath.replace(/\\/g, '');
+
     // Si la ruta ya es completa (http/https), retornarla tal cual
-    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-      return relativePath;
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      return cleanPath;
     }
 
     // Construir URL para Laravel storage
     const baseUrl = environment.apiUrl.replace('/api', '');
     
     // Si la ruta ya tiene /storage, no duplicar
-    if (relativePath.startsWith('/storage')) {
-      return `${baseUrl}${relativePath}`;
+    if (cleanPath.startsWith('/storage')) {
+      return `${baseUrl}${cleanPath}`;
     }
     
-    return `${baseUrl}/storage/${relativePath}`;
+    return `${baseUrl}/storage/${cleanPath}`;
   }
 
   openImageInNewTab(url: string) {
