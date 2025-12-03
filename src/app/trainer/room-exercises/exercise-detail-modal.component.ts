@@ -96,35 +96,28 @@ export class ExerciseDetailModalComponent implements OnInit {
 
   getImageUrl(relativePath: string | undefined | null): string | null {
     if (!relativePath) {
-      console.log('❌ No relativePath provided');
       return null;
     }
     
-    console.log('🔧 Input relativePath:', relativePath);
-    
     // Limpiar barras escapadas que vienen del backend JSON
     const cleanPath = relativePath.replace(/\\/g, '');
-    console.log('🧹 Clean path:', cleanPath);
     
     if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-      console.log('🌐 Already full URL:', cleanPath);
       return cleanPath;
     }
     
-    // Construir la URL base para las imágenes (sin /api al final)
+    // Remover /api solo del FINAL de la URL, no del subdominio
     // De https://api.safekids.site/api -> https://api.safekids.site
-    const apiBaseUrl = environment.apiUrl.replace('/api', '');
-    console.log('🏠 API Base URL:', apiBaseUrl);
-    
-    if (cleanPath.startsWith('/storage/')) {
-      const finalUrl = `${apiBaseUrl}${cleanPath}`;
-      console.log('✅ Final URL:', finalUrl);
-      return finalUrl;
+    let baseUrl = environment.apiUrl;
+    if (baseUrl.endsWith('/api')) {
+      baseUrl = baseUrl.slice(0, -4); // Remueve los últimos 4 caracteres '/api'
     }
     
-    const finalUrl = `${apiBaseUrl}/storage/${cleanPath}`;
-    console.log('✅ Final URL (with /storage/):', finalUrl);
-    return finalUrl;
+    if (cleanPath.startsWith('/storage/')) {
+      return `${baseUrl}${cleanPath}`;
+    }
+    
+    return `${baseUrl}/storage/${cleanPath}`;
   }
 
   openImageInNewTab(url: string) {

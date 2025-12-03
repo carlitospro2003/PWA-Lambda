@@ -113,8 +113,12 @@ export class ExerciseDetailModalComponent {
       return cleanPath;
     }
 
-    // Construir URL para Laravel storage
-    const baseUrl = environment.apiUrl.replace('/api', '');
+    // Remover /api solo del FINAL de la URL, no del subdominio
+    // De https://api.safekids.site/api -> https://api.safekids.site
+    let baseUrl = environment.apiUrl;
+    if (baseUrl.endsWith('/api')) {
+      baseUrl = baseUrl.slice(0, -4); // Remueve los últimos 4 caracteres '/api'
+    }
     
     // Si la ruta ya tiene /storage, no duplicar
     if (cleanPath.startsWith('/storage')) {
