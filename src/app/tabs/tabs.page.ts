@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge } from '@ionic/angular/standalone';
 import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { 
   home, 
@@ -18,6 +19,7 @@ import {
   heart,
   heartOutline
 } from 'ionicons/icons';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-tabs',
@@ -28,8 +30,14 @@ import {
 })
 export class TabsPage implements OnInit {
   currentTab: string = 'home';
+  unreadCount$: Observable<number>;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private notificationService: NotificationService
+  ) {
+    this.unreadCount$ = this.notificationService.unreadCount$;
+    
     // Add all required icons
     addIcons({
       home,
@@ -75,12 +83,5 @@ export class TabsPage implements OnInit {
     } else if (url.includes('/tabs/account')) {
       this.currentTab = 'account';
     }
-  }
-
-  // Obtener número de notificaciones no leídas (simulado)
-  getUnreadNotifications(): number {
-    // En una aplicación real, esto vendría de un servicio
-    // Por ahora retornamos un número fijo para demostración
-    return 3;
   }
 }

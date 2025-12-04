@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -14,7 +15,14 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonCard,
-  IonCardContent
+  IonCardContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -26,19 +34,16 @@ import {
   alertCircleOutline,
   informationCircleOutline,
   refreshOutline,
-  ellipsisVerticalOutline
+  ellipsisVerticalOutline,
+  mailOpenOutline,
+  mailUnreadOutline,
+  trashOutline,
+  checkmarkDoneOutline,
+  notificationsOffOutline
 } from 'ionicons/icons';
-
-// Interfaz para las notificaciones
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'exercise' | 'room';
-  timestamp: Date;
-  isRead: boolean;
-  relatedId?: number;
-}
+import { NotificationService } from '../services/notification.service';
+import { Notification } from '../services/notifications-api.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-notifications',
@@ -57,66 +62,26 @@ interface Notification {
     IonButtons,
     IonRefresher,
     IonRefresherContent,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
-    IonCard,
-    IonCardContent
+    IonList,
+    IonItem,
+    IonLabel,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption
   ]
 })
 export class NotificationsPage implements OnInit {
+  notifications$: Observable<Notification[]>;
+  unreadCount$: Observable<number>;
 
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'Nueva sala disponible',
-      message: 'El entrenador Carlos ha creado la sala "HIIT Intensivo". ¡Únete ahora!',
-      type: 'room',
-      timestamp: new Date(2025, 8, 27, 10, 30),
-      isRead: false
-    },
-    {
-      id: 2,
-      title: 'Ejercicio completado',
-      message: 'Has completado exitosamente el ejercicio "Burpees x20" en la sala Principiantes.',
-      type: 'success',
-      timestamp: new Date(2025, 8, 27, 9, 15),
-      isRead: false
-    },
-    {
-      id: 3,
-      title: 'Nuevo ejercicio agregado',
-      message: 'Se agregó el ejercicio "Sentadillas con salto" a tu sala "Entrenamiento Avanzado".',
-      type: 'exercise',
-      timestamp: new Date(2025, 8, 26, 18, 45),
-      isRead: true
-    },
-    {
-      id: 4,
-      title: 'Recordatorio de entrenamiento',
-      message: 'No olvides completar tu rutina diaria. ¡Llevas 5 días consecutivos!',
-      type: 'info',
-      timestamp: new Date(2025, 8, 26, 8, 0),
-      isRead: true
-    },
-    {
-      id: 5,
-      title: 'Nuevo miembro en tu sala',
-      message: 'Ana se unió a tu sala "Grupo Principiantes". Dale la bienvenida.',
-      type: 'room',
-      timestamp: new Date(2025, 8, 25, 16, 20),
-      isRead: true
-    },
-    {
-      id: 6,
-      title: 'Meta semanal alcanzada',
-      message: '¡Felicidades! Has completado tu meta semanal de 150 minutos de ejercicio.',
-      type: 'success',
-      timestamp: new Date(2025, 8, 25, 12, 0),
-      isRead: true
-    }
-  ];
-
-  constructor() {
+  constructor(
+    private notificationService: NotificationService,
+    private router: Router,
+    private alertController: AlertController
+  ) {
+    this.notifications$ = this.notificationService.notifications$;
+    this.unreadCount$ = this.notificationService.unreadCount$;
+    
     addIcons({
       notificationsOutline,
       timeOutline,
@@ -126,100 +91,124 @@ export class NotificationsPage implements OnInit {
       alertCircleOutline,
       informationCircleOutline,
       refreshOutline,
-      ellipsisVerticalOutline
+      ellipsisVerticalOutline,
+      mailOpenOutline,
+      mailUnreadOutline,
+      trashOutline,
+      checkmarkDoneOutline,
+      notificationsOffOutline
     });
   }
 
   ngOnInit() {
-    // Inicialización si es necesaria
+    // Sincronizar al entrar a la página
+    this.notificationService.syncNotificationsFromBackend();
   }
 
-  // Obtener icono según el tipo de notificación
-  getNotificationIcon(type: string): string {
-    switch (type) {
-      case 'room': return 'people-outline';
-      case 'exercise': return 'fitness-outline';
-      case 'success': return 'checkmark-circle-outline';
-      case 'warning': return 'alert-circle-outline';
-      default: return 'information-circle-outline';
+  /**
+   * Manejar clic en una notificación
+   */
+  handleNotificationClick(notification: Notification) {
+    // Marcar como leída si no lo está
+    if (!notification.read) {
+      this.notificationService.markAsRead(notification.id);
+    }
+
+    // Navegar según el tipo
+    switch (notification.type) {
+      case 'new_exercise':
+        // Navegar al detalle del ejercicio
+        if (notification.data.exercise_id) {
+          this.router.navigate(['/room-exercises', notification.data.room_id]);
+        }
+        break;
+      
+      case 'test':
+        // Notificación de prueba, no hacer nada
+        break;
+      
+      default:
+        console.log('Tipo de notificación desconocido:', notification.type);
     }
   }
 
-  // Obtener color según el tipo de notificación
-  getNotificationColor(type: string): string {
-    switch (type) {
-      case 'room': return 'primary';
-      case 'exercise': return 'secondary';
-      case 'success': return 'success';
-      case 'warning': return 'warning';
-      default: return 'medium';
-    }
-  }
-
-  // Obtener etiqueta del tipo de notificación
-  getNotificationTypeLabel(type: string): string {
-    switch (type) {
-      case 'room': return 'Sala';
-      case 'exercise': return 'Ejercicio';
-      case 'success': return 'Logro';
-      case 'warning': return 'Aviso';
-      default: return 'Info';
-    }
-  }
-
-  // Función para trackBy en ngFor
-  trackByNotificationId(index: number, notification: Notification): number {
-    return notification.id;
-  }
-
-  // Marcar notificación como leída
-  markAsRead(notification: Notification) {
-    notification.isRead = true;
-  }
-
-  // Marcar todas como leídas
-  markAllAsRead() {
-    this.notifications.forEach(notification => {
-      notification.isRead = true;
+  /**
+   * Marcar todas como leídas
+   */
+  async markAllAsRead() {
+    const alert = await this.alertController.create({
+      header: 'Marcar todas como leídas',
+      message: '¿Estás seguro de marcar todas las notificaciones como leídas?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Sí, marcar todas',
+          handler: () => {
+            this.notificationService.markAllAsRead();
+          }
+        }
+      ]
     });
+
+    await alert.present();
   }
 
-  // Obtener número de notificaciones no leídas
-  getUnreadCount(): number {
-    return this.notifications.filter(n => !n.isRead).length;
+  /**
+   * Eliminar notificación
+   */
+  async deleteNotification(notification: Notification, event: Event) {
+    event.stopPropagation(); // Evitar que se dispare el click de la notificación
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar notificación',
+      message: '¿Estás seguro de eliminar esta notificación?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.notificationService.deleteNotification(notification.id);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
-  // Refrescar notificaciones
+  /**
+   * Refrescar notificaciones
+   */
   handleRefresh(event: any) {
+    this.notificationService.syncNotificationsFromBackend();
     setTimeout(() => {
-      // Simular carga de nuevas notificaciones
-      console.log('Refreshing notifications...');
-      event.target.complete();
-    }, 2000);
-  }
-
-  // Cargar más notificaciones
-  loadMore(event: any) {
-    setTimeout(() => {
-      // Simular carga de más notificaciones
-      console.log('Loading more notifications...');
       event.target.complete();
     }, 1000);
   }
 
-  // Eliminar notificación
-  deleteNotification(id: number) {
-    this.notifications = this.notifications.filter(n => n.id !== id);
-  }
-
-  // Formatear fecha
-  formatTime(date: Date): string {
+  /**
+   * Formatear fecha relativa (hace 5 minutos, hace 1 hora, etc.)
+   */
+  getRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+    if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
     
-    if (diffInMinutes < 1) return 'Hace un momento';
-    if (diffInMinutes < 60) return `Hace ${diffInMinutes}m`;
-    if (diffInMinutes < 1440) return `Hace ${Math.floor(diffInMinutes / 60)}h`;
-    return `Hace ${Math.floor(diffInMinutes / 1440)}d`;
+    return date.toLocaleDateString();
   }
 }

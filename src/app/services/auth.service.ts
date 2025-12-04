@@ -121,6 +121,22 @@ export class AuthService {
    * Limpiar datos de autenticación
    */
   private clearAuthData(): void {
+    // Limpiar notificaciones primero
+    try {
+      // Intentar obtener el NotificationService si está disponible
+      const injector = (window as any).ngInjector;
+      if (injector) {
+        const notificationService = injector.get('NotificationService');
+        if (notificationService) {
+          notificationService.clear();
+          console.log('Notificaciones limpiadas');
+        }
+      }
+    } catch (error) {
+      // Si no se puede acceder al servicio, continuar
+      console.log('No se pudo limpiar notificaciones en logout');
+    }
+    
     // Limpiar localStorage
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');

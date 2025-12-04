@@ -38,6 +38,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { UserService, User } from '../../services/user.service';
+import { NotificationService } from '../../services/notification.service';
 import { RoomService } from '../../services/room.service';
 
 interface TrainerStats {
@@ -85,7 +86,8 @@ export class TrainerProfilePage implements OnInit {
     private roomService: RoomService,
     private alertController: AlertController,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private notificationService: NotificationService
   ) {
     addIcons({
       person,
@@ -224,6 +226,10 @@ export class TrainerProfilePage implements OnInit {
         
         console.log('Logout Response:', response);
         
+        // Limpiar notificaciones
+        this.notificationService.clear();
+        console.log('✅ Notificaciones limpiadas');
+        
         // Limpiar localStorage y token SIEMPRE después del logout
         this.authService.logoutLocal();
         
@@ -239,6 +245,10 @@ export class TrainerProfilePage implements OnInit {
         await loading.dismiss();
         
         console.error('Logout Error:', error);
+        
+        // Limpiar notificaciones aunque falle
+        this.notificationService.clear();
+        console.log('✅ Notificaciones limpiadas (error en logout)');
         
         // Aunque falle la API, cerramos sesión localmente
         this.authService.logoutLocal();

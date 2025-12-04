@@ -25,6 +25,7 @@ import { person, lockClosed, eye, eyeOff, fitness, fingerPrint } from 'ionicons/
 import { AuthService, LoginRequest } from '../services/auth.service';
 import { BiometricService } from '../services/biometric.service';
 import { FirebaseService } from '../services/firebase.service';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -69,7 +70,8 @@ export class LoginPage implements OnInit {
     private loadingController: LoadingController,
     private biometricService: BiometricService,
     private alertController: AlertController,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private notificationService: NotificationService
   ) {
     addIcons({
       person,
@@ -138,6 +140,14 @@ export class LoginPage implements OnInit {
         
         if (response.success) {
           await this.showToast('¡Bienvenido! Inicio de sesión exitoso', 'success');
+          
+          // Activar listener de mensajes FCM después del login exitoso
+          this.firebaseService.listenToMessages();
+          console.log('✅ Listener de FCM activado después del login');
+          
+          // Sincronizar notificaciones después del login
+          this.notificationService.syncNotificationsFromBackend();
+          console.log('✅ Sincronización de notificaciones iniciada');
           
           // Si tiene biometría disponible y marcó "recordar", preguntar si quiere activarla
           if (this.biometricAvailable && !this.biometricEnabled && this.rememberBiometric) {
