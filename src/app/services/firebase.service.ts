@@ -62,7 +62,7 @@ export class FirebaseService {
     onMessage(this.messaging, (payload) => {
       console.log('Mensaje recibido en primer plano:', payload);
       
-      // Mostrar notificación personalizada usando Service Worker
+      // Mostrar notificación personalizada
       if (payload.notification) {
         this.showNotification(
           payload.notification.title || 'Nueva notificación',
@@ -73,21 +73,13 @@ export class FirebaseService {
     });
   }
 
-  private async showNotification(title: string, body: string, icon?: string) {
-    try {
-      // Usar Service Worker Registration para mostrar notificaciones
-      const registration = await navigator.serviceWorker.ready;
-      
-      await registration.showNotification(title, {
+  private showNotification(title: string, body: string, icon?: string) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
         body,
         icon: icon || '/assets/icon/favicon.png',
-        badge: '/assets/icon/favicon.png',
-        tag: 'notification-' + Date.now()
-      } as NotificationOptions);
-      
-      console.log('Notificación mostrada correctamente');
-    } catch (error) {
-      console.error('Error al mostrar notificación:', error);
+        badge: '/assets/icon/favicon.png'
+      });
     }
   }
 
@@ -95,3 +87,4 @@ export class FirebaseService {
     return this.requestPermission();
   }
 }
+
