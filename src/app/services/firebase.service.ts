@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { environment } from '../../environments/environment';
+import { ToastController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class FirebaseService {
   private messaging: Messaging | null = null;
 
-  constructor() {
+  constructor(private toastController: ToastController) {
     this.initializeFirebase();
   }
 
@@ -62,25 +63,32 @@ export class FirebaseService {
     onMessage(this.messaging, (payload) => {
       console.log('Mensaje recibido en primer plano:', payload);
       
-      // Mostrar notificación personalizada
+      // Mostrar notificación dentro de la app usando Toast de Ionic
       if (payload.notification) {
-        this.showNotification(
+        this.showInAppNotification(
           payload.notification.title || 'Nueva notificación',
-          payload.notification.body || '',
-          payload.notification.icon
+          payload.notification.body || ''
         );
       }
     });
   }
 
-  private showNotification(title: string, body: string, icon?: string) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, {
-        body,
-        icon: icon || '/assets/icon/favicon.png',
-        badge: '/assets/icon/favicon.png'
-      });
-    }
+  private async showInAppNotification(title: string, body: string) {
+    const toast = await this.toastController.create({
+      header: title,
+      message: body,
+      duration: 5000,
+      position: 'top',
+      color: 'primary',
+      buttons: [
+        {
+          text: 'Cerrar',
+          role: 'cancel'
+        }
+      ]
+    });
+    
+    await toast.present();
   }
 
   async getFCMToken(): Promise<string | null> {
