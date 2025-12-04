@@ -29,6 +29,7 @@ import {
 } from 'ionicons/icons';
 
 import { RoomService, Room } from '../services/room.service';
+import { AuthService } from '../services/auth.service';
 
 // Interfaz para las salas del usuario
 interface UserRoom {
@@ -62,7 +63,7 @@ interface UserRoom {
   ]
 })
 export class HomePage implements OnInit {
-  userName: string = 'Carlos';
+  userName: string = '';
   searchCode: string = '';
   isSearching: boolean = false;
   searchedRoom: Room | null = null;
@@ -74,6 +75,7 @@ export class HomePage implements OnInit {
   constructor(
     private router: Router,
     private roomService: RoomService,
+    private authService: AuthService,
     private toastController: ToastController,
     private alertController: AlertController
   ) {
@@ -87,7 +89,18 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadUserName();
     this.loadMyJoinedRooms();
+  }
+
+  /**
+   * Cargar el nombre del usuario actual
+   */
+  loadUserName() {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.userName = user.USR_Name;
+    }
   }
 
   /**
