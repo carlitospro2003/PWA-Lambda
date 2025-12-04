@@ -143,11 +143,17 @@ export class TrainerDashboardPage implements OnInit {
             id: room.ROO_ID,
             code: room.ROO_Code,
             name: room.ROO_Name,
-            activeMembers: 0, // Por ahora en 0, se puede agregar esta info a la API después
-            totalExercises: 0  // Por ahora en 0, se puede agregar esta info a la API después
+            activeMembers: room.trainees_count || 0,
+            totalExercises: room.total_exercises || 0
           }));
 
-          console.log('Salas cargadas:', this.rooms);
+          console.log('✅ Salas cargadas:', this.rooms);
+          console.log('📊 Total de salas:', this.rooms.length);
+          
+          // Log detallado de cada sala
+          this.rooms.forEach(room => {
+            console.log(`  📍 Sala "${room.name}": ${room.activeMembers} miembros, ${room.totalExercises} ejercicios`);
+          });
         }
       },
       error: (error) => {

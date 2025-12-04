@@ -468,6 +468,27 @@ ion-toolbar {
       --padding-bottom: 12px;
       min-height: 100px;
     }
+
+    // Campo de solo lectura
+    .read-only-field {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px;
+      color: #333333;
+      font-size: 1rem;
+
+      strong {
+        color: #495057;
+      }
+    }
+
+    .field-hint {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin: 5px 0 0 0;
+      font-style: italic;
+    }
   }
 
   .modal-actions {

@@ -14,6 +14,9 @@ export interface Room {
   ROO_Code: string;
   ROO_USR_ID: number;
   created_at: string;
+  updated_at?: string;
+  total_exercises?: number;
+  trainees_count?: number;
   user?: {
     USR_ID: number;
     USR_Name: string;

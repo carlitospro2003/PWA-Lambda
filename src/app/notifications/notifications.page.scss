@@ -1,12 +1,14 @@
 /* Notifications Page Styles */
 .notifications-content {
-  --background: #f8f9fa;
+  --background: #ffffff !important;
+  background: #ffffff !important;
 }
 
 .notifications-container {
   padding: 16px;
   max-width: 1200px;
   margin: 0 auto;
+  background: #ffffff;
 }
 
 /* Notifications List */
@@ -18,12 +20,17 @@
 
 /* Notification Cards */
 .notification-card {
-  --background: #ffffff;
+  --background: #ffffff !important;
+  background: #ffffff !important;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+
+  ion-card-content {
+    background: #ffffff !important;
+  }
 }
 
 .notification-card.unread {

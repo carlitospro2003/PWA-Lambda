@@ -84,20 +84,6 @@
               </div>
             </div>
 
-            <!-- Información del ejercicio -->
-            <div class="exercise-info">
-              <div class="exercise-details">
-                <div class="detail-item">
-                  <ion-icon name="barbell-outline" class="detail-icon"></ion-icon>
-                  <span>{{ exercise.sets }} series</span>
-                </div>
-                <div class="detail-item">
-                  <ion-icon name="flash-outline" class="detail-icon"></ion-icon>
-                  <span>{{ exercise.repetitions }} reps</span>
-                </div>
-              </div>
-            </div>
-
             <!-- Tiempo completado -->
             <div class="completed-info" *ngIf="exercise.completed && exercise.completedAt">
               <ion-icon name="checkmark-circle-outline" class="completed-time-icon"></ion-icon>
@@ -107,28 +93,8 @@
             <!-- Acciones del ejercicio -->
             <div class="exercise-actions">
               <ion-button 
-                *ngIf="!exercise.completed"
                 fill="solid"
                 color="primary"
-                size="small"
-                (click)="startExercise(exercise)">
-                <ion-icon name="play-circle-outline" slot="start"></ion-icon>
-                Iniciar
-              </ion-button>
-              
-              <ion-button 
-                *ngIf="!exercise.completed"
-                fill="outline"
-                color="success"
-                size="small"
-                (click)="markAsCompleted(exercise)">
-                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                Marcar como completado
-              </ion-button>
-
-              <ion-button 
-                fill="clear"
-                color="medium"
                 size="small"
                 (click)="viewExerciseDetails(exercise)">
                 <ion-icon name="information-circle-outline" slot="start"></ion-icon>

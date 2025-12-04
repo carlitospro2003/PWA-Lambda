@@ -142,14 +142,13 @@
     <ion-content class="ion-padding">
       <div class="edit-form">
         
-        <!-- Título -->
+        <!-- Título (Solo lectura) -->
         <div class="form-field">
-          <ion-label position="stacked">Título *</ion-label>
-          <ion-input 
-            [(ngModel)]="editForm.EXC_Title" 
-            placeholder="Título del ejercicio"
-            type="text">
-          </ion-input>
+          <ion-label position="stacked">Título</ion-label>
+          <div class="read-only-field">
+            <strong>{{ editingExercise?.EXC_Title }}</strong>
+          </div>
+          <p class="field-hint">El título no se puede editar</p>
         </div>
 
         <!-- Tipo (Select) -->

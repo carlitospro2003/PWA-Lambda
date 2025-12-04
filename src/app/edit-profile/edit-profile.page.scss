@@ -1,47 +1,32 @@
 /* Edit Profile Page Styles */
 .edit-profile-content {
-  --background: #f8f9fa;
+  --background: #ffffff !important;
+  background: #ffffff !important;
 }
 
 .edit-profile-container {
   padding: 16px;
   max-width: 600px;
   margin: 0 auto;
-}
-
-/* Avatar Section */
-.avatar-section {
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.avatar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar-icon {
-  --size: 120px;
-  --color: #fdbc22;
-}
-
-.change-photo-btn {
-  --color: #fdbc22;
-  font-size: 0.9rem;
+  background: #ffffff;
 }
 
 /* Form Cards */
 .form-card {
-  --background: #ffffff;
+  --background: #ffffff !important;
+  background: #ffffff !important;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
+
+  ion-card-content {
+    background: #ffffff !important;
+  }
 }
 
 .form-card ion-card-header {
   padding-bottom: 8px;
+  background: #ffffff !important;
 }
 
 .form-card ion-card-title {
@@ -50,7 +35,7 @@
   gap: 12px;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: #333 !important;
 }
 
 .section-icon {
@@ -60,7 +45,8 @@
 
 /* Form Items */
 .form-item {
-  --background: transparent;
+  --background: #ffffff !important;
+  background: #ffffff !important;
   --border-color: rgba(0, 0, 0, 0.1);
   --padding: 16px 0;
   margin-bottom: 8px;
@@ -73,17 +59,19 @@
 
 .form-item ion-label {
   font-weight: 600;
-  color: #555;
+  color: #555 !important;
   margin-bottom: 8px;
 }
 
 .form-item ion-input {
-  --background: #f8f9fa;
+  --background: #f8f9fa !important;
+  background: #f8f9fa !important;
   --border-radius: 8px;
   --padding-start: 16px;
   --padding-end: 16px;
   --padding-top: 12px;
   --padding-bottom: 12px;
+  --color: #333 !important;
   font-size: 1rem;
 }
 

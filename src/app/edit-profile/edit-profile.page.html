@@ -21,17 +21,6 @@
 
   <div class="edit-profile-container">
 
-    <!-- Avatar Section -->
-    <div class="avatar-section">
-      <div class="avatar-container">
-        <ion-icon name="person-circle" class="avatar-icon" color="primary"></ion-icon>
-        <ion-button fill="clear" size="small" color="primary" class="change-photo-btn">
-          <ion-icon name="camera-outline" slot="start"></ion-icon>
-          Cambiar foto
-        </ion-button>
-      </div>
-    </div>
-
     <!-- Formulario de Edición -->
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
       

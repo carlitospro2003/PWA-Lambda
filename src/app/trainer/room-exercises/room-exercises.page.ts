@@ -94,7 +94,6 @@ export class RoomExercisesPage implements OnInit {
   isEditModalOpen = false;
   editingExercise: Exercise | null = null;
   editForm = {
-    EXC_Title: '',
     EXC_Type: '',
     EXC_DifficultyLevel: '',
     EXC_Instructions: '',
@@ -299,9 +298,8 @@ export class RoomExercisesPage implements OnInit {
     // Guardar ejercicio en edición
     this.editingExercise = exercise;
 
-    // Pre-llenar el formulario
+    // Pre-llenar el formulario (sin título, que es solo lectura)
     this.editForm = {
-      EXC_Title: exercise.EXC_Title,
       EXC_Type: exercise.EXC_Type || '',
       EXC_DifficultyLevel: exercise.EXC_DifficultyLevel || '',
       EXC_Instructions: exercise.EXC_Instructions || '',

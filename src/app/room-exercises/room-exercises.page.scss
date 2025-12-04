@@ -1,12 +1,14 @@
 /* Room Exercises Page Styles */
 .room-exercises-content {
-  --background: #f8f9fa;
+  --background: #ffffff !important;
+  background: #ffffff !important;
 }
 
 .room-exercises-container {
   padding: 16px;
   max-width: 1200px;
   margin: 0 auto;
+  background: #ffffff;
 }
 
 /* Loading Container */
@@ -150,12 +152,17 @@ ion-progress-bar {
 
 /* Exercise Cards */
 .exercise-card {
-  --background: #ffffff;
+  --background: #ffffff !important;
+  background: #ffffff !important;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+
+  ion-card-content {
+    background: #ffffff !important;
+  }
 }
 
 .exercise-card:hover {
@@ -412,7 +419,8 @@ ion-fab-button {
   }
 }
 
-/* Dark Mode Support */
+/* Dark Mode Support - Deshabilitado para mantener fondo blanco */
+/*
 @media (prefers-color-scheme: dark) {
   .room-exercises-content {
     --background: #1a1a1a;
@@ -434,6 +442,7 @@ ion-fab-button {
     color: #cccccc;
   }
 }
+*/
 
 /* Animation for completed exercises */
 .exercise-card.completed {

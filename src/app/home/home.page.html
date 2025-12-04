@@ -98,31 +98,6 @@
             </ion-chip>
           </div>
 
-          <!-- Información de la sala -->
-          <div class="room-info">
-            <!-- Miembros totales -->
-            <div class="info-item">
-              <div class="info-icon-container">
-                <ion-icon name="people-outline" class="info-icon"></ion-icon>
-              </div>
-              <div class="info-content">
-                <span class="info-label">Miembros</span>
-                <span class="info-value">{{ room.totalMembers }}</span>
-              </div>
-            </div>
-            
-            <!-- Ejercicios disponibles -->
-            <div class="info-item">
-              <div class="info-icon-container">
-                <ion-icon name="fitness-outline" class="info-icon"></ion-icon>
-              </div>
-              <div class="info-content">
-                <span class="info-label">Ejercicios</span>
-                <span class="info-value">{{ room.totalExercises }}</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Botón de acción -->
           <div class="action-section">
             <div class="enter-button" (click)="enterRoom(room); $event.stopPropagation()">
