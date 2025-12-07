@@ -123,24 +123,13 @@ export class NotificationsPage implements OnInit, ViewWillEnter {
       this.notificationService.markAsRead(notifId);
     }
 
-    // Navegar según el tipo
-    const notifType = notification.NOT_Type || notification.type;
-    const notifData = notification.NOT_Data || notification.data;
-    
-    switch (notifType) {
-      case 'new_exercise':
-        // Navegar al detalle del ejercicio
-        if (notifData?.exercise_id) {
-          this.router.navigate(['/room-exercises', notifData.room_id]);
-        }
-        break;
-      
-      case 'test':
-        // Notificación de prueba, no hacer nada
-        break;
-      
-      default:
-        console.log('Tipo de notificación desconocido:', notifType);
+    // Navegar a la sala de ejercicios usando NOT_ROO_ID
+    const roomId = notification.NOT_ROO_ID;
+    if (roomId) {
+      console.log('[NOTIFICATIONS] Navegando a sala:', roomId);
+      this.router.navigate(['/room-exercises', roomId]);
+    } else {
+      console.warn('[NOTIFICATIONS] No se encontró NOT_ROO_ID en la notificación');
     }
   }
 

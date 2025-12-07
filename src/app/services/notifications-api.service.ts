@@ -9,6 +9,7 @@ export interface Notification {
   NOT_Type: string;
   NOT_Title: string;
   NOT_Body: string;
+  NOT_ROO_ID: number;
   NOT_Data: {
     type: string;
     exercise_id?: number;
@@ -21,6 +22,10 @@ export interface Notification {
   NOT_CreatedAt: string;
   created_at: string;
   updated_at: string;
+  room?: {
+    ROO_ID: number;
+    ROO_Name: string;
+  };
   
   // Propiedades compatibles con el frontend
   id?: number;
