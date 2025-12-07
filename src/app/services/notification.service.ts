@@ -2,6 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { NotificationsApiService, Notification } from './notifications-api.service';
 import { AuthService } from './auth.service';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,11 @@ export class NotificationService {
   constructor(
     private notificationsApi: NotificationsApiService,
     private authService: AuthService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private firebaseService: FirebaseService
   ) {
+    // Inyectar este servicio en FirebaseService para evitar dependencia circular
+    this.firebaseService.setNotificationService(this);
     this.initAutoSync();
   }
 

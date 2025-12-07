@@ -22,7 +22,8 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
-  AlertController
+  AlertController,
+  ViewWillEnter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -70,7 +71,7 @@ import { Observable } from 'rxjs';
     IonItemOption
   ]
 })
-export class NotificationsPage implements OnInit {
+export class NotificationsPage implements OnInit, ViewWillEnter {
   notifications$: Observable<Notification[]>;
   unreadCount$: Observable<number>;
 
@@ -101,7 +102,13 @@ export class NotificationsPage implements OnInit {
   }
 
   ngOnInit() {
-    // Sincronizar al entrar a la página
+    // Este se ejecuta solo una vez al crear el componente
+    console.log('[NOTIFICATIONS PAGE] ngOnInit ejecutado');
+  }
+
+  ionViewWillEnter() {
+    // Este se ejecuta cada vez que entras a la página/tab
+    console.log('[NOTIFICATIONS PAGE] ionViewWillEnter - Sincronizando notificaciones...');
     this.notificationService.syncNotificationsFromBackend();
   }
 

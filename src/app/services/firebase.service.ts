@@ -9,9 +9,18 @@ import { ToastController } from '@ionic/angular';
 })
 export class FirebaseService {
   private messaging: Messaging | null = null;
+  private notificationService: any = null; // Se inyectará después para evitar dependencia circular
 
   constructor(private toastController: ToastController) {
     this.initializeFirebase();
+  }
+
+  /**
+   * Inyectar el NotificationService después de la construcción
+   * para evitar dependencias circulares
+   */
+  setNotificationService(service: any) {
+    this.notificationService = service;
   }
 
   private initializeFirebase() {
@@ -62,6 +71,12 @@ export class FirebaseService {
 
     onMessage(this.messaging, (payload) => {
       console.log('Mensaje recibido en primer plano:', payload);
+      
+      // Sincronizar notificaciones desde el backend para actualizar el badge
+      if (this.notificationService) {
+        console.log('[FCM] Sincronizando notificaciones después de recibir mensaje...');
+        this.notificationService.syncNotificationsFromBackend();
+      }
       
       // Mostrar notificación dentro de la app usando Toast de Ionic
       if (payload.notification) {
