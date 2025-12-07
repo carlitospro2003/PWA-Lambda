@@ -1,35 +1,41 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment, API_ENDPOINTS } from '../../environments/environment';
 
 export interface Notification {
-  id: number;
-  user_id: number;
-  type: 'new_exercise' | 'test' | string;
-  title: string;
-  body: string;
-  data: {
+  NOT_ID: number;
+  NOT_USR_ID: number;
+  NOT_Type: string;
+  NOT_Title: string;
+  NOT_Body: string;
+  NOT_Data: {
     type: string;
     exercise_id?: number;
     room_id?: number;
     room_name?: string;
     [key: string]: any;
   };
-  read: boolean;
-  read_at: string | null;
+  NOT_Status: 'unread' | 'read';
+  NOT_ReadAt: string | null;
+  NOT_CreatedAt: string;
   created_at: string;
   updated_at: string;
+  
+  // Propiedades compatibles con el frontend
+  id?: number;
+  read?: boolean;
+  title?: string;
+  body?: string;
+  type?: string;
+  data?: any;
+  read_at?: string | null;
 }
 
 export interface NotificationsResponse {
   success: boolean;
-  data: {
-    current_page: number;
-    data: Notification[];
-    per_page: number;
-    total: number;
-  };
+  message: string;
+  data: Notification[];
   unread_count: number;
 }
 
@@ -50,7 +56,7 @@ export class NotificationsApiService {
    * Obtener todas las notificaciones del usuario
    */
   getNotifications(): Observable<NotificationsResponse> {
-    return this.http.get<NotificationsResponse>(`${this.apiUrl}/my`);
+    return this.http.get<NotificationsResponse>(`${environment.apiUrl}${API_ENDPOINTS.GET_NOTIFICATIONS}`);
   }
 
   /**
@@ -64,7 +70,7 @@ export class NotificationsApiService {
    * Marcar una notificación como leída
    */
   markAsRead(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/read`, {});
+    return this.http.put(`${environment.apiUrl}${API_ENDPOINTS.MARK_NOTIFICATION_AS_READ}/${id}`, {});
   }
 
   /**

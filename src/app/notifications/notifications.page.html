@@ -44,25 +44,25 @@
       
       <!-- Notificación -->
       <ion-item 
-        [class.unread]="!notif.read"
+        [class.unread]="notif.NOT_Status === 'unread' || !notif.read"
         (click)="handleNotificationClick(notif)"
         button
         detail="false">
         
         <ion-icon 
           slot="start" 
-          [name]="notif.read ? 'mail-open-outline' : 'mail-unread-outline'"
-          [color]="notif.read ? 'medium' : 'primary'">
+          [name]="(notif.NOT_Status === 'read' || notif.read) ? 'mail-open-outline' : 'mail-unread-outline'"
+          [color]="(notif.NOT_Status === 'read' || notif.read) ? 'medium' : 'primary'">
         </ion-icon>
         
         <ion-label>
-          <h2>{{ notif.title }}</h2>
-          <p>{{ notif.body }}</p>
-          <p class="timestamp">{{ getRelativeTime(notif.created_at) }}</p>
+          <h2>{{ notif.NOT_Title || notif.title }}</h2>
+          <p>{{ notif.NOT_Body || notif.body }}</p>
+          <p class="timestamp">{{ getRelativeTime(notif.NOT_CreatedAt || notif.created_at) }}</p>
         </ion-label>
         
         <ion-badge 
-          *ngIf="!notif.read" 
+          *ngIf="notif.NOT_Status === 'unread' || !notif.read" 
           slot="end" 
           color="primary">
           Nuevo

@@ -60,8 +60,21 @@ export class NotificationService {
     this.notificationsApi.getNotifications().subscribe({
       next: (response) => {
         if (response.success) {
-          console.log('[NOTIFICATIONS] Sincronizadas:', response.data.data.length);
-          this.notificationsSubject.next(response.data.data);
+          // Mapear notificaciones del backend al formato del frontend
+          const mappedNotifications = response.data.map(notif => ({
+            ...notif,
+            id: notif.NOT_ID,
+            read: notif.NOT_Status === 'read',
+            title: notif.NOT_Title,
+            body: notif.NOT_Body,
+            type: notif.NOT_Type,
+            data: notif.NOT_Data,
+            read_at: notif.NOT_ReadAt,
+            NOT_CreatedAt: notif.created_at // Mapear created_at a NOT_CreatedAt también
+          }));
+          
+          console.log('[NOTIFICATIONS] Sincronizadas:', mappedNotifications.length);
+          this.notificationsSubject.next(mappedNotifications);
           this.unreadCountSubject.next(response.unread_count);
         }
       },
@@ -76,17 +89,27 @@ export class NotificationService {
    */
   markAsRead(id: number): void {
     this.notificationsApi.markAsRead(id).subscribe({
-      next: () => {
-        // Actualizar localmente
-        const notifications = this.notificationsSubject.value;
-        const updated = notifications.map(n => 
-          n.id === id ? { ...n, read: true, read_at: new Date().toISOString() } : n
-        );
-        this.notificationsSubject.next(updated);
-        
-        // Actualizar contador
-        const unreadCount = updated.filter(n => !n.read).length;
-        this.unreadCountSubject.next(unreadCount);
+      next: (response) => {
+        if (response.success) {
+          // Actualizar localmente
+          const notifications = this.notificationsSubject.value;
+          const updated = notifications.map(n => 
+            (n.NOT_ID === id || n.id === id) ? { 
+              ...n, 
+              NOT_Status: 'read' as const,
+              read: true, 
+              NOT_ReadAt: new Date().toISOString(),
+              read_at: new Date().toISOString() 
+            } : n
+          );
+          this.notificationsSubject.next(updated);
+          
+          // Actualizar contador
+          const unreadCount = updated.filter(n => n.NOT_Status === 'unread' || !n.read).length;
+          this.unreadCountSubject.next(unreadCount);
+          
+          console.log('[NOTIFICATIONS] Notificación marcada como leída:', id);
+        }
       },
       error: (error) => {
         console.error('[NOTIFICATIONS] Error al marcar como leída:', error);

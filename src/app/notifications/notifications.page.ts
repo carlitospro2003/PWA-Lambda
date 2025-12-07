@@ -110,16 +110,21 @@ export class NotificationsPage implements OnInit {
    */
   handleNotificationClick(notification: Notification) {
     // Marcar como leída si no lo está
-    if (!notification.read) {
-      this.notificationService.markAsRead(notification.id);
+    const isUnread = notification.NOT_Status === 'unread' || !notification.read;
+    if (isUnread) {
+      const notifId = notification.NOT_ID || notification.id!;
+      this.notificationService.markAsRead(notifId);
     }
 
     // Navegar según el tipo
-    switch (notification.type) {
+    const notifType = notification.NOT_Type || notification.type;
+    const notifData = notification.NOT_Data || notification.data;
+    
+    switch (notifType) {
       case 'new_exercise':
         // Navegar al detalle del ejercicio
-        if (notification.data.exercise_id) {
-          this.router.navigate(['/room-exercises', notification.data.room_id]);
+        if (notifData?.exercise_id) {
+          this.router.navigate(['/room-exercises', notifData.room_id]);
         }
         break;
       
@@ -128,7 +133,7 @@ export class NotificationsPage implements OnInit {
         break;
       
       default:
-        console.log('Tipo de notificación desconocido:', notification.type);
+        console.log('Tipo de notificación desconocido:', notifType);
     }
   }
 
@@ -174,7 +179,8 @@ export class NotificationsPage implements OnInit {
           text: 'Eliminar',
           role: 'destructive',
           handler: () => {
-            this.notificationService.deleteNotification(notification.id);
+            const notifId = notification.NOT_ID || notification.id!;
+            this.notificationService.deleteNotification(notifId);
           }
         }
       ]

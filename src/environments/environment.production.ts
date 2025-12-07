@@ -61,10 +61,6 @@ export const API_ENDPOINTS = {
   ADD_FAVORITE: '/AddFavorite',
   
   // Notification endpoints
-  NOTIFICATIONS: '/notifications',
-  MY_NOTIFICATIONS: '/notifications/my',
-  UNREAD_COUNT: '/notifications/unread-count',
-  MARK_AS_READ: '/notifications',
-  MARK_ALL_AS_READ: '/notifications/read-all',
-  DELETE_NOTIFICATION: '/notifications'
+  GET_NOTIFICATIONS: '/notifications', // GET /notifications
+  MARK_NOTIFICATION_AS_READ: '/notifications' // PUT /notifications/{id}
 };
