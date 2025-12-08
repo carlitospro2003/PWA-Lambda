@@ -26,6 +26,7 @@ import { AuthService, LoginRequest } from '../services/auth.service';
 import { BiometricService } from '../services/biometric.service';
 import { FirebaseService } from '../services/firebase.service';
 import { NotificationService } from '../services/notification.service';
+import { VersionService } from '../services/version.service';
 
 @Component({
   selector: 'app-login',
@@ -71,7 +72,8 @@ export class LoginPage implements OnInit {
     private biometricService: BiometricService,
     private alertController: AlertController,
     private firebaseService: FirebaseService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private versionService: VersionService
   ) {
     addIcons({
       person,
@@ -148,6 +150,10 @@ export class LoginPage implements OnInit {
           // Sincronizar notificaciones después del login
           this.notificationService.syncNotificationsFromBackend();
           console.log('✅ Sincronización de notificaciones iniciada');
+          
+          // Verificar actualizaciones después del login exitoso
+          await this.versionService.checkForUpdates();
+          console.log('✅ Verificación de versión completada');
           
           // Si tiene biometría disponible y marcó "recordar", preguntar si quiere activarla
           if (this.biometricAvailable && !this.biometricEnabled && this.rememberBiometric) {

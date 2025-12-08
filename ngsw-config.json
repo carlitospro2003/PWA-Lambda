@@ -11,6 +11,7 @@
           "/index.csr.html",
           "/index.html",
           "/manifest.webmanifest",
+          "/version.json",
           "/*.css",
           "/*.js"
         ]
@@ -22,8 +23,41 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2|ico)"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-cache",
+      "urls": [
+        "https://api.safekids.site/api/**",
+        "http://127.0.0.1:8000/api/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "1h",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "api-performance",
+      "urls": [
+        "https://api.safekids.site/api/getMyRooms",
+        "https://api.safekids.site/api/getMyJoinedRooms",
+        "https://api.safekids.site/api/getMyRoutines",
+        "https://api.safekids.site/api/notifications",
+        "http://127.0.0.1:8000/api/getMyRooms",
+        "http://127.0.0.1:8000/api/getMyJoinedRooms",
+        "http://127.0.0.1:8000/api/getMyRoutines",
+        "http://127.0.0.1:8000/api/notifications"
+      ],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 50,
+        "maxAge": "30m"
       }
     }
   ]
