@@ -61,15 +61,6 @@
 
           <ion-button 
             expand="block" 
-            fill="clear"
-            (click)="resendCode()"
-            [disabled]="isVerifying"
-            class="resend-button">
-            ¿No recibiste el código? Reenviar
-          </ion-button>
-
-          <ion-button 
-            expand="block" 
             fill="outline"
             (click)="cancelVerification()"
             [disabled]="isVerifying"
