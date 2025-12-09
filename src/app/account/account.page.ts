@@ -58,6 +58,9 @@ export class AccountPage implements OnInit {
     lastName: '',
     email: ''
   };
+  
+  is2FAEnabled: boolean = false;
+  isToggling2FA: boolean = false;
 
   constructor(
     private router: Router,
@@ -94,6 +97,9 @@ export class AccountPage implements OnInit {
           email: user.USR_Email
         };
         
+        // Obtener estado de 2FA
+        this.is2FAEnabled = (user as any).USR_2FA_Enabled || false;
+        
         localStorage.setItem('user', JSON.stringify(user));
       }
     } catch (error) {
@@ -106,6 +112,7 @@ export class AccountPage implements OnInit {
           lastName: user.USR_LastName,
           email: user.USR_Email
         };
+        this.is2FAEnabled = (user as any).USR_2FA_Enabled || false;
       }
     }
   }
@@ -113,6 +120,83 @@ export class AccountPage implements OnInit {
   openEditProfile() {
     // Navegar a la vista de edición de perfil
     this.router.navigate(['/edit-profile']);
+  }
+
+  async toggle2FA() {
+    const action = this.is2FAEnabled ? 'desactivar' : 'activar';
+    const actionCapital = this.is2FAEnabled ? 'Desactivar' : 'Activar';
+    
+    const alert = await this.alertController.create({
+      header: `${actionCapital} 2FA`,
+      message: `¿Estás seguro de que quieres ${action} la autenticación de dos factores?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: actionCapital,
+          handler: async () => {
+            await this.performToggle2FA();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private async performToggle2FA() {
+    this.isToggling2FA = true;
+    
+    const loading = await this.loadingController.create({
+      message: 'Actualizando configuración...',
+      duration: 10000
+    });
+    await loading.present();
+
+    this.userService.toggle2FA().subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        this.isToggling2FA = false;
+        
+        if (response.success) {
+          this.is2FAEnabled = response.is_2fa_enabled;
+          
+          const toast = await this.toastController.create({
+            message: response.message,
+            duration: 3000,
+            color: 'success',
+            position: 'top'
+          });
+          await toast.present();
+          
+          // Recargar perfil para asegurar sincronización
+          await this.loadUserProfile();
+        } else {
+          const toast = await this.toastController.create({
+            message: response.message || 'Error al cambiar configuración',
+            duration: 3000,
+            color: 'danger',
+            position: 'top'
+          });
+          await toast.present();
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isToggling2FA = false;
+        
+        console.error('Error al toggle 2FA:', error);
+        
+        const toast = await this.toastController.create({
+          message: error.error?.message || 'Error al cambiar configuración 2FA',
+          duration: 3000,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
+      }
+    });
   }
 
   async signOut() {

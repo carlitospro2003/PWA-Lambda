@@ -59,6 +59,32 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Configuración de Seguridad -->
+    <ion-card class="security-card">
+      <ion-card-header>
+        <ion-card-title>Seguridad</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="security-option">
+          <div class="security-info">
+            <h3>Autenticación de Dos Factores (2FA)</h3>
+            <p class="security-description">
+              {{ is2FAEnabled ? 
+                'La autenticación 2FA está activa. Recibirás un código por email al iniciar sesión.' : 
+                'Agrega una capa extra de seguridad. Recibirás un código por email al iniciar sesión.' 
+              }}
+            </p>
+          </div>
+          <ion-button 
+            [color]="is2FAEnabled ? 'danger' : 'primary'"
+            (click)="toggle2FA()"
+            [disabled]="isToggling2FA">
+            {{ is2FAEnabled ? 'Desactivar 2FA' : 'Activar 2FA' }}
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Botón de Cerrar Sesión -->
     <div class="logout-section">
       <ion-button 

@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
   CHANGE_PASSWORD: '/users/change-password',
   EDIT_USER: '/editUser',
   GET_USER: '/getUser',
+  TOGGLE_2FA: '/toggle2FA',
   
   // Exercise endpoints
   EXERCISES: '/exercises',

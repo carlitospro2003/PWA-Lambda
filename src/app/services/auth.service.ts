@@ -30,6 +30,7 @@ export interface User {
   USR_Phone: string;
   USR_UserRole: string;
   USR_FCM: string;
+  USR_2FA_Enabled?: boolean;
   created_at: string;
   updated_at: string;
 }

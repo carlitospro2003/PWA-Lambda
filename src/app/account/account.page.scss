@@ -254,11 +254,73 @@ ion-toolbar {
 
 /* Efectos hover para cards */
 .user-info-card,
-.personal-info-card {
+.personal-info-card,
+.security-card {
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Estilos para la tarjeta de seguridad */
+.security-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(253, 188, 34, 0.2);
+  background: white;
+
+  ion-card-header {
+    padding-bottom: 10px;
+
+    ion-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #333333;
+    }
+  }
+
+  .security-option {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .security-info {
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333333;
+        margin: 0 0 8px 0;
+      }
+
+      .security-description {
+        font-size: 0.9rem;
+        color: #666666;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+
+    ion-button {
+      --border-radius: 12px;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .security-card .security-option {
+    .security-info h3 {
+      font-size: 1rem;
+    }
+
+    .security-info .security-description {
+      font-size: 0.85rem;
+    }
   }
 }
