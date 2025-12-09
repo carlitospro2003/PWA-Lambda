@@ -1,5 +1,5 @@
 .exercise-detail-content {
-  --background: #f8f9fa;
+  --background: #ffffff;
 }
 
 .detail-container {
@@ -50,9 +50,10 @@
 
 .room-info {
   padding: 12px;
-  background: #f8f9fa;
+  background: #ffffff;
   border-radius: 8px;
   margin-bottom: 16px;
+  border: 1px solid #e9ecef;
   
   p {
     margin: 4px 0;
@@ -108,7 +109,8 @@
 .media-item {
   border-radius: 12px;
   overflow: hidden;
-  background: #f8f9fa;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   
   &:hover {

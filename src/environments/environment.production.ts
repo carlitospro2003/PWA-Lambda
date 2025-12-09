@@ -2,7 +2,8 @@ export const environment = {
   production: true,
   apiUrl: 'https://api.safekids.site/api',
   appName: 'Lambda Fitness',
-  version: '1.0.1',
+  version: '1.2.3',
+  recaptchaSiteKey: '6LcgbCUsAAAAABvBxNT4pRRYdd70_gkmmTXpmu2z', // Reemplazar con tu Site Key de Google reCAPTCHA v3
   firebase: {
     apiKey: "AIzaSyDPQ3HcafZsG9MJgwTYDM-oV-uCOBCIlnM",
     authDomain: "lambda-6054d.firebaseapp.com",

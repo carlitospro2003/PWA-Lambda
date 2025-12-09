@@ -146,4 +146,63 @@
       </ion-button>
     </div>
   </div>
+
+  <!-- Modal 2FA -->
+  <div class="twofa-modal-overlay" *ngIf="show2FAModal" (click)="cancel2FA()">
+    <div class="twofa-modal-content" (click)="$event.stopPropagation()">
+      <div class="twofa-header">
+        <ion-icon name="mail" class="twofa-icon"></ion-icon>
+        <h2>Verificación en 2 pasos</h2>
+        <p>Ingresa el código de 6 dígitos enviado a:</p>
+        <p class="twofa-email">{{ email }}</p>
+      </div>
+
+      <div class="twofa-body">
+        <ion-item class="twofa-input" lines="none">
+          <ion-label position="stacked">Código de verificación</ion-label>
+          <ion-input 
+            type="text" 
+            [(ngModel)]="twoFactorCode"
+            (ionInput)="onCodeInput($event)"
+            placeholder="000000"
+            maxlength="6"
+            inputmode="numeric"
+            [disabled]="isVerifying2FA">
+          </ion-input>
+        </ion-item>
+
+        <div class="twofa-info">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>El código expira en 5 minutos</span>
+        </div>
+
+        <ion-button 
+          expand="block" 
+          (click)="verify2FACode()"
+          [disabled]="isVerifying2FA || twoFactorCode.length !== 6"
+          class="verify-button">
+          <span *ngIf="!isVerifying2FA">Verificar</span>
+          <span *ngIf="isVerifying2FA">Verificando...</span>
+        </ion-button>
+
+        <ion-button 
+          expand="block" 
+          fill="clear"
+          (click)="resend2FACode()"
+          [disabled]="isVerifying2FA"
+          class="resend-button">
+          ¿No recibiste el código? Reenviar
+        </ion-button>
+
+        <ion-button 
+          expand="block" 
+          fill="outline"
+          (click)="cancel2FA()"
+          [disabled]="isVerifying2FA"
+          class="cancel-button">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </div>
 </ion-content>

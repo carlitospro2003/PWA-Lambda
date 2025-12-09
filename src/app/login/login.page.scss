@@ -296,3 +296,182 @@
     font-size: 1.8rem;
   }
 }
+
+// Estilos para modal 2FA
+.twofa-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.twofa-modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+.twofa-header {
+  background: linear-gradient(135deg, #fdbc22 0%, #ffa726 100%);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+
+  .twofa-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+  }
+
+  p {
+    font-size: 0.95rem;
+    margin: 5px 0;
+    opacity: 0.95;
+  }
+
+  .twofa-email {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 8px;
+  }
+}
+
+.twofa-body {
+  padding: 25px;
+}
+
+.twofa-input {
+  --background: #f5f5f5;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  
+  ion-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  ion-input {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 8px;
+    color: #fdbc22;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+}
+
+.twofa-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+
+  ion-icon {
+    font-size: 18px;
+    color: #fdbc22;
+  }
+}
+
+.verify-button {
+  --background: linear-gradient(135deg, #fdbc22 0%, #ffa726 100%);
+  --background-hover: linear-gradient(135deg, #ffa726 0%, #fdbc22 100%);
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(253, 188, 34, 0.3);
+  height: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  text-transform: none;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.resend-button {
+  --color: #fdbc22;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-transform: none;
+}
+
+.cancel-button {
+  --border-color: #ddd;
+  --color: #666;
+  --border-radius: 12px;
+  font-size: 0.95rem;
+  text-transform: none;
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .twofa-modal-overlay {
+    padding: 15px;
+  }
+
+  .twofa-header {
+    padding: 25px 15px;
+
+    .twofa-icon {
+      font-size: 50px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+  }
+
+  .twofa-body {
+    padding: 20px 15px;
+  }
+
+  .twofa-input ion-input {
+    font-size: 1.5rem;
+    letter-spacing: 6px;
+  }
+}

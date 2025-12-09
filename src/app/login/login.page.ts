@@ -21,7 +21,7 @@ import {
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { person, lockClosed, eye, eyeOff, fitness, fingerPrint } from 'ionicons/icons';
+import { person, lockClosed, eye, eyeOff, fitness, fingerPrint, mail, timeOutline } from 'ionicons/icons';
 import { AuthService, LoginRequest } from '../services/auth.service';
 import { BiometricService } from '../services/biometric.service';
 import { FirebaseService } from '../services/firebase.service';
@@ -58,6 +58,11 @@ export class LoginPage implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
   
+  // 2FA properties
+  show2FAModal: boolean = false;
+  twoFactorCode: string = '';
+  isVerifying2FA: boolean = false;
+  
   // Biometric properties
   biometricAvailable: boolean = false;
   biometricEnabled: boolean = false;
@@ -81,7 +86,9 @@ export class LoginPage implements OnInit {
       eye,
       eyeOff,
       fitness,
-      fingerPrint
+      fingerPrint,
+      mail,
+      timeOutline
     });
   }
 
@@ -140,36 +147,15 @@ export class LoginPage implements OnInit {
       next: async (response) => {
         await loading.dismiss();
         
+        // Si requiere 2FA, mostrar modal para ingresar código
+        if (response.requires_2fa && response.email_sent) {
+          this.show2FAModal = true;
+          await this.showToast(response.message || 'Código enviado a tu email', 'success');
+          return;
+        }
+        
         if (response.success) {
-          await this.showToast('¡Bienvenido! Inicio de sesión exitoso', 'success');
-          
-          // Activar listener de mensajes FCM después del login exitoso
-          this.firebaseService.listenToMessages();
-          console.log('✅ Listener de FCM activado después del login');
-          
-          // Sincronizar notificaciones después del login
-          this.notificationService.syncNotificationsFromBackend();
-          console.log('✅ Sincronización de notificaciones iniciada');
-          
-          // Verificar actualizaciones después del login exitoso
-          await this.versionService.checkForUpdates();
-          console.log('✅ Verificación de versión completada');
-          
-          // Si tiene biometría disponible y marcó "recordar", preguntar si quiere activarla
-          if (this.biometricAvailable && !this.biometricEnabled && this.rememberBiometric) {
-            await this.promptEnableBiometric();
-          }
-          
-          // Redirigir según el rol del usuario
-          const user = this.authService.getCurrentUser();
-          if (user?.USR_UserRole === 'trainer') {
-            this.router.navigate(['/trainer/dashboard'], { replaceUrl: true });
-          } else if (user?.USR_UserRole === 'trainee') {
-            this.router.navigate(['/tabs/home'], { replaceUrl: true });
-          } else {
-            // Rol desconocido, redirigir a login
-            this.router.navigate(['/login'], { replaceUrl: true });
-          }
+          await this.handleSuccessfulLogin();
         } else {
           this.errorMessage = response.message || 'Error al iniciar sesión';
           await this.showToast(this.errorMessage, 'danger');
@@ -184,7 +170,6 @@ export class LoginPage implements OnInit {
         if (error.status === 401) {
           errorMsg = 'Credenciales inválidas. Verifica tu email y contraseña.';
         } else if (error.status === 422 && error.error?.errors) {
-          // Mostrar errores de validación
           const validationErrors = error.error.errors;
           errorMsg = Object.values(validationErrors)[0] as string;
         } else if (error.error?.message) {
@@ -195,6 +180,144 @@ export class LoginPage implements OnInit {
         await this.showToast(errorMsg, 'danger');
       }
     });
+  }
+
+  /**
+   * Manejar login exitoso (refactorizado para reutilizar)
+   */
+  private async handleSuccessfulLogin() {
+    await this.showToast('¡Bienvenido! Inicio de sesión exitoso', 'success');
+    
+    // Activar listener de mensajes FCM después del login exitoso
+    this.firebaseService.listenToMessages();
+    console.log('✅ Listener de FCM activado después del login');
+    
+    // Sincronizar notificaciones después del login
+    this.notificationService.syncNotificationsFromBackend();
+    console.log('✅ Sincronización de notificaciones iniciada');
+    
+    // Verificar actualizaciones después del login exitoso
+    await this.versionService.checkForUpdates();
+    console.log('✅ Verificación de versión completada');
+    
+    // Si tiene biometría disponible y marcó "recordar", preguntar si quiere activarla
+    if (this.biometricAvailable && !this.biometricEnabled && this.rememberBiometric) {
+      await this.promptEnableBiometric();
+    }
+    
+    // Redirigir según el rol del usuario
+    const user = this.authService.getCurrentUser();
+    if (user?.USR_UserRole === 'trainer') {
+      this.router.navigate(['/trainer/dashboard'], { replaceUrl: true });
+    } else if (user?.USR_UserRole === 'trainee') {
+      this.router.navigate(['/tabs/home'], { replaceUrl: true });
+    } else {
+      // Rol desconocido, redirigir a login
+      this.router.navigate(['/login'], { replaceUrl: true });
+    }
+  }
+
+  /**
+   * Verificar código 2FA
+   */
+  async verify2FACode() {
+    if (!this.twoFactorCode || this.twoFactorCode.length !== 6) {
+      await this.showToast('Ingresa el código de 6 dígitos', 'warning');
+      return;
+    }
+
+    this.isVerifying2FA = true;
+
+    const loading = await this.loadingController.create({
+      message: 'Verificando código...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    // Obtener FCM token
+    const fcmToken = await this.firebaseService.getFCMToken();
+
+    const credentials: LoginRequest = {
+      USR_Email: this.email.trim(),
+      USR_Password: this.password,
+      USR_2FA_Code: this.twoFactorCode
+    };
+
+    if (fcmToken) {
+      credentials.fcm_token = fcmToken;
+    }
+
+    this.authService.login(credentials).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        this.isVerifying2FA = false;
+
+        if (response.success) {
+          this.show2FAModal = false;
+          this.twoFactorCode = '';
+          await this.handleSuccessfulLogin();
+        } else {
+          await this.showToast(response.message || 'Código inválido', 'danger');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isVerifying2FA = false;
+        
+        let errorMsg = 'Error al verificar el código';
+        if (error.error?.message) {
+          errorMsg = error.error.message;
+        }
+        
+        await this.showToast(errorMsg, 'danger');
+      }
+    });
+  }
+
+  /**
+   * Cancelar modal de 2FA
+   */
+  cancel2FA() {
+    this.show2FAModal = false;
+    this.twoFactorCode = '';
+    this.isVerifying2FA = false;
+  }
+
+  /**
+   * Reenviar código 2FA
+   */
+  async resend2FACode() {
+    const loading = await this.loadingController.create({
+      message: 'Reenviando código...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
+    const credentials: LoginRequest = {
+      USR_Email: this.email.trim(),
+      USR_Password: this.password
+    };
+
+    this.authService.login(credentials).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        if (response.requires_2fa && response.email_sent) {
+          await this.showToast('Código reenviado a tu email', 'success');
+        }
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        await this.showToast('Error al reenviar código', 'danger');
+      }
+    });
+  }
+
+  /**
+   * Validar entrada de solo números para código 2FA
+   */
+  onCodeInput(event: any) {
+    const value = event.target.value;
+    this.twoFactorCode = value.replace(/[^0-9]/g, '').slice(0, 6);
   }
 
   private validateForm(): boolean {

@@ -210,3 +210,33 @@ ion-header {
     font-size: 1.2rem;
   }
 }
+
+// Estilos para reCAPTCHA v2
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
+  
+  #recaptcha-container {
+    transform: scale(0.95);
+    transform-origin: center center;
+  }
+}
+
+@media (max-width: 400px) {
+  .recaptcha-container {
+    #recaptcha-container {
+      transform: scale(0.85);
+    }
+  }
+}
+
+@media (max-width: 350px) {
+  .recaptcha-container {
+    #recaptcha-container {
+      transform: scale(0.75);
+    }
+  }
+}

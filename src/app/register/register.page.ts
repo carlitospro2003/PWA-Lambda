@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { 
@@ -38,6 +38,7 @@ import {
   call
 } from 'ionicons/icons';
 import { AuthService, RegisterRequest } from '../services/auth.service';
+import { RecaptchaService } from '../services/recaptcha.service';
 
 @Component({
   selector: 'app-register',
@@ -68,7 +69,7 @@ import { AuthService, RegisterRequest } from '../services/auth.service';
     FormsModule
   ]
 })
-export class RegisterPage implements OnInit {
+export class RegisterPage implements OnInit, AfterViewInit {
   firstName: string = '';
   lastName: string = '';
   email: string = '';
@@ -83,7 +84,8 @@ export class RegisterPage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private recaptchaService: RecaptchaService
   ) {
     addIcons({
       person,
@@ -99,6 +101,25 @@ export class RegisterPage implements OnInit {
   }
 
   ngOnInit() {}
+
+  ngAfterViewInit() {
+    // Renderizar el widget de reCAPTCHA v2 después de que la vista esté lista
+    console.log('[REGISTER] Renderizando reCAPTCHA v2...');
+    
+    // Pequeño delay para asegurar que el DOM esté listo
+    setTimeout(() => {
+      this.recaptchaService.renderRecaptcha(
+        'recaptcha-container',
+        (token: string) => {
+          console.log('[REGISTER] reCAPTCHA verificado correctamente');
+        },
+        () => {
+          console.error('[REGISTER] Error en reCAPTCHA');
+          this.showToast('Error en la verificación de seguridad', 'danger');
+        }
+      );
+    }, 500);
+  }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -176,54 +197,77 @@ export class RegisterPage implements OnInit {
       return;
     }
 
+    // Verificar que el usuario haya completado el reCAPTCHA v2
+    const recaptchaToken = this.recaptchaService.getResponse();
+    if (!recaptchaToken) {
+      await this.showToast('Por favor, completa la verificación de seguridad', 'warning');
+      return;
+    }
+
+    console.log('[REGISTER] reCAPTCHA v2 completado, iniciando registro...');
+
     const loading = await this.loadingController.create({
       message: 'Registrando usuario...',
       spinner: 'crescent'
     });
     await loading.present();
 
-    const registerData: RegisterRequest = {
-      USR_Name: this.firstName.trim(),
-      USR_LastName: this.lastName.trim(),
-      USR_Email: this.email.trim(),
-      USR_Phone: this.phone.trim(),
-      USR_Password: this.password,
-      USR_UserRole: this.role
-    };
+    try {
 
-    this.authService.register(registerData).subscribe({
-      next: async (response) => {
-        await loading.dismiss();
-        
-        if (response.success) {
-          await this.showToast('¡Registro exitoso! Ahora puedes iniciar sesión', 'success');
-          this.router.navigate(['/login']);
-        } else {
-          this.errorMessage = response.message || 'Error al registrar usuario';
-          await this.showToast(this.errorMessage, 'danger');
+      const registerData: RegisterRequest = {
+        USR_Name: this.firstName.trim(),
+        USR_LastName: this.lastName.trim(),
+        USR_Email: this.email.trim(),
+        USR_Phone: this.phone.trim(),
+        USR_Password: this.password,
+        USR_UserRole: this.role,
+        recaptcha_token: recaptchaToken
+      };
+
+      this.authService.register(registerData).subscribe({
+        next: async (response) => {
+          await loading.dismiss();
+          
+          if (response.success) {
+            await this.showToast('¡Registro exitoso! Ahora puedes iniciar sesión', 'success');
+            this.router.navigate(['/login']);
+          } else {
+            this.errorMessage = response.message || 'Error al registrar usuario';
+            await this.showToast(this.errorMessage, 'danger');
+          }
+        },
+        error: async (error) => {
+          await loading.dismiss();
+          console.error('Error de registro:', error);
+          
+          let errorMsg = 'Error de conexión. Verifica tu conexión a internet.';
+          
+          if (error.status === 422 && error.error?.errors) {
+            // Mostrar errores de validación
+            const validationErrors = error.error.errors;
+            const firstError = Object.values(validationErrors)[0] as string[];
+            errorMsg = firstError[0];
+          } else if (error.status === 403) {
+            errorMsg = 'No tienes permisos para registrarte con ese rol';
+          } else if (error.error?.message) {
+            errorMsg = error.error.message;
+          }
+          
+          this.errorMessage = errorMsg;
+          await this.showToast(errorMsg, 'danger');
+          
+          // Resetear reCAPTCHA para permitir otro intento
+          this.recaptchaService.reset();
         }
-      },
-      error: async (error) => {
-        await loading.dismiss();
-        console.error('Error de registro:', error);
-        
-        let errorMsg = 'Error de conexión. Verifica tu conexión a internet.';
-        
-        if (error.status === 422 && error.error?.errors) {
-          // Mostrar errores de validación
-          const validationErrors = error.error.errors;
-          const firstError = Object.values(validationErrors)[0] as string[];
-          errorMsg = firstError[0];
-        } else if (error.status === 403) {
-          errorMsg = 'No tienes permisos para registrarte con ese rol';
-        } else if (error.error?.message) {
-          errorMsg = error.error.message;
-        }
-        
-        this.errorMessage = errorMsg;
-        await this.showToast(errorMsg, 'danger');
-      }
-    });
+      });
+    } catch (error) {
+      await loading.dismiss();
+      console.error('[REGISTER] Error inesperado:', error);
+      await this.showToast('Error inesperado. Por favor, intenta de nuevo.', 'danger');
+      
+      // Resetear reCAPTCHA
+      this.recaptchaService.reset();
+    }
   }
 
   private async showToast(message: string, color: string) {

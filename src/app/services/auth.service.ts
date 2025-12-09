@@ -9,6 +9,7 @@ export interface LoginRequest {
   USR_Email: string;
   USR_Password: string;
   fcm_token?: string;
+  USR_2FA_Code?: string;
 }
 
 export interface RegisterRequest {
@@ -18,6 +19,7 @@ export interface RegisterRequest {
   USR_Phone: string;
   USR_Password: string;
   USR_UserRole: 'trainer' | 'trainee';
+  recaptcha_token: string;
 }
 
 export interface User {
@@ -38,6 +40,8 @@ export interface LoginResponse {
   data?: User;
   token?: string;
   errors?: any;
+  requires_2fa?: boolean;
+  email_sent?: boolean;
 }
 
 export interface RegisterResponse {
