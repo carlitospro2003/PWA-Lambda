@@ -100,6 +100,25 @@ export class AuthService {
   }
 
   /**
+   * Verificar código 2FA
+   */
+  verify2FA(verifyData: { USR_Email: string; USR_2FA_Code: string }): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.post<any>(`${this.apiUrl}${API_ENDPOINTS.VERIFY_2FA}`, verifyData, { headers })
+      .pipe(
+        tap(response => {
+          if (response.success && response.data && response.token) {
+            this.setAuthData(response.data, response.token);
+          }
+        })
+      );
+  }
+
+  /**
    * Cerrar sesión con la API
    */
   logout(): Observable<any> {

@@ -62,6 +62,8 @@ export class LoginPage implements OnInit {
   show2FAModal: boolean = false;
   twoFactorCode: string = '';
   isVerifying2FA: boolean = false;
+  savedEmailFor2FA: string = '';
+  savedPasswordFor2FA: string = '';
   
   // Biometric properties
   biometricAvailable: boolean = false;
@@ -147,10 +149,21 @@ export class LoginPage implements OnInit {
       next: async (response) => {
         await loading.dismiss();
         
-        // Si requiere 2FA, mostrar modal para ingresar código
-        if (response.requires_2fa && response.email_sent) {
-          this.show2FAModal = true;
-          await this.showToast(response.message || 'Código enviado a tu email', 'success');
+        // Si requiere verificación 2FA, guardar email y navegar a página de verificación
+        if (response.success && (response as any).requires_verification && (response as any).has_2fa) {
+          // Guardar email en sessionStorage para la verificación
+          sessionStorage.setItem('pending_2fa_email', this.email.trim());
+          sessionStorage.setItem('pending_2fa_password', this.password);
+          
+          await this.showToast(
+            (response as any).email_sent 
+              ? 'Código enviado a tu email. Revísa tu bandeja de entrada.' 
+              : 'Ingresa el código de verificación.',
+            'success'
+          );
+          
+          // Navegar a página de verificación 2FA
+          this.router.navigate(['/verify-2fa']);
           return;
         }
         

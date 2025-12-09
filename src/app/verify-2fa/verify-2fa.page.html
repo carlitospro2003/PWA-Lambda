@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancelVerification()" defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Verificación 2FA</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="verify-2fa-content">
+  <div class="verify-container">
+    <!-- Icono y título -->
+    <div class="header-section">
+      <div class="icon-container">
+        <ion-icon name="mail-outline" class="mail-icon"></ion-icon>
+      </div>
+      <h1 class="title">Verifica tu identidad</h1>
+      <p class="subtitle">
+        Hemos enviado un código de 6 dígitos a:
+      </p>
+      <p class="email">{{ email }}</p>
+    </div>
+
+    <!-- Formulario de verificación -->
+    <ion-card class="verify-card">
+      <ion-card-content>
+        <form (ngSubmit)="verifyCode()">
+          <ion-item class="code-input" lines="none">
+            <ion-label position="stacked">Código de Verificación</ion-label>
+            <ion-input 
+              type="text" 
+              [(ngModel)]="code"
+              (ionInput)="onCodeInput($event)"
+              name="code"
+              placeholder="000000"
+              maxlength="6"
+              inputmode="numeric"
+              [disabled]="isVerifying"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <div class="info-message">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>El código expira en 5 minutos</span>
+          </div>
+
+          <!-- Mensaje de error -->
+          <ion-text color="danger" class="error-message" *ngIf="errorMessage">
+            <p>{{ errorMessage }}</p>
+          </ion-text>
+
+          <ion-button 
+            expand="block" 
+            type="submit" 
+            class="verify-button"
+            [disabled]="isVerifying || code.length !== 6">
+            <span *ngIf="!isVerifying">Verificar</span>
+            <span *ngIf="isVerifying">Verificando...</span>
+          </ion-button>
+
+          <ion-button 
+            expand="block" 
+            fill="clear"
+            (click)="resendCode()"
+            [disabled]="isVerifying"
+            class="resend-button">
+            ¿No recibiste el código? Reenviar
+          </ion-button>
+
+          <ion-button 
+            expand="block" 
+            fill="outline"
+            (click)="cancelVerification()"
+            [disabled]="isVerifying"
+            class="cancel-button">
+            Volver al Login
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Nota de seguridad -->
+    <div class="security-note">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <p>
+        Por tu seguridad, nunca compartas este código con nadie.
+      </p>
+    </div>
+  </div>
+</ion-content>

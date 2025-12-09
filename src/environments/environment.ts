@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
   LOGOUT: '/logout',
   REFRESH_TOKEN: '/refresh',
   PROFILE: '/profile',
+  VERIFY_2FA: '/verify2FA',
   
   // User endpoints
   USERS: '/users',
