@@ -30,7 +30,8 @@ import {
   fitnessOutline,
   cloudUploadOutline,
   closeOutline,
-  linkOutline
+  linkOutline,
+  informationCircleOutline
 } from 'ionicons/icons';
 
 interface ExerciseFormData {
@@ -108,7 +109,7 @@ export class AddExercisePage implements OnInit {
     private loadingController: LoadingController,
     private toastController: ToastController
   ) {
-    addIcons({ saveOutline, fitnessOutline, cloudUploadOutline, closeOutline, linkOutline });
+    addIcons({ saveOutline, fitnessOutline, cloudUploadOutline, closeOutline, linkOutline, informationCircleOutline });
   }
 
   ngOnInit() {
@@ -138,28 +139,124 @@ export class AddExercisePage implements OnInit {
   }
 
   // Manejar selección de archivos
-  onFileSelected(event: any, mediaField: string) {
+  async onFileSelected(event: any, mediaField: string) {
     const file = event.target.files[0];
     if (file) {
       // Validar tipo de archivo
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'video/mp4', 'video/mov'];
       if (!allowedTypes.includes(file.type)) {
-        this.showToast('Solo se permiten archivos: JPEG, PNG, WEBP, MP4, MOV', 'danger');
+        await this.showToast('Solo se permiten archivos: JPEG, PNG, WEBP, MP4, MOV', 'danger');
         event.target.value = '';
         return;
       }
 
-      // Validar tamaño (máximo 20MB)
-      const maxSize = 20 * 1024 * 1024; // 20MB
+      // Validar tamaño (máximo 20MB - igual que el backend)
+      const maxSize = 20 * 1024 * 1024; // 20MB = 20480 KB
       if (file.size > maxSize) {
-        this.showToast('El archivo es muy grande. Máximo 20MB permitido', 'danger');
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        await this.showToast(`El archivo es muy grande (${fileSizeMB}MB). Máximo 20MB permitido`, 'danger');
         event.target.value = '';
         return;
       }
 
-      this.uploadedFiles[mediaField] = file;
-      this.showToast(`Archivo seleccionado: ${file.name}`, 'success');
+      // Si es una imagen grande (mayor a 5MB), comprimirla automáticamente
+      if (file.type.startsWith('image/') && file.size > 5 * 1024 * 1024) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        await this.showToast(`Imagen grande detectada (${fileSizeMB}MB). Comprimiendo...`, 'warning');
+        
+        try {
+          const compressedFile = await this.compressImage(file);
+          this.uploadedFiles[mediaField] = compressedFile;
+          const compressedSizeMB = (compressedFile.size / (1024 * 1024)).toFixed(2);
+          const savedMB = (file.size - compressedFile.size) / (1024 * 1024);
+          await this.showToast(`✅ Imagen comprimida: ${compressedSizeMB}MB (ahorraste ${savedMB.toFixed(2)}MB)`, 'success');
+        } catch (error) {
+          console.error('Error al comprimir imagen:', error);
+          await this.showToast('⚠️ Error al comprimir. Usando imagen original', 'warning');
+          this.uploadedFiles[mediaField] = file;
+        }
+      } else {
+        this.uploadedFiles[mediaField] = file;
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        await this.showToast(`Archivo seleccionado: ${file.name} (${fileSizeMB}MB)`, 'success');
+      }
     }
+  }
+
+  /**
+   * Comprimir imagen antes de subir
+   */
+  private async compressImage(file: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      
+      reader.onload = (event: any) => {
+        const img = new Image();
+        img.src = event.target.result;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Redimensionar si es muy grande (máximo 1920px en el lado más largo)
+          const maxDimension = 1920;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('No se pudo obtener contexto del canvas'));
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Convertir a blob con calidad 0.8 (80%)
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('No se pudo crear el blob'));
+                return;
+              }
+              
+              // Crear nuevo File con el blob comprimido
+              const compressedFile = new File(
+                [blob],
+                file.name.replace(/\.[^.]+$/, '_compressed.jpg'),
+                {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                }
+              );
+              
+              resolve(compressedFile);
+            },
+            'image/jpeg',
+            0.8 // Calidad 80%
+          );
+        };
+        
+        img.onerror = () => {
+          reject(new Error('Error al cargar la imagen'));
+        };
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Error al leer el archivo'));
+      };
+    });
   }
 
   // Eliminar archivo seleccionado
