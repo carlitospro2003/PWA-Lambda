@@ -142,12 +142,39 @@ export class FirebaseService {
       
       console.log('[FIREBASE] Token FCM será limpiado por el backend en el logout');
       
-      // Opcional: Limpiar permisos de notificación localmente si es necesario
-      // Nota: No podemos revocar permisos de notificación del navegador mediante código
-      // El usuario debe hacerlo manualmente en la configuración del navegador
+      // Desregistrar el Service Worker de Firebase
+      await this.unregisterFirebaseServiceWorker();
       
     } catch (error) {
       console.error('[FIREBASE] Error al limpiar token FCM:', error);
+    }
+  }
+
+  /**
+   * Desregistrar el Service Worker de Firebase al cerrar sesión
+   * Esto evita que se reciban notificaciones cuando no hay sesión activa
+   */
+  private async unregisterFirebaseServiceWorker(): Promise<void> {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        
+        for (const registration of registrations) {
+          // Buscar el Service Worker de Firebase
+          if (registration.active?.scriptURL.includes('firebase-messaging-sw')) {
+            console.log('[FIREBASE] Desregistrando Service Worker de Firebase...');
+            const success = await registration.unregister();
+            
+            if (success) {
+              console.log('[FIREBASE] ✅ Service Worker desregistrado exitosamente');
+            } else {
+              console.log('[FIREBASE] ⚠️ No se pudo desregistrar el Service Worker');
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[FIREBASE] Error al desregistrar Service Worker:', error);
     }
   }
 }

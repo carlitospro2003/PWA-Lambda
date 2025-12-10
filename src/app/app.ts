@@ -41,6 +41,9 @@ export class App implements OnInit {
     
     // Inicializar Firebase Cloud Messaging
     this.initializeFirebaseMessaging();
+    
+    // Configurar listener para verificación de sesión desde el Service Worker
+    this.setupServiceWorkerSessionCheck();
   }
 
   /**
@@ -63,6 +66,32 @@ export class App implements OnInit {
       }
     } catch (error) {
       console.error('Error al inicializar Firebase Messaging:', error);
+    }
+  }
+
+  /**
+   * Configurar listener para responder a verificaciones de sesión desde el Service Worker
+   * El Service Worker preguntará si hay sesión activa antes de mostrar notificaciones
+   */
+  private setupServiceWorkerSessionCheck() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'CHECK_SESSION') {
+          // Verificar si hay sesión activa (token y usuario en localStorage)
+          const hasSession = this.authService.isAuthenticated();
+          
+          console.log('[APP] Service Worker preguntó por sesión. Estado:', hasSession ? '✅ ACTIVA' : '❌ NO ACTIVA');
+          
+          // Responder al Service Worker a través del MessageChannel
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ 
+              hasSession: hasSession 
+            });
+          }
+        }
+      });
+      
+      console.log('[APP] ✅ Listener de verificación de sesión configurado');
     }
   }
 }
