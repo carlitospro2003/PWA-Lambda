@@ -125,5 +125,30 @@ export class FirebaseService {
     }
     console.log('[FIREBASE] Listener detenido');
   }
+
+  /**
+   * Limpiar token FCM del usuario (útil al cerrar sesión)
+   * El backend se encarga de limpiar el token en la base de datos
+   */
+  async clearFCMToken(): Promise<void> {
+    try {
+      if (!this.messaging) {
+        console.log('[FIREBASE] Messaging no inicializado, no hay token que limpiar');
+        return;
+      }
+
+      // Detener el listener primero
+      this.stopListening();
+      
+      console.log('[FIREBASE] Token FCM será limpiado por el backend en el logout');
+      
+      // Opcional: Limpiar permisos de notificación localmente si es necesario
+      // Nota: No podemos revocar permisos de notificación del navegador mediante código
+      // El usuario debe hacerlo manualmente en la configuración del navegador
+      
+    } catch (error) {
+      console.error('[FIREBASE] Error al limpiar token FCM:', error);
+    }
+  }
 }
 

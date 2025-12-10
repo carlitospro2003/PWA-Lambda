@@ -121,6 +121,8 @@ export class AuthService {
 
   /**
    * Cerrar sesión con la API
+   * El backend limpiará el token FCM del usuario estableciéndolo como ' ' (espacio)
+   * para que no reciba más notificaciones push
    */
   logout(): Observable<any> {
     const headers = this.getAuthHeaders();
@@ -129,6 +131,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           console.log('AuthService Logout Response:', response);
+          console.log('[AUTH] Backend ha limpiado el token FCM del usuario');
           this.clearAuthData();
         })
       );
@@ -144,34 +147,29 @@ export class AuthService {
 
   /**
    * Limpiar datos de autenticación
+   * Nota: El token FCM ya fue limpiado en el backend por el método logout()
    */
   private clearAuthData(): void {
-    // Detener listener de notificaciones Firebase
+    // Detener listener de notificaciones Firebase y limpiar token FCM
     try {
       const firebaseService = (window as any).firebaseServiceInstance;
-      if (firebaseService && firebaseService.stopListening) {
-        firebaseService.stopListening();
-        console.log('[AUTH] Listener de Firebase detenido');
+      if (firebaseService) {
+        if (firebaseService.clearFCMToken) {
+          firebaseService.clearFCMToken();
+          console.log('[AUTH] Token FCM limpiado en Firebase');
+        }
+        if (firebaseService.stopListening) {
+          firebaseService.stopListening();
+          console.log('[AUTH] Listener de Firebase detenido');
+        }
       }
     } catch (error) {
       console.log('[AUTH] No se pudo detener listener de Firebase:', error);
     }
 
-    // Desregistrar Service Worker de Firebase (opcional pero recomendado)
-    try {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          registrations.forEach((registration) => {
-            if (registration.active?.scriptURL.includes('firebase-messaging-sw')) {
-              console.log('[AUTH] Desregistrando Service Worker de Firebase');
-              registration.unregister();
-            }
-          });
-        });
-      }
-    } catch (error) {
-      console.log('[AUTH] No se pudo desregistrar Service Worker:', error);
-    }
+    // Nota: No desregistramos el Service Worker para mantener la funcionalidad PWA
+    // El backend ya limpió el token FCM del usuario (USR_FCM = ' ')
+    // por lo que no recibirá más notificaciones push
 
     // Limpiar notificaciones primero
     try {

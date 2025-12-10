@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 
@@ -9,6 +9,7 @@ import { filter } from 'rxjs/operators';
 export class VersionService {
   constructor(
     private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
     private swUpdate: SwUpdate
   ) {
     this.initializeVersionDetection();
@@ -97,13 +98,43 @@ export class VersionService {
    * Activar actualización y recargar la app
    */
   private async activateUpdate(): Promise<void> {
+    const loading = await this.loadingCtrl.create({
+      message: 'Instalando actualización...',
+      spinner: 'crescent'
+    });
+    await loading.present();
+
     try {
       console.log('[VERSION] Activando actualización...');
       await this.swUpdate.activateUpdate();
-      console.log('[VERSION] Actualización activada, recargando app...');
+      console.log('[VERSION] ✅ Actualización activada exitosamente');
+      
+      await loading.dismiss();
+      
+      // Mostrar mensaje de éxito antes de recargar
+      const successAlert = await this.alertCtrl.create({
+        header: '✅ Actualización Completada',
+        message: 'La app se recargará para aplicar los cambios.',
+        buttons: ['OK']
+      });
+      await successAlert.present();
+      await successAlert.onDidDismiss();
+      
+      console.log('[VERSION] Recargando app...');
       window.location.reload();
     } catch (error) {
       console.error('[VERSION] Error al activar actualización:', error);
+      await loading.dismiss();
+      
+      // Mostrar error pero recargar de todas formas
+      const errorAlert = await this.alertCtrl.create({
+        header: '⚠️ Error en Actualización',
+        message: 'Hubo un error, pero se recargará la app de todas formas.',
+        buttons: ['OK']
+      });
+      await errorAlert.present();
+      await errorAlert.onDidDismiss();
+      
       // Forzar recarga de todas formas
       window.location.reload();
     }
