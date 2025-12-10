@@ -60,13 +60,22 @@ export class AuthService {
   private apiUrl = environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
+  private refreshTokenInterval: any = null;
   
   public currentUser$ = this.currentUserSubject.asObservable();
   public token$ = this.tokenSubject.asObservable();
 
+  // Constantes para el refresco de token
+  private readonly TOKEN_LIFETIME = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
+  private readonly REFRESH_BEFORE_EXPIRY = 2 * 60 * 60 * 1000; // Refrescar 2 horas antes de expirar
+  private readonly REFRESH_CHECK_INTERVAL = 30 * 60 * 1000; // Verificar cada 30 minutos
+
   constructor(private http: HttpClient) {
     // Cargar datos guardados del localStorage al inicializar
     this.loadStoredAuth();
+    
+    // Iniciar sistema de refresco automático de token
+    this.startTokenRefreshScheduler();
   }
 
   /**
@@ -146,10 +155,129 @@ export class AuthService {
   }
 
   /**
+   * Refrescar el token de autenticación
+   */
+  refreshToken(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    
+    console.log('[AUTH] 🔄 Refrescando token de autenticación...');
+    
+    return this.http.post<any>(`${this.apiUrl}${API_ENDPOINTS.REFRESH_TOKEN}`, {}, { headers })
+      .pipe(
+        tap(response => {
+          if (response.success && response.token) {
+            console.log('[AUTH] ✅ Token refrescado exitosamente');
+            
+            // Actualizar solo el token, mantener el usuario actual
+            const currentUser = this.getCurrentUser();
+            if (currentUser) {
+              this.setAuthData(currentUser, response.token);
+              
+              // Guardar timestamp del último refresco
+              localStorage.setItem('tokenRefreshedAt', Date.now().toString());
+              
+              console.log('[AUTH] 💾 Token actualizado en localStorage');
+            }
+          } else {
+            console.warn('[AUTH] ⚠️ Respuesta de refresco sin token válido');
+          }
+        })
+      );
+  }
+
+  /**
+   * Iniciar programador de refresco automático de token
+   */
+  private startTokenRefreshScheduler(): void {
+    // Limpiar intervalo anterior si existe
+    if (this.refreshTokenInterval) {
+      clearInterval(this.refreshTokenInterval);
+    }
+
+    console.log('[AUTH] 🔁 Iniciando programador de refresco automático de token');
+    console.log(`[AUTH] ⏰ Verificación cada ${this.REFRESH_CHECK_INTERVAL / 60000} minutos`);
+    console.log(`[AUTH] 🕐 Token válido por 24 horas, se refrescará 2 horas antes de expirar`);
+
+    // Verificar inmediatamente si necesita refresco
+    this.checkAndRefreshToken();
+
+    // Configurar intervalo para verificar periódicamente
+    this.refreshTokenInterval = setInterval(() => {
+      this.checkAndRefreshToken();
+    }, this.REFRESH_CHECK_INTERVAL);
+  }
+
+  /**
+   * Verificar si el token necesita ser refrescado y hacerlo si es necesario
+   */
+  private checkAndRefreshToken(): void {
+    // Verificar si el usuario está autenticado
+    if (!this.isAuthenticated()) {
+      console.log('[AUTH] 👤 Usuario no autenticado, saltando verificación de token');
+      return;
+    }
+
+    const tokenRefreshedAt = localStorage.getItem('tokenRefreshedAt');
+    const lastRefreshTime = tokenRefreshedAt ? parseInt(tokenRefreshedAt) : 0;
+    const currentTime = Date.now();
+    const timeSinceLastRefresh = currentTime - lastRefreshTime;
+
+    // Si no hay timestamp de refresco, establecer uno ahora (probablemente es un login reciente)
+    if (!tokenRefreshedAt) {
+      localStorage.setItem('tokenRefreshedAt', currentTime.toString());
+      console.log('[AUTH] 📝 Estableciendo timestamp inicial de token');
+      return;
+    }
+
+    // Calcular tiempo hasta la expiración
+    const timeUntilExpiry = this.TOKEN_LIFETIME - timeSinceLastRefresh;
+    const hoursUntilExpiry = (timeUntilExpiry / (60 * 60 * 1000)).toFixed(2);
+
+    console.log(`[AUTH] ⏱️ Tiempo desde último refresco: ${(timeSinceLastRefresh / 60000).toFixed(0)} minutos`);
+    console.log(`[AUTH] ⏳ Tiempo hasta expiración: ~${hoursUntilExpiry} horas`);
+
+    // Si el token está cerca de expirar (menos de 2 horas), refrescarlo
+    if (timeUntilExpiry <= this.REFRESH_BEFORE_EXPIRY) {
+      console.log('[AUTH] ⚠️ Token cerca de expirar, iniciando refresco...');
+      
+      this.refreshToken().subscribe({
+        next: (response) => {
+          console.log('[AUTH] ✅ Token refrescado automáticamente');
+        },
+        error: (error) => {
+          console.error('[AUTH] ❌ Error al refrescar token automáticamente:', error);
+          
+          // Si el token ya expiró o es inválido, cerrar sesión
+          if (error.status === 401 || error.status === 500) {
+            console.error('[AUTH] 🚪 Token inválido o expirado, cerrando sesión...');
+            this.logoutLocal();
+          }
+        }
+      });
+    } else {
+      console.log('[AUTH] ✅ Token válido, no necesita refresco aún');
+    }
+  }
+
+  /**
+   * Detener el programador de refresco de token
+   */
+  private stopTokenRefreshScheduler(): void {
+    if (this.refreshTokenInterval) {
+      clearInterval(this.refreshTokenInterval);
+      this.refreshTokenInterval = null;
+      console.log('[AUTH] 🛑 Programador de refresco de token detenido');
+    }
+  }
+
+  /**
    * Limpiar datos de autenticación
    * Nota: El token FCM ya fue limpiado en el backend por el método logout()
    */
   private clearAuthData(): void {
+    // Detener programador de refresco de token
+    this.stopTokenRefreshScheduler();
+    
     // Detener listener de notificaciones Firebase y limpiar token FCM
     try {
       const firebaseService = (window as any).firebaseServiceInstance;
@@ -190,6 +318,7 @@ export class AuthService {
     // Limpiar localStorage
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('tokenRefreshedAt');
     
     // Limpiar subjects
     this.currentUserSubject.next(null);
@@ -260,10 +389,14 @@ export class AuthService {
     // Guardar en localStorage para persistencia
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('authToken', token);
+    localStorage.setItem('tokenRefreshedAt', Date.now().toString());
     
     // Actualizar subjects
     this.currentUserSubject.next(user);
     this.tokenSubject.next(token);
+    
+    // Reiniciar programador de refresco con el nuevo token
+    this.startTokenRefreshScheduler();
   }
 
   /**

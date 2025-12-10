@@ -2,7 +2,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://127.0.0.1:8000/api',
   appName: 'Lambda Fitness',
-  version: '1.3.2',
+  version: '1.3.3',
   recaptchaSiteKey: '6LcgbCUsAAAAABvBxNT4pRRYdd70_gkmmTXpmu2z', // Reemplazar con tu Site Key de Google reCAPTCHA v3
   firebase: {
     apiKey: "AIzaSyDPQ3HcafZsG9MJgwTYDM-oV-uCOBCIlnM",
@@ -20,7 +20,7 @@ export const API_ENDPOINTS = {
   LOGIN: '/login',
   REGISTER: '/register',
   LOGOUT: '/logout',
-  REFRESH_TOKEN: '/refresh',
+  REFRESH_TOKEN: '/refreshToken',
   PROFILE: '/profile',
   VERIFY_2FA: '/verify2FA',
   
