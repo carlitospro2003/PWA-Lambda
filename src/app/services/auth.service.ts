@@ -157,6 +157,22 @@ export class AuthService {
       console.log('[AUTH] No se pudo detener listener de Firebase:', error);
     }
 
+    // Desregistrar Service Worker de Firebase (opcional pero recomendado)
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            if (registration.active?.scriptURL.includes('firebase-messaging-sw')) {
+              console.log('[AUTH] Desregistrando Service Worker de Firebase');
+              registration.unregister();
+            }
+          });
+        });
+      }
+    } catch (error) {
+      console.log('[AUTH] No se pudo desregistrar Service Worker:', error);
+    }
+
     // Limpiar notificaciones primero
     try {
       // Intentar obtener el NotificationService si está disponible
