@@ -35,7 +35,8 @@ import {
   chevronBack,
   personAdd,
   fitness,
-  call
+  call,
+  informationCircleOutline
 } from 'ionicons/icons';
 import { AuthService, RegisterRequest } from '../services/auth.service';
 import { RecaptchaService } from '../services/recaptcha.service';
@@ -96,7 +97,8 @@ export class RegisterPage implements OnInit, AfterViewInit {
       chevronBack,
       personAdd,
       fitness,
-      call
+      call,
+      informationCircleOutline
     });
   }
 
@@ -128,6 +130,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
   validateForm(): boolean {
     this.errorMessage = '';
 
+    // Validación de Nombre (min:2, max:50)
     if (!this.firstName.trim()) {
       this.errorMessage = 'El nombre es requerido';
       this.showToast(this.errorMessage, 'warning');
@@ -140,6 +143,13 @@ export class RegisterPage implements OnInit, AfterViewInit {
       return false;
     }
 
+    if (this.firstName.trim().length > 50) {
+      this.errorMessage = 'El nombre no puede exceder los 50 caracteres';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validación de Apellido (min:2, max:50)
     if (!this.lastName.trim()) {
       this.errorMessage = 'El apellido es requerido';
       this.showToast(this.errorMessage, 'warning');
@@ -152,6 +162,13 @@ export class RegisterPage implements OnInit, AfterViewInit {
       return false;
     }
 
+    if (this.lastName.trim().length > 50) {
+      this.errorMessage = 'El apellido no puede exceder los 50 caracteres';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validación de Email (max:255)
     if (!this.email.trim()) {
       this.errorMessage = 'El email es requerido';
       this.showToast(this.errorMessage, 'warning');
@@ -159,14 +176,29 @@ export class RegisterPage implements OnInit, AfterViewInit {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.email)) {
+    if (!emailRegex.test(this.email.trim())) {
       this.errorMessage = 'Ingresa un email válido';
       this.showToast(this.errorMessage, 'warning');
       return false;
     }
 
+    if (this.email.trim().length > 255) {
+      this.errorMessage = 'El email no puede exceder los 255 caracteres';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validación de Teléfono (exactamente 10 dígitos)
     if (!this.phone.trim()) {
       this.errorMessage = 'El teléfono es requerido';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validar que solo contenga números
+    const phoneRegex = /^\d+$/;
+    if (!phoneRegex.test(this.phone.trim())) {
+      this.errorMessage = 'El teléfono solo debe contener números';
       this.showToast(this.errorMessage, 'warning');
       return false;
     }
@@ -177,6 +209,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
       return false;
     }
 
+    // Validación de Contraseña (min:8, max:255, con regex estricto)
     if (!this.password) {
       this.errorMessage = 'La contraseña es requerida';
       this.showToast(this.errorMessage, 'warning');
@@ -185,6 +218,27 @@ export class RegisterPage implements OnInit, AfterViewInit {
 
     if (this.password.length < 8) {
       this.errorMessage = 'La contraseña debe tener al menos 8 caracteres';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    if (this.password.length > 255) {
+      this.errorMessage = 'La contraseña no puede exceder los 255 caracteres';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validación regex del backend: al menos 1 minúscula, 1 mayúscula y 1 número
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    if (!passwordRegex.test(this.password)) {
+      this.errorMessage = 'La contraseña debe contener al menos: 1 letra minúscula, 1 mayúscula y 1 número';
+      this.showToast(this.errorMessage, 'warning');
+      return false;
+    }
+
+    // Validación de Rol
+    if (!this.role || !['trainer', 'trainee'].includes(this.role)) {
+      this.errorMessage = 'Debes seleccionar un rol válido (Entrenador o Usuario)';
       this.showToast(this.errorMessage, 'warning');
       return false;
     }

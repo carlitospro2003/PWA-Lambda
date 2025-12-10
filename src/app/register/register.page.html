@@ -34,6 +34,8 @@
                     [(ngModel)]="firstName" 
                     name="firstName"
                     placeholder="Tu nombre"
+                    minlength="2"
+                    maxlength="50"
                     required>
                   </ion-input>
                 </ion-item>
@@ -49,6 +51,8 @@
                     [(ngModel)]="lastName" 
                     name="lastName"
                     placeholder="Tu apellido"
+                    minlength="2"
+                    maxlength="50"
                     required>
                   </ion-input>
                 </ion-item>
@@ -66,6 +70,7 @@
                     [(ngModel)]="email" 
                     name="email"
                     placeholder="tucorreo@ejemplo.com"
+                    maxlength="255"
                     required>
                   </ion-input>
                 </ion-item>
@@ -119,6 +124,7 @@
                     [(ngModel)]="password" 
                     name="password"
                     placeholder="Mínimo 8 caracteres"
+                    maxlength="255"
                     required>
                   </ion-input>
                   <ion-button 
@@ -129,6 +135,21 @@
                     <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
                   </ion-button>
                 </ion-item>
+                <!-- Requisitos de contraseña -->
+                <div class="password-requirements">
+                  <ion-text color="medium">
+                    <p class="requirements-text">
+                      <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
+                      La contraseña debe incluir:
+                    </p>
+                    <ul class="requirements-list">
+                      <li>✓ Mínimo 8 caracteres</li>
+                      <li>✓ Al menos 1 letra minúscula (a-z)</li>
+                      <li>✓ Al menos 1 letra MAYÚSCULA (A-Z)</li>
+                      <li>✓ Al menos 1 número (0-9)</li>
+                    </ul>
+                  </ion-text>
+                </div>
               </ion-col>
             </ion-row>
 
