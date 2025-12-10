@@ -209,10 +209,6 @@ export class LoginPage implements OnInit {
     this.notificationService.syncNotificationsFromBackend();
     console.log('✅ Sincronización de notificaciones iniciada');
     
-    // Verificar actualizaciones después del login exitoso
-    await this.versionService.checkForUpdates();
-    console.log('✅ Verificación de versión completada');
-    
     // Si tiene biometría disponible y marcó "recordar", preguntar si quiere activarla
     if (this.biometricAvailable && !this.biometricEnabled && this.rememberBiometric) {
       await this.promptEnableBiometric();

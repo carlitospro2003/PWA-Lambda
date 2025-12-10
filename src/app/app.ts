@@ -33,24 +33,16 @@ export class App implements OnInit {
     // Inicializar monitoreo de red y sincronización
     console.log('[APP] Estado de red:', this.networkService.isOnline() ? 'ONLINE' : 'OFFLINE');
     
-    // Verificar actualizaciones disponibles
-    this.checkAppVersion();
+    // El versionService ya se inicializa automáticamente en su constructor
+    // No es necesario llamar checkForUpdates aquí
     
     // Inicializar Firebase Cloud Messaging
     this.initializeFirebaseMessaging();
   }
 
   /**
-   * Verificar si hay nueva versión disponible
+   * Inicializar Firebase Cloud Messaging
    */
-  private async checkAppVersion() {
-    // Solo verificar si el usuario está autenticado y hay conexión
-    if (this.authService.isAuthenticated() && this.networkService.isOnline()) {
-      console.log('[APP] Verificando actualizaciones...');
-      await this.versionService.checkForUpdates();
-    }
-  }
-
   private async initializeFirebaseMessaging() {
     try {
       // Escuchar mensajes en primer plano

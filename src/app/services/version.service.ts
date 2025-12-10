@@ -1,55 +1,63 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { SwUpdate } from '@angular/service-worker';
-import { environment, API_ENDPOINTS } from '../../environments/environment';
-
-interface VersionResponse {
-  version: string;
-}
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VersionService {
-  private readonly LOCAL_VERSION = environment.version;
-  private readonly UPDATE_DISMISSED_KEY = 'updateDismissed';
-
   constructor(
-    private http: HttpClient,
     private alertCtrl: AlertController,
     private swUpdate: SwUpdate
-  ) {}
+  ) {
+    this.initializeVersionDetection();
+  }
 
   /**
-   * Verificar si hay actualizaciones disponibles
+   * Inicializar detección automática de nuevas versiones
+   */
+  private initializeVersionDetection(): void {
+    if (!this.swUpdate.isEnabled) {
+      console.log('[VERSION] Service Worker no está habilitado');
+      return;
+    }
+
+    console.log('[VERSION] Sistema de detección de actualizaciones iniciado');
+
+    // Escuchar cuando hay una nueva versión disponible
+    this.swUpdate.versionUpdates
+      .pipe(
+        filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY')
+      )
+      .subscribe(event => {
+        console.log('[VERSION] Nueva versión detectada');
+        console.log('[VERSION] Versión actual:', event.currentVersion);
+        console.log('[VERSION] Nueva versión:', event.latestVersion);
+        this.showUpdateAlert();
+      });
+
+    // Verificar actualizaciones al inicio
+    this.checkForUpdates();
+  }
+
+  /**
+   * Verificar manualmente si hay actualizaciones
    */
   async checkForUpdates(): Promise<void> {
+    if (!this.swUpdate.isEnabled) {
+      console.log('[VERSION] Service Worker no está habilitado');
+      return;
+    }
+
     try {
-      // Obtener versión del servidor
-      const serverVersion = await this.getServerVersion();
+      console.log('[VERSION] Verificando actualizaciones...');
+      const updateAvailable = await this.swUpdate.checkForUpdate();
       
-      if (!serverVersion) {
-        console.warn('[VERSION] No se pudo obtener la versión del servidor');
-        return;
-      }
-
-      console.log('[VERSION] Local:', this.LOCAL_VERSION, '| Server:', serverVersion);
-
-      // Comparar versiones
-      if (serverVersion !== this.LOCAL_VERSION) {
-        console.log('[VERSION] Nueva versión disponible:', serverVersion);
-        
-        // Verificar si el usuario ya rechazó esta versión
-        const dismissedVersion = localStorage.getItem(this.UPDATE_DISMISSED_KEY);
-        
-        if (dismissedVersion !== serverVersion) {
-          await this.showUpdateAlert(serverVersion);
-        } else {
-          console.log('[VERSION] Usuario pospuso actualización para esta versión');
-        }
+      if (updateAvailable) {
+        console.log('[VERSION] Actualización disponible');
       } else {
-        console.log('[VERSION] App actualizada');
+        console.log('[VERSION] No hay actualizaciones disponibles');
       }
     } catch (error) {
       console.error('[VERSION] Error al verificar actualizaciones:', error);
@@ -57,28 +65,12 @@ export class VersionService {
   }
 
   /**
-   * Obtener versión del servidor
-   */
-  private async getServerVersion(): Promise<string | null> {
-    try {
-      const response = await this.http.get<VersionResponse>(
-        `${environment.apiUrl}${API_ENDPOINTS.VERSION_CHECK}`
-      ).toPromise();
-      
-      return response?.version || null;
-    } catch (error) {
-      console.error('[VERSION] Error al obtener versión del servidor:', error);
-      return null;
-    }
-  }
-
-  /**
    * Mostrar alerta de actualización
    */
-  private async showUpdateAlert(newVersion: string): Promise<void> {
+  private async showUpdateAlert(): Promise<void> {
     const alert = await this.alertCtrl.create({
-      header: '🚀 Actualización Disponible',
-      message: `Hay una nueva versión (${newVersion}) de Lambda Fitness. ¿Deseas actualizar ahora?`,
+      header: '🚀 Nueva Versión Disponible',
+      message: 'Hay una nueva versión de Lambda Fitness disponible. Para obtener las últimas funciones y mejoras, actualiza ahora.',
       backdropDismiss: false,
       buttons: [
         {
@@ -86,14 +78,13 @@ export class VersionService {
           role: 'cancel',
           handler: () => {
             console.log('[VERSION] Usuario pospuso actualización');
-            localStorage.setItem(this.UPDATE_DISMISSED_KEY, newVersion);
           }
         },
         {
-          text: 'Actualizar',
+          text: 'Actualizar Ahora',
           handler: () => {
             console.log('[VERSION] Usuario acepta actualización');
-            this.updateApp();
+            this.activateUpdate();
           }
         }
       ]
@@ -103,25 +94,17 @@ export class VersionService {
   }
 
   /**
-   * Actualizar la aplicación
+   * Activar actualización y recargar la app
    */
-  private async updateApp(): Promise<void> {
+  private async activateUpdate(): Promise<void> {
     try {
-      // Limpiar el flag de actualización pospuesta
-      localStorage.removeItem(this.UPDATE_DISMISSED_KEY);
-
-      // Si hay Service Worker, activar actualización
-      if (this.swUpdate.isEnabled) {
-        console.log('[VERSION] Activando Service Worker actualizado...');
-        await this.swUpdate.activateUpdate();
-      }
-
-      // Recargar la página para aplicar cambios
-      console.log('[VERSION] Recargando aplicación...');
+      console.log('[VERSION] Activando actualización...');
+      await this.swUpdate.activateUpdate();
+      console.log('[VERSION] Actualización activada, recargando app...');
       window.location.reload();
     } catch (error) {
-      console.error('[VERSION] Error al actualizar:', error);
-      // Forzar recarga incluso si falla la actualización del SW
+      console.error('[VERSION] Error al activar actualización:', error);
+      // Forzar recarga de todas formas
       window.location.reload();
     }
   }
@@ -129,8 +112,8 @@ export class VersionService {
   /**
    * Forzar verificación de actualizaciones (útil para desarrollo)
    */
-  forceCheckForUpdates(): void {
-    localStorage.removeItem(this.UPDATE_DISMISSED_KEY);
-    this.checkForUpdates();
+  async forceCheckForUpdates(): Promise<void> {
+    console.log('[VERSION] Forzando verificación de actualizaciones...');
+    await this.checkForUpdates();
   }
 }

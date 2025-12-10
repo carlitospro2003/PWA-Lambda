@@ -249,10 +249,6 @@ export class Verify2FAPage implements OnInit {
     this.notificationService.syncNotificationsFromBackend();
     console.log('✅ Sincronización de notificaciones iniciada');
 
-    // Verificar actualizaciones
-    await this.versionService.checkForUpdates();
-    console.log('✅ Verificación de versión completada');
-
     // Redirigir según el rol del usuario
     const user = this.authService.getCurrentUser();
     if (user?.USR_UserRole === 'trainer') {
