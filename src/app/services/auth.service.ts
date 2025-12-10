@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment, API_ENDPOINTS } from '../../environments/environment';
+import { FirebaseService } from './firebase.service';
 
 // Interfaces para la API
 export interface LoginRequest {
@@ -145,6 +146,17 @@ export class AuthService {
    * Limpiar datos de autenticación
    */
   private clearAuthData(): void {
+    // Detener listener de notificaciones Firebase
+    try {
+      const firebaseService = (window as any).firebaseServiceInstance;
+      if (firebaseService && firebaseService.stopListening) {
+        firebaseService.stopListening();
+        console.log('[AUTH] Listener de Firebase detenido');
+      }
+    } catch (error) {
+      console.log('[AUTH] No se pudo detener listener de Firebase:', error);
+    }
+
     // Limpiar notificaciones primero
     try {
       // Intentar obtener el NotificationService si está disponible

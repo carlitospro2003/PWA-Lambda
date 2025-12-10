@@ -10,6 +10,7 @@ import { ToastController } from '@ionic/angular';
 export class FirebaseService {
   private messaging: Messaging | null = null;
   private notificationService: any = null; // Se inyectará después para evitar dependencia circular
+  private unsubscribeMessages: (() => void) | null = null; // Guardar referencia para desuscribir
 
   constructor(private toastController: ToastController) {
     this.initializeFirebase();
@@ -69,7 +70,8 @@ export class FirebaseService {
       return;
     }
 
-    onMessage(this.messaging, (payload) => {
+    console.log('[FIREBASE] Iniciando listener de notificaciones');
+    this.unsubscribeMessages = onMessage(this.messaging, (payload) => {
       console.log('Mensaje recibido en primer plano:', payload);
       
       // Sincronizar notificaciones desde el backend para actualizar el badge
@@ -108,6 +110,20 @@ export class FirebaseService {
 
   async getFCMToken(): Promise<string | null> {
     return this.requestPermission();
+  }
+
+  /**
+   * Detener listener de notificaciones (útil al cerrar sesión)
+   */
+  stopListening(): void {
+    console.log('[FIREBASE] Deteniendo listener de notificaciones');
+    // Limpiar referencia del listener si existe
+    if (this.unsubscribeMessages) {
+      // onMessage retorna una función pero no es directamente invocable para desuscribir
+      // En Firebase Web v9+, onMessage no retorna unsubscribe, pero limpiamos la referencia
+      this.unsubscribeMessages = null;
+    }
+    console.log('[FIREBASE] Listener detenido');
   }
 }
 

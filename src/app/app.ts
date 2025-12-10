@@ -25,7 +25,10 @@ export class App implements OnInit {
     private authService: AuthService,
     private syncService: SyncService,
     private networkService: NetworkService
-  ) {}
+  ) {
+    // Guardar referencia global de FirebaseService para uso en logout
+    (window as any).firebaseServiceInstance = this.firebaseService;
+  }
 
   async ngOnInit() {
     console.log('App initialized - PWA install service active');
