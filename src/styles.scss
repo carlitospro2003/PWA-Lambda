@@ -54,3 +54,54 @@ ion-row.business-info {
     justify-content: start;
   }
 }
+
+/* ============================================
+   Estilos para alerta de actualización de versión
+   ============================================ */
+.version-update-alert {
+  .alert-wrapper {
+    --max-width: 90%;
+    --border-radius: 16px;
+  }
+
+  .alert-head {
+    padding: 20px 20px 16px 20px;
+    
+    h2 {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: #fdbc22;
+    }
+  }
+
+  .alert-message {
+    padding: 0 20px 20px 20px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #333;
+
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      
+      li {
+        margin: 4px 0;
+      }
+    }
+  }
+
+  .alert-button-group {
+    padding: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    .alert-button-cancel {
+      color: #999;
+      font-weight: 500;
+    }
+
+    .alert-button-confirm {
+      color: #fdbc22;
+      font-weight: 700;
+    }
+  }
+}
