@@ -70,8 +70,8 @@ export class VersionService {
    */
   private async showUpdateAlert(): Promise<void> {
     const alert = await this.alertCtrl.create({
-      header: '🚀 Nueva Versión Disponible',
-      message: 'Hay una actualización importante de Lambda Fitness disponible. Correcciones de errores, mejoras de rendimiento y nuevas funcionalidades. La app se recargará automáticamente. Tu sesión se mantendrá activa.',
+      header: 'Nueva Versión Disponible',
+      message: 'Hay una nueva actualización disponible.',
       backdropDismiss: false,
       buttons: [
         {
