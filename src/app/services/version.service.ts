@@ -71,27 +71,12 @@ export class VersionService {
   private async showUpdateAlert(): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: '🚀 Nueva Versión Disponible',
-      message: `
-        <div style="text-align: left; padding: 10px 0;">
-          <p><strong>Hay una actualización importante de Lambda Fitness disponible.</strong></p>
-          <p style="margin-top: 10px;">✨ <strong>Mejoras incluidas:</strong></p>
-          <ul style="margin: 8px 0; padding-left: 20px; font-size: 0.9em;">
-            <li>Correcciones de errores</li>
-            <li>Mejoras de rendimiento</li>
-            <li>Nuevas funcionalidades</li>
-          </ul>
-          <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-            ℹ️ La app se recargará automáticamente. Tu sesión se mantendrá activa.
-          </p>
-        </div>
-      `,
+      message: 'Hay una actualización importante de Lambda Fitness disponible. Correcciones de errores, mejoras de rendimiento y nuevas funcionalidades. La app se recargará automáticamente. Tu sesión se mantendrá activa.',
       backdropDismiss: false,
-      cssClass: 'version-update-alert',
       buttons: [
         {
           text: 'Más Tarde',
           role: 'cancel',
-          cssClass: 'alert-button-cancel',
           handler: () => {
             console.log('[VERSION] ⏰ Usuario pospuso actualización');
             // Recordar en 1 hora
@@ -102,7 +87,6 @@ export class VersionService {
         },
         {
           text: 'Actualizar Ahora',
-          cssClass: 'alert-button-confirm',
           handler: () => {
             console.log('[VERSION] ✅ Usuario acepta actualización');
             this.activateUpdate();
